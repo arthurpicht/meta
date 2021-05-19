@@ -30,6 +30,7 @@ class RepoConfigTest {
 
         assertEquals("simple", repoConfig.getRepoId());
         assertEquals("git@github.com:arthurpicht/testRepoSimple.git", repoConfig.getGitRepoUrl());
+        assertFalse(repoConfig.hasGitRepoUrlReadOnly());
         assertEquals("src/test/resources", repoConfig.getDestinationPath().toString());
         assertFalse(repoConfig.hasAlteredRepoName());
         assertEquals("testRepoSimple", repoConfig.getRepoName());
@@ -101,6 +102,18 @@ class RepoConfigTest {
         } catch (ConfigurationException e) {
             // din
         }
+    }
+
+    @Test
+    void testUrlReadOnly() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
+        Configuration testRepo1 = getSection("testRepo6");
+        Path referencePath = Paths.get("src/test/resources");
+
+        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+
+        assertEquals("git@github.com:arthurpicht/testRepo6.git", repoConfig.getGitRepoUrl());
+        assertTrue(repoConfig.hasGitRepoUrlReadOnly());
+        assertEquals("https://github.com/arthurpicht/testRepo6.git", repoConfig.getGitRepoUrlReadOnly());
     }
 
 }

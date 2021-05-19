@@ -26,6 +26,8 @@ public class CloneExecutor implements CommandExecutor {
             ExecutionContext.init();
         }
 
+        boolean cicd = cliCall.getOptionParserResultSpecific().hasOption(Meta.OPTION_CICD);
+
         try {
             ProjectConfig projectConfig = new ProjectConfig(ExecutionContext.getMetaDir());
 
@@ -39,7 +41,10 @@ public class CloneExecutor implements CommandExecutor {
 
                 Files.createDirectories(repoConfig.getDestinationPath());
 
-                Git.clone(repoConfig.getDestinationPath(), repoConfig.getGitRepoUrl(), repoConfig.getRepoName());
+                String url = repoConfig.getGitRepoUrl();
+                if (cicd && repoConfig.hasGitRepoUrlReadOnly()) url = repoConfig.getGitRepoUrlReadOnly();
+
+                Git.clone(repoConfig.getDestinationPath(), url, repoConfig.getRepoName());
 
                 if (repoConfig.hasAlteredBranch()) {
                     Git.checkout(repoConfig.getRepoPath(), repoConfig.getBranch());

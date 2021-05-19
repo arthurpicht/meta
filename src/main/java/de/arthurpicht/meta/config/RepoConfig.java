@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 public class RepoConfig {
 
     private static final String KEY_URL = "url";
+    private static final String KEY_URL_RO = "urlReadOnly";
     private static final String KEY_DESTINATION_DIR = "destinationDir";
     private static final String KEY_REPO_NAME = "repoName";
     private static final String KEY_BRANCH = "branch";
@@ -26,7 +27,12 @@ public class RepoConfig {
 
         ConfigHelper.assertKey(configuration, this.repoId, KEY_URL);
         String urlString = configuration.getString(KEY_URL);
-        this.gitRepoUrl = new GitRepoUrl(urlString);
+        if (configuration.containsKey(KEY_URL_RO)) {
+            String urlRoString = configuration.getString(KEY_URL_RO);
+            this.gitRepoUrl = new GitRepoUrl(urlString, urlRoString);
+        } else {
+            this.gitRepoUrl = new GitRepoUrl(urlString);
+        }
 
         if (configuration.containsKey(KEY_DESTINATION_DIR)) {
             Path destinationDirPath = Paths.get(configuration.getString(KEY_DESTINATION_DIR));
@@ -61,6 +67,14 @@ public class RepoConfig {
 
     public String getGitRepoUrl() {
         return this.gitRepoUrl.getUrl();
+    }
+
+    public boolean hasGitRepoUrlReadOnly() {
+        return this.gitRepoUrl.hasUrlReadOnly();
+    }
+
+    public String getGitRepoUrlReadOnly() {
+        return this.gitRepoUrl.getUrlReadOnly();
     }
 
     public Path getDestinationPath() {

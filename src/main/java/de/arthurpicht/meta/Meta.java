@@ -16,6 +16,8 @@ public class Meta {
     public static final String OPTION_STACKTRACE = "stacktrace";
     public static final String OPTION_META_DIR = "metaDir";
 
+    public static final String OPTION_CICD = "cicd";
+
     private static Cli createCli() {
 
         Options globalOptions = new Options()
@@ -28,8 +30,12 @@ public class Meta {
 
         commands.setDefaultCommand(new InfoDefaultCommand());
 
+        Options cloneOptions = new Options()
+                .add(new OptionBuilder().withShortName('c').withLongName("cicd").withDescription("Use read only repos for CICD.").build(OPTION_CICD));
+
         commands.add(new CommandSequenceBuilder()
                 .addCommands("clone")
+                .withSpecificOptions(cloneOptions)
                 .withCommandExecutor(new CloneExecutor())
                 .withDescription("Clones repos.")
                 .build()
