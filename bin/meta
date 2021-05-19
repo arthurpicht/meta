@@ -1,0 +1,9 @@
+#!/bin/bash
+
+__dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# version=$(cat ${__dir}/../version)
+# get first file independent of version number
+file=$(cd ${__dir}/../build/fatjar && ls -1 meta-*.jar | head -n 1)
+
+java -jar "${__dir}/../build/fatjar/${file}" "$@"
