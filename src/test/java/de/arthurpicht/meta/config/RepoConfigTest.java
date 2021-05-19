@@ -29,9 +29,10 @@ class RepoConfigTest {
         RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
 
         assertEquals("simple", repoConfig.getRepoId());
-        assertEquals("git@github.com:arthurpicht/testRepoSimple.git", repoConfig.getRepoUrl());
+        assertEquals("git@github.com:arthurpicht/testRepoSimple.git", repoConfig.getGitRepoUrl());
         assertEquals("src/test/resources", repoConfig.getDestinationPath().toString());
         assertFalse(repoConfig.hasAlteredRepoName());
+        assertEquals("testRepoSimple", repoConfig.getRepoName());
         assertFalse(repoConfig.hasAlteredBranch());
     }
 
@@ -43,10 +44,11 @@ class RepoConfigTest {
         RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
 
         assertEquals("testRepo1", repoConfig.getRepoId());
-        assertEquals("git@github.com:arthurpicht/testRepo1.git", repoConfig.getRepoUrl());
+        assertEquals("git@github.com:arthurpicht/testRepo1.git", repoConfig.getGitRepoUrl());
         assertEquals("src/test/resources/core", repoConfig.getDestinationPath().toString());
         assertFalse(repoConfig.getDestinationPath().isAbsolute());
         assertFalse(repoConfig.hasAlteredRepoName());
+        assertEquals("testRepo1", repoConfig.getRepoName());
         assertFalse(repoConfig.hasAlteredBranch());
     }
 
@@ -58,10 +60,11 @@ class RepoConfigTest {
         RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
 
         assertEquals("testRepo2", repoConfig.getRepoId());
-        assertEquals("git@github.com:arthurpicht/testRepo2.git", repoConfig.getRepoUrl());
+        assertEquals("git@github.com:arthurpicht/testRepo2.git", repoConfig.getGitRepoUrl());
         assertEquals("/my/absolute/path", repoConfig.getDestinationPath().toString());
         assertTrue(repoConfig.getDestinationPath().isAbsolute());
         assertFalse(repoConfig.hasAlteredRepoName());
+        assertEquals("testRepo2", repoConfig.getRepoName());
         assertFalse(repoConfig.hasAlteredBranch());
     }
 

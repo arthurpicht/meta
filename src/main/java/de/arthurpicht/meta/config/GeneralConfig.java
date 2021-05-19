@@ -18,11 +18,10 @@ public class GeneralConfig {
 
         Path referenceValue = Paths.get(configuration.getString(KEY_REFERENCE));
         if (referenceValue.isAbsolute()) {
-            referencePath = referenceValue.normalize().toAbsolutePath();
+            referencePath = referenceValue.toAbsolutePath().normalize();
         } else {
-            referencePath = metaPath.resolve(referenceValue).normalize().toAbsolutePath();
+            referencePath = metaPath.resolve(referenceValue).toAbsolutePath().normalize();
         }
-
     }
 
     public Path getReferencePath() {

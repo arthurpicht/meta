@@ -7,7 +7,13 @@ import de.arthurpicht.meta.ExecutionContext;
 import de.arthurpicht.meta.Meta;
 import de.arthurpicht.meta.config.ConfigurationException;
 import de.arthurpicht.meta.config.ProjectConfig;
+import de.arthurpicht.meta.config.RepoConfig;
+import de.arthurpicht.meta.git.Git;
+import de.arthurpicht.meta.git.GitException;
 import de.arthurpicht.utils.core.strings.Strings;
+
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class CloneExecutor implements CommandExecutor {
 
@@ -25,7 +31,22 @@ public class CloneExecutor implements CommandExecutor {
 
             System.out.println("Found projects: " + Strings.listing(projectConfig.getProjectNames(), " ", "", "", "[", "]"));
 
-        } catch (ConfigurationException e) {
+            for (String project : projectConfig.getProjectNames()) {
+
+                RepoConfig repoConfig = projectConfig.getProjectConfig(project);
+
+                System.out.println("[" + project + "] clone and checkout ...");
+
+                Files.createDirectories(repoConfig.getDestinationPath());
+
+                Git.clone(repoConfig.getDestinationPath(), repoConfig.getGitRepoUrl(), repoConfig.getRepoName());
+
+                if (repoConfig.hasAlteredBranch()) {
+                    Git.checkout(repoConfig.getRepoPath(), repoConfig.getBranch());
+                }
+            }
+
+        } catch (ConfigurationException | GitException | IOException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }
 
