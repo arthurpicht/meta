@@ -1,7 +1,7 @@
 package de.arthurpicht.meta.config;
 
 import de.arthurpicht.configuration.Configuration;
-import de.arthurpicht.meta.helper.GitRepoUrl;
+import de.arthurpicht.meta.git.GitRepoUrl;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.nio.file.Path;

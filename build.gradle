@@ -5,6 +5,12 @@ plugins {
 group 'com.github.arthurpicht'
 version '0.1-SNAPSHOT'
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
 repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
@@ -15,14 +21,10 @@ dependencies {
     implementation 'com.github.arthurpicht:cli:0.1-beta1'
     implementation 'com.github.arthurpicht:AP-Configuration:0.1.0'
 
+    implementation group: 'com.diogonunes', name: 'JColor', version: '5.0.1'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
 }
 
 test {
@@ -36,7 +38,7 @@ task extractDependencies(type: Copy, dependsOn: jar) {
 
 task fatJar(type: Jar, dependsOn: extractDependencies) {
     manifest {
-        attributes 'Main-Class': 'de.arthurpicht.meta.Meta'
+        attributes 'Main-Class': 'de.arthurpicht.meta.cli.Meta'
         attributes 'Version': project.property("version")
         attributes 'Build' : new Date().format('yyyyMMddHHmmss')
     }

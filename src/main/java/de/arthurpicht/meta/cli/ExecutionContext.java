@@ -1,4 +1,4 @@
-package de.arthurpicht.meta;
+package de.arthurpicht.meta.cli;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

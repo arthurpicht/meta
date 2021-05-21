@@ -1,4 +1,4 @@
-package de.arthurpicht.meta.helper;
+package de.arthurpicht.meta.git;
 
 import de.arthurpicht.utils.core.strings.Strings;
 
