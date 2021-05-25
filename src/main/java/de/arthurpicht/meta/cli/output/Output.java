@@ -8,16 +8,16 @@ public class Output {
         System.out.println(blueTag(projectName) + message);
     }
 
-    public static void ok(String message) {
-        System.out.println(greenTag("OK") + message);
+    public static void ok(String projectName, String message) {
+        System.out.println(greenTag("OK") + blueTag(projectName) + message);
     }
 
-    public static void warning(String message) {
-        System.out.println(yellowTag("WARN") + message);
+    public static void warning(String projectName, String message) {
+        System.out.println(yellowTag("WARN") + blueTag(projectName) + message);
     }
 
-    public static void error(String message) {
-        System.out.println(redTag("ERROR") + message);
+    public static void error(String projectName, String message) {
+        System.out.println(redTag("ERROR") + blueTag(projectName) + message);
     }
 
     public static String blueTag(String tag) {

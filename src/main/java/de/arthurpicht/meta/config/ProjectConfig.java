@@ -6,9 +6,7 @@ import de.arthurpicht.configuration.ConfigurationFileNotFoundException;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ProjectConfig {
 
@@ -42,8 +40,10 @@ public class ProjectConfig {
         }
     }
 
-    public Set<String> getProjectNames() {
-        return this.projectConfigMap.keySet();
+    public List<String> getProjectNames() {
+        List<String> projectNames = new ArrayList<>(this.projectConfigMap.keySet());
+        Collections.sort(projectNames);
+        return projectNames;
     }
 
     public RepoConfig getProjectConfig(String projectName) {

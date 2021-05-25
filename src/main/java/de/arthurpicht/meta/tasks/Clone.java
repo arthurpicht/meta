@@ -18,7 +18,7 @@ import static de.arthurpicht.meta.cli.output.Output.warning;
 
 public class Clone {
 
-    public static boolean execute(ProjectConfig projectConfig, boolean isCicd, boolean verbose) throws IOException {
+    public static TaskSummary execute(ProjectConfig projectConfig, boolean isCicd, boolean verbose) throws IOException {
 
         TaskSummary taskSummary = new TaskSummary();
 
@@ -31,7 +31,7 @@ public class Clone {
 
             if (isRepoPreexisting(repoConfig)) {
                 taskSummary.addRepoWarning(repoName);
-                warning("Repo already existing. Consider performing update. Skip operation.");
+                warning(project,"Repo already existing. Consider performing update. Skip operation.");
                 continue;
             }
 
@@ -40,7 +40,7 @@ public class Clone {
             try {
                 gitClone(repoConfig, isCicd, verbose);
             } catch (GitException e) {
-                Output.error("Git clone failed: " + e.getMessage());
+                Output.error(project,"Git clone failed: " + e.getMessage());
                 // TODO output stacktrace
                 taskSummary.addRepoFailed(repoName);
                 continue;
@@ -49,7 +49,7 @@ public class Clone {
             try {
                 checkoutAlteredBranch(repoConfig);
             } catch (GitException e) {
-                Output.error("Git checkout failed: " + e.getMessage());
+                Output.error(project,"Git checkout failed: " + e.getMessage());
                 // TODO check existence of targeted branch
                 // TODO output stacktrace
                 taskSummary.addRepoFailed(repoName);
@@ -57,12 +57,12 @@ public class Clone {
             }
 
             taskSummary.addRepoSuccess(repoName);
-            Output.ok("Repo cloned successfully.");
+            Output.ok(project,"Repo cloned successfully.");
         }
 
         summaryOut(taskSummary);
 
-        return (taskSummary.hasSuccess());
+        return taskSummary;
     }
 
     private static boolean isRepoPreexisting(RepoConfig repoConfig) throws IOException {
@@ -82,14 +82,16 @@ public class Clone {
     }
 
     private static void summaryOut(TaskSummary taskSummary) {
-
-        // TODO make it right ...
-
+        System.out.println();
         if (taskSummary.hasSuccess()) {
             System.out.println(Ansi.colorize("REPOS CLONED SUCCESSFULLY.", Colors.greenText));
         } else {
-            System.out.println(Ansi.colorize("ERROR WHEN CLONING REPOS.", Colors.redText));
+            System.out.println(Ansi.colorize("ERROR ON CLONING REPOS.", Colors.redText));
         }
+        System.out.println(taskSummary.getNumberOfRepos() + " repos processed: "
+                + taskSummary.getNrOfReposSuccess() + " ok, "
+                + taskSummary.getNrOfReposWarning() + " with warnings, "
+                + taskSummary.getNrOfReposFailed() + " failed.");
     }
 
 }

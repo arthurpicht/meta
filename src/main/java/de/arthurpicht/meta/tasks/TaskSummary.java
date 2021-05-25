@@ -59,4 +59,8 @@ public class TaskSummary {
         return !this.reposWarning.isEmpty();
     }
 
+    public int getNumberOfRepos() {
+        return this.reposSuccess.size() + this.reposWarning.size() + this.reposFailed.size();
+    }
+
 }
