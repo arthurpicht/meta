@@ -1,4 +1,4 @@
-package de.arthurpicht.meta;
+package de.arthurpicht.meta.cli;
 
 import de.arthurpicht.cli.*;
 import de.arthurpicht.cli.command.CommandSequenceBuilder;
@@ -9,7 +9,7 @@ import de.arthurpicht.cli.option.ManOption;
 import de.arthurpicht.cli.option.OptionBuilder;
 import de.arthurpicht.cli.option.Options;
 import de.arthurpicht.cli.option.VersionOption;
-import de.arthurpicht.meta.executor.CloneExecutor;
+import de.arthurpicht.meta.cli.executor.CloneExecutor;
 
 public class Meta {
 

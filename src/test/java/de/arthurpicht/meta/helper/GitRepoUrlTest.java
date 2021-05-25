@@ -1,5 +1,6 @@
 package de.arthurpicht.meta.helper;
 
+import de.arthurpicht.meta.git.GitRepoUrl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

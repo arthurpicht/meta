@@ -1,15 +1,16 @@
-package de.arthurpicht.meta.executor;
+package de.arthurpicht.meta.cli.executor;
 
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
-import de.arthurpicht.meta.ExecutionContext;
-import de.arthurpicht.meta.Meta;
+import de.arthurpicht.meta.cli.ExecutionContext;
+import de.arthurpicht.meta.cli.Meta;
 import de.arthurpicht.meta.config.ConfigurationException;
 import de.arthurpicht.meta.config.ProjectConfig;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
+import de.arthurpicht.meta.tasks.Clone;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.io.IOException;
@@ -33,25 +34,11 @@ public class CloneExecutor implements CommandExecutor {
 
             System.out.println("Found projects: " + Strings.listing(projectConfig.getProjectNames(), " ", "", "", "[", "]"));
 
-            for (String project : projectConfig.getProjectNames()) {
+            // TODO verbose flag from cli parameter
+            // TODO process return flag (success/fail)
+            Clone.execute(projectConfig, cicd, true);
 
-                RepoConfig repoConfig = projectConfig.getProjectConfig(project);
-
-                System.out.println("[" + project + "] clone and checkout ...");
-
-                Files.createDirectories(repoConfig.getDestinationPath());
-
-                String url = repoConfig.getGitRepoUrl();
-                if (cicd && repoConfig.hasGitRepoUrlReadOnly()) url = repoConfig.getGitRepoUrlReadOnly();
-
-                Git.clone(repoConfig.getDestinationPath(), url, repoConfig.getRepoName());
-
-                if (repoConfig.hasAlteredBranch()) {
-                    Git.checkout(repoConfig.getRepoPath(), repoConfig.getBranch());
-                }
-            }
-
-        } catch (ConfigurationException | GitException | IOException e) {
+        } catch (ConfigurationException | IOException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }
 
