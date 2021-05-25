@@ -34,25 +34,9 @@ public class CloneExecutor implements CommandExecutor {
 
             System.out.println("Found projects: " + Strings.listing(projectConfig.getProjectNames(), " ", "", "", "[", "]"));
 
+            // TODO verbose flag from cli parameter
+            // TODO process return flag (success/fail)
             Clone.execute(projectConfig, cicd, true);
-
-//            for (String project : projectConfig.getProjectNames()) {
-//
-//                RepoConfig repoConfig = projectConfig.getProjectConfig(project);
-//
-//                System.out.println("[" + project + "] clone and checkout ...");
-//
-//                Files.createDirectories(repoConfig.getDestinationPath());
-//
-//                String url = repoConfig.getGitRepoUrl();
-//                if (cicd && repoConfig.hasGitRepoUrlReadOnly()) url = repoConfig.getGitRepoUrlReadOnly();
-//
-//                Git.clone(repoConfig.getDestinationPath(), url, repoConfig.getRepoName());
-//
-//                if (repoConfig.hasAlteredBranch()) {
-//                    Git.checkout(repoConfig.getRepoPath(), repoConfig.getBranch());
-//                }
-//            }
 
         } catch (ConfigurationException | IOException e) {
             throw new CommandExecutorException(e.getMessage(), e);

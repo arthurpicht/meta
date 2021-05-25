@@ -51,8 +51,12 @@ public class TaskSummary {
         return this.reposFailed;
     }
 
-    public boolean isSuccess() {
+    public boolean hasSuccess() {
         return this.reposFailed.isEmpty();
+    }
+
+    public boolean hasWarnings() {
+        return !this.reposWarning.isEmpty();
     }
 
 }
