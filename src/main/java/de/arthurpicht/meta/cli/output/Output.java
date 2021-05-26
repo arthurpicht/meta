@@ -36,4 +36,11 @@ public class Output {
         return Ansi.colorize("[" + tag + "] ", Colors.redText);
     }
 
+    public static void deleteLastLine() {
+        int count = 1;
+        System.out.printf("\033[%dA",count); // Move up
+        System.out.print("\033[2K"); // Erase line content
+    }
+
+
 }

@@ -1,4 +1,4 @@
-package de.arthurpicht.meta.tasks;
+package de.arthurpicht.meta.tasks.clone;
 
 import com.diogonunes.jcolor.Ansi;
 import de.arthurpicht.meta.cli.output.Colors;
@@ -8,6 +8,7 @@ import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
 import de.arthurpicht.meta.helper.FilesHelper;
+import de.arthurpicht.meta.tasks.TaskSummary;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,19 +19,22 @@ import static de.arthurpicht.meta.cli.output.Output.warning;
 
 public class Clone {
 
-    public static TaskSummary execute(ProjectConfig projectConfig, boolean isCicd, boolean verbose) throws IOException {
+    public static TaskSummary execute(CloneConfig cloneConfig) throws IOException {
 
         TaskSummary taskSummary = new TaskSummary();
+        ProjectConfig projectConfig = cloneConfig.getProjectConfig();
 
         for (String project : projectConfig.getProjectNames()) {
 
             RepoConfig repoConfig = projectConfig.getProjectConfig(project);
             String repoName = repoConfig.getRepoName();
 
-            message(project, "clone and checkout ...");
+            message(project, "Operation pending ...");
 
             if (isRepoPreexisting(repoConfig)) {
                 taskSummary.addRepoWarning(repoName);
+                if (!cloneConfig.isVerbose())
+                    Output.deleteLastLine();
                 warning(project,"Repo already existing. Consider performing update. Skip operation.");
                 continue;
             }
@@ -38,25 +42,31 @@ public class Clone {
             Files.createDirectories(repoConfig.getDestinationPath());
 
             try {
-                gitClone(repoConfig, isCicd, verbose);
+                gitClone(repoConfig, cloneConfig.isCicd(), cloneConfig.isVerbose());
             } catch (GitException e) {
                 Output.error(project,"Git clone failed: " + e.getMessage());
-                // TODO output stacktrace
+                if (cloneConfig.isStacktrace())
+                    e.printStackTrace();
                 taskSummary.addRepoFailed(repoName);
                 continue;
             }
 
             try {
-                checkoutAlteredBranch(repoConfig);
+                checkoutAlteredBranch(repoConfig, cloneConfig.isVerbose());
             } catch (GitException e) {
                 Output.error(project,"Git checkout failed: " + e.getMessage());
+                if (cloneConfig.isStacktrace())
+                    e.printStackTrace();
                 // TODO check existence of targeted branch
-                // TODO output stacktrace
                 taskSummary.addRepoFailed(repoName);
                 continue;
             }
 
             taskSummary.addRepoSuccess(repoName);
+            if (!cloneConfig.isVerbose()) {
+                Output.deleteLastLine();
+            }
+
             Output.ok(project,"Repo cloned successfully.");
         }
 
@@ -76,9 +86,9 @@ public class Clone {
         Git.clone(repoConfig.getDestinationPath(), url, repoConfig.getRepoName(), verbose);
     }
 
-    private static void checkoutAlteredBranch(RepoConfig repoConfig) throws GitException {
+    private static void checkoutAlteredBranch(RepoConfig repoConfig, boolean verbose) throws GitException {
         if (repoConfig.hasAlteredBranch())
-            Git.checkout(repoConfig.getRepoPath(), repoConfig.getBranch());
+            Git.checkout(repoConfig.getRepoPath(), repoConfig.getBranch(), verbose);
     }
 
     private static void summaryOut(TaskSummary taskSummary) {

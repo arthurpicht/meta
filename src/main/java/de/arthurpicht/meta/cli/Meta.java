@@ -1,20 +1,20 @@
 package de.arthurpicht.meta.cli;
 
+import com.diogonunes.jcolor.Ansi;
 import de.arthurpicht.cli.*;
 import de.arthurpicht.cli.command.CommandSequenceBuilder;
 import de.arthurpicht.cli.command.Commands;
 import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
-import de.arthurpicht.cli.option.ManOption;
-import de.arthurpicht.cli.option.OptionBuilder;
-import de.arthurpicht.cli.option.Options;
-import de.arthurpicht.cli.option.VersionOption;
+import de.arthurpicht.cli.option.*;
 import de.arthurpicht.meta.cli.executor.CloneExecutor;
+import de.arthurpicht.meta.cli.output.Colors;
 
 public class Meta {
 
     public static final String OPTION_STACKTRACE = "stacktrace";
     public static final String OPTION_META_DIR = "metaDir";
+    public static final String OPTION_VERBOSE = "verbose";
 
     public static final String OPTION_CICD = "cicd";
 
@@ -24,7 +24,8 @@ public class Meta {
                 .add(new VersionOption())
                 .add(new ManOption())
                 .add(new OptionBuilder().withShortName('s').withLongName("stacktrace").withDescription("Show stacktrace when running on error.").build(OPTION_STACKTRACE))
-                .add(new OptionBuilder().withShortName('d').withLongName("metaDir").withArgumentName("metaDir").withDescription("meta directory").build(OPTION_META_DIR));
+                .add(new OptionBuilder().withShortName('d').withLongName("metaDir").withArgumentName("metaDir").withDescription("meta directory").build(OPTION_META_DIR))
+                .add(new OptionBuilder().withLongName("verbose").withDescription("verbose output").build(OPTION_VERBOSE));
 
         Commands commands = new Commands();
 
@@ -70,11 +71,23 @@ public class Meta {
 
         try {
             cli.execute(cliCall);
-        } catch (CommandExecutorException | RuntimeException e) {
-            System.out.println(e.getMessage());
-            if (showStacktrace) e.printStackTrace();
+        } catch (CommandExecutorException e) {
+            if (e.getCause() != null) {
+                errorOut(e.getCause(), showStacktrace);
+                System.exit(10);
+            }
             System.exit(1);
+        } catch (RuntimeException e) {
+            errorOut(e, showStacktrace);
+            System.exit(11);
         }
+    }
+
+    private static void errorOut(Throwable e, boolean showStacktrace) {
+        System.out.println("");
+        System.out.println(Ansi.colorize("ERROR. OPERATION ABORTED.", Colors.redText));
+        System.out.println(e.getMessage());
+        if (showStacktrace) e.printStackTrace();
     }
 
 }

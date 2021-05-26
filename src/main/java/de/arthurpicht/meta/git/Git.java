@@ -10,6 +10,7 @@ import java.util.List;
 
 public class Git {
 
+    // TODO invoke
     public static boolean hasGit() throws GitException {
         try {
             Process process = new ProcessBuilder("which", "git").start();
@@ -25,15 +26,10 @@ public class Git {
 
         List<String> commands = Lists.newArrayList("git", "-C", destinationPath.toString(), "clone", url, repoName);
 
-        System.out.println(Strings.listing(commands, " "));
+        if (verbose)
+            System.out.println(Strings.listing(commands, " "));
 
         try {
-//            Process process = new ProcessBuilder()
-//                    .command(commands)
-////                    .directory(workingDir.toAbsolutePath().toFile())
-//                    .inheritIO()
-//                    .start();
-
             ProcessBuilder processBuilder = new ProcessBuilder()
                     .command(commands);
             if (verbose) processBuilder.inheritIO();
@@ -43,11 +39,11 @@ public class Git {
             List<String> errorResult = InputStreamHelper.asStringList(process.getErrorStream());
 
             outputResult(result, verbose);
-            outputError(errorResult);
+            outputError(errorResult, verbose);
 
             int exitCode = process.waitFor();
             if (exitCode != 0)
-                throw new GitException("Exited with with error code " + exitCode + ".");
+                throw new GitException("'git clone' exited with with error code " + exitCode + ".");
 
         } catch (IOException | IllegalArgumentException | InterruptedException e) {
             throw new GitException(e);
@@ -61,42 +57,34 @@ public class Git {
         }
     }
 
-    private static void outputError(List<String> errorResult) {
-        if (errorResult.isEmpty()) return;
+    private static void outputError(List<String> errorResult, boolean verbose) {
+        if (!verbose || errorResult.isEmpty()) return;
         for (String string : errorResult) {
             System.out.println(string);
         }
     }
 
-    public static void checkout(Path repoPath, String branch) throws GitException {
+    public static void checkout(Path repoPath, String branch, boolean verbose) throws GitException {
 
         List<String> commands = Lists.newArrayList("git", "-C", repoPath.toString(), "checkout", branch);
-        System.out.println(Strings.listing(commands, " "));
+        if (verbose)
+            System.out.println(Strings.listing(commands, " "));
 
         try {
-            Process process = new ProcessBuilder()
-                    .command(commands)
-                    .inheritIO()
-                    .start();
+            ProcessBuilder processBuilder = new ProcessBuilder().command(commands);
+            if (verbose)
+                processBuilder.inheritIO();
+            Process process = processBuilder.start();
 
             List<String> result = InputStreamHelper.asStringList(process.getInputStream());
             List<String> errorResult = InputStreamHelper.asStringList(process.getErrorStream());
 
-            for (String string : result) {
-                System.out.println(string);
-            }
-
-            if (!errorResult.isEmpty()) {
-                System.out.println("ErrorOut:");
-                for (String string : errorResult) {
-                    System.out.println(string);
-                }
-            }
+            outputResult(result, verbose);
+            outputError(errorResult, verbose);
 
             int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                System.out.println("Exited with with error code " + exitCode + ".");
-            }
+            if (exitCode != 0)
+                throw new GitException("'git checkout' exited with with error code " + exitCode + ".");
 
         } catch (IOException | IllegalArgumentException | InterruptedException e) {
             throw new GitException(e);
