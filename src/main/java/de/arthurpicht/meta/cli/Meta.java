@@ -39,7 +39,7 @@ public class Meta {
                 .addCommands("clone")
                 .withSpecificOptions(cloneOptions)
                 .withCommandExecutor(new CloneExecutor())
-                .withDescription("Clones repos.")
+                .withDescription("Clones all repos for respective target.")
                 .build()
         );
 
