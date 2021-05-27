@@ -9,6 +9,7 @@ import de.arthurpicht.cli.common.UnrecognizedArgumentException;
 import de.arthurpicht.cli.option.*;
 import de.arthurpicht.meta.cli.executor.CloneExecutor;
 import de.arthurpicht.meta.cli.output.Colors;
+import de.arthurpicht.utils.core.strings.Strings;
 
 public class Meta {
 
@@ -16,7 +17,7 @@ public class Meta {
     public static final String OPTION_META_DIR = "metaDir";
     public static final String OPTION_VERBOSE = "verbose";
 
-    public static final String OPTION_CICD = "cicd";
+    public static final String OPTION_CLONE_TARGET = "target";
 
     private static Cli createCli() {
 
@@ -32,7 +33,7 @@ public class Meta {
         commands.setDefaultCommand(new InfoDefaultCommand());
 
         Options cloneOptions = new Options()
-                .add(new OptionBuilder().withShortName('c').withLongName("cicd").withDescription("Use read only repos for CICD.").build(OPTION_CICD));
+                .add(new OptionBuilder().withShortName('t').withLongName("target").withArgumentName("target").withDescription("Target environment. Either <dev> (default) or <prod>.").build(OPTION_CLONE_TARGET));
 
         commands.add(new CommandSequenceBuilder()
                 .addCommands("clone")
@@ -44,7 +45,7 @@ public class Meta {
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("meta\nhttps://github.com/arthurpicht/meta")
-                .withVersionByTag("0.1-SNAPSHOT", "2021-05-18")
+                .withVersionByTag("0.1-SNAPSHOT", "2021-05-27")
                 .build("meta");
 
         return new CliBuilder()
@@ -75,6 +76,10 @@ public class Meta {
             if (e.getCause() != null) {
                 errorOut(e.getCause(), showStacktrace);
                 System.exit(10);
+            }
+            if (Strings.isSpecified(e.getMessage())) {
+                errorOut(e, showStacktrace);
+                System.exit(1);
             }
             System.exit(1);
         } catch (RuntimeException e) {

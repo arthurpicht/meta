@@ -10,22 +10,34 @@ import de.arthurpicht.meta.config.ProjectConfig;
 import de.arthurpicht.meta.tasks.TaskSummary;
 import de.arthurpicht.meta.tasks.clone.Clone;
 import de.arthurpicht.meta.tasks.clone.CloneConfig;
-import de.arthurpicht.utils.core.strings.Strings;
 
 import java.io.IOException;
 
 public class CloneExecutor implements CommandExecutor {
+
+    public enum Target { DEV, PROD }
 
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
 
         ExecutionContext.init(cliCall);
 
-        boolean cicd = cliCall.getOptionParserResultSpecific().hasOption(Meta.OPTION_CICD);
+        Target target = Target.DEV;
+        if (cliCall.getOptionParserResultSpecific().hasOption(Meta.OPTION_CLONE_TARGET)) {
+            String targetSpec = cliCall.getOptionParserResultSpecific().getValue(Meta.OPTION_CLONE_TARGET);
+            if (targetSpec.equalsIgnoreCase(Target.DEV.name())) {
+                target = Target.DEV;
+            } else if (targetSpec.equalsIgnoreCase(Target.PROD.name())) {
+                target = Target.PROD;
+            } else {
+                throw new CommandExecutorException("Illegal value for option [" + Meta.OPTION_CLONE_TARGET + "]: '" + targetSpec + "'." +
+                        " Must be either <dev> (default) or <prod>.");
+            }
+        }
 
         try {
             ProjectConfig projectConfig = new ProjectConfig(ExecutionContext.getMetaDir());
-            CloneConfig cloneConfig = CloneConfig.getInstance(projectConfig, cicd);
+            CloneConfig cloneConfig = CloneConfig.getInstance(projectConfig, target);
 
 //            System.out.println("Found projects: "
 //                    + Strings.listing(projectConfig.getProjectNames(), " ", "", "", "[", "]"));

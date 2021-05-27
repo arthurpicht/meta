@@ -29,6 +29,9 @@ public class Clone {
             RepoConfig repoConfig = projectConfig.getProjectConfig(project);
             String repoName = repoConfig.getRepoName();
 
+            if (cloneConfig.isTargetDev() && !repoConfig.hasTargetDev()) continue;
+            if (cloneConfig.isTargetProd() && !repoConfig.hasTargetProd()) continue;
+
             message(project, "Operation pending ...");
 
             if (isRepoPreexisting(repoConfig)) {
@@ -42,7 +45,7 @@ public class Clone {
             Files.createDirectories(repoConfig.getDestinationPath());
 
             try {
-                gitClone(repoConfig, cloneConfig.isCicd(), cloneConfig.isVerbose());
+                gitClone(repoConfig, cloneConfig.isTargetProd(), cloneConfig.isVerbose());
             } catch (GitException e) {
                 Output.error(project,"Git clone failed: " + e.getMessage());
                 if (cloneConfig.isStacktrace())
@@ -80,9 +83,9 @@ public class Clone {
         return FilesHelper.isDirectoryNonEmpty(repoDir);
     }
 
-    private static void gitClone(RepoConfig repoConfig, boolean isCicd, boolean verbose) throws GitException {
+    private static void gitClone(RepoConfig repoConfig, boolean isTargetProd, boolean verbose) throws GitException {
         String url = repoConfig.getGitRepoUrl();
-        if (isCicd && repoConfig.hasGitRepoUrlReadOnly()) url = repoConfig.getGitRepoUrlReadOnly();
+        if (isTargetProd && repoConfig.hasGitRepoUrlReadOnly()) url = repoConfig.getGitRepoUrlReadOnly();
         Git.clone(repoConfig.getDestinationPath(), url, repoConfig.getRepoName(), verbose);
     }
 
