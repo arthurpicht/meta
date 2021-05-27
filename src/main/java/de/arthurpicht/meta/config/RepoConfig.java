@@ -6,14 +6,20 @@ import de.arthurpicht.utils.core.strings.Strings;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class RepoConfig {
+
+    private enum Target {DEV, PROD}
 
     private static final String KEY_URL = "url";
     private static final String KEY_URL_RO = "urlReadOnly";
     private static final String KEY_DESTINATION_DIR = "destinationDir";
     private static final String KEY_REPO_NAME = "repoName";
     private static final String KEY_BRANCH = "branch";
+    private static final String KEY_TARGET = "target";
 
     private final String repoId;
     private final GitRepoUrl gitRepoUrl;
@@ -21,6 +27,7 @@ public class RepoConfig {
     private final String repoName;
     private final boolean isRepoNameAltered;
     private final String branch;
+    private final Set<Target> targets;
 
     public RepoConfig(Configuration configuration, Path referencePath) throws ConfigurationException {
         this.repoId = configuration.getSectionName();
@@ -58,6 +65,25 @@ public class RepoConfig {
             this.branch = configuration.getString(KEY_BRANCH);
         } else {
             this.branch = "";
+        }
+
+        this.targets = new HashSet<>();
+        if (configuration.containsKey(KEY_TARGET)) {
+            List<String> targetStrings = configuration.getStringList(KEY_TARGET);
+            for (String targetString : targetStrings) {
+                if (targetString.equalsIgnoreCase(Target.DEV.name())) {
+                    this.targets.add(Target.DEV);
+                } else if (targetString.equalsIgnoreCase(Target.PROD.name())) {
+                    this.targets.add(Target.PROD);
+                } else {
+                    throw new ConfigurationException("Illegal configuration value for repo [" + this.repoId + "] and key "
+                            + "[" + KEY_TARGET + "]: '" + targetString + "'. Must be either '" + Target.DEV + "' or '"
+                            + Target.PROD + "'.");
+                }
+            }
+        } else {
+            this.targets.add(Target.DEV);
+            this.targets.add(Target.PROD);
         }
     }
 
@@ -99,6 +125,14 @@ public class RepoConfig {
 
     public Path getRepoPath() {
         return this.destinationPath.resolve(this.repoName);
+    }
+
+    public boolean hasTargetDev() {
+        return this.targets.contains(Target.DEV);
+    }
+
+    public boolean hasTargetProd() {
+        return this.targets.contains(Target.PROD);
     }
 
 }

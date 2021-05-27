@@ -35,6 +35,8 @@ class RepoConfigTest {
         assertFalse(repoConfig.hasAlteredRepoName());
         assertEquals("testRepoSimple", repoConfig.getRepoName());
         assertFalse(repoConfig.hasAlteredBranch());
+        assertTrue(repoConfig.hasTargetDev());
+        assertTrue(repoConfig.hasTargetProd());
     }
 
     @Test
@@ -115,5 +117,43 @@ class RepoConfigTest {
         assertTrue(repoConfig.hasGitRepoUrlReadOnly());
         assertEquals("https://github.com/arthurpicht/testRepo6.git", repoConfig.getGitRepoUrlReadOnly());
     }
+
+    @Test
+    void testTargetDev() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
+        Configuration testRepo1 = getSection("testRepo7");
+        Path referencePath = Paths.get("src/test/resources");
+
+        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+
+        assertTrue(repoConfig.hasTargetDev());
+        assertFalse(repoConfig.hasTargetProd());
+    }
+
+    @Test
+    void testTargetProd() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
+        Configuration testRepo1 = getSection("testRepo8");
+        Path referencePath = Paths.get("src/test/resources");
+
+        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+
+        assertFalse(repoConfig.hasTargetDev());
+        assertTrue(repoConfig.hasTargetProd());
+    }
+
+    @Test
+    void illegalTarget_neg() throws IOException, ConfigurationFileNotFoundException {
+        Configuration testRepo1 = getSection("testRepo9");
+        Path referencePath = Paths.get("src/test/resources");
+
+        try {
+            new RepoConfig(testRepo1, referencePath);
+            fail(ConfigurationException.class.getSimpleName() + " expected.");
+        } catch (ConfigurationException e) {
+            assertEquals("Illegal configuration value for repo [testRepo9] and key [target]: 'rubbish'. Must be either 'DEV' or 'PROD'.",
+                    e.getMessage());
+        }
+    }
+
+
 
 }
