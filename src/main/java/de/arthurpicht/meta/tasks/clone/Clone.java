@@ -14,8 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static de.arthurpicht.meta.cli.output.Output.message;
-import static de.arthurpicht.meta.cli.output.Output.warning;
+import static de.arthurpicht.meta.cli.output.Output.*;
 
 public class Clone {
 
@@ -34,11 +33,25 @@ public class Clone {
 
             message(project, "Operation pending ...");
 
-            if (isRepoPreexisting(repoConfig)) {
-                taskSummary.addRepoWarning(repoName);
-                if (!cloneConfig.isVerbose())
-                    Output.deleteLastLine();
-                warning(project,"Repo already existing. Consider performing update. Skip operation.");
+            if (isRepoDirPreexisting(repoConfig)) {
+                if (isRepoDir(repoConfig)) {
+                    if (isIntendedGitRepo(repoConfig)) {
+                        taskSummary.addRepoWarning(repoName);
+                        if (!cloneConfig.isVerbose())
+                            Output.deleteLastLine();
+                        warning(project,"Repo already existing. Consider performing update. Skip operation.");
+                    } else {
+                        taskSummary.addRepoFailed(repoName);
+                        if (!cloneConfig.isVerbose())
+                            Output.deleteLastLine();
+                        error(project,"Wrong repo in destination.");
+                    }
+                } else {
+                    taskSummary.addRepoFailed(repoName);
+                    if (!cloneConfig.isVerbose())
+                        Output.deleteLastLine();
+                    error(project,"Repo destination already existing: no repo.");
+                }
                 continue;
             }
 
@@ -78,9 +91,25 @@ public class Clone {
         return taskSummary;
     }
 
-    private static boolean isRepoPreexisting(RepoConfig repoConfig) throws IOException {
+    private static boolean isRepoDirPreexisting(RepoConfig repoConfig) throws IOException {
         Path repoDir = repoConfig.getDestinationPath().resolve(repoConfig.getRepoName());
         return FilesHelper.isDirectoryNonEmpty(repoDir);
+    }
+
+    private static boolean isRepoDir(RepoConfig repoConfig) throws IOException {
+        Path repoDir = repoConfig.getDestinationPath().resolve(repoConfig.getRepoName());
+        return Git.isGitRepo(repoDir);
+    }
+
+    private static boolean isIntendedGitRepo(RepoConfig repoConfig) {
+        Path repoDir = repoConfig.getDestinationPath().resolve(repoConfig.getRepoName());
+        String repoUrl;
+        try {
+            repoUrl = Git.getRemoteUrlForOriginFetch(repoDir);
+        } catch (GitException e) {
+            throw new RuntimeException("Unexpected Git-Exception: " + e.getMessage(), e);
+        }
+        return (repoConfig.getGitRepoUrl().equals(repoUrl));
     }
 
     private static void gitClone(RepoConfig repoConfig, boolean isTargetProd, boolean verbose) throws GitException {
