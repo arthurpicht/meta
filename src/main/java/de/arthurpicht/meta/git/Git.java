@@ -80,7 +80,7 @@ public class Git {
         }
     }
 
-    public static boolean isGitRepo(Path repoPath) throws IOException {
+    public static boolean isGitRepo(Path repoPath) {
         if (!FilesHelper.isExistingDirectory(repoPath))
             throw new IllegalArgumentException("Assertion failed. No existing directory: [" + repoPath + "].");
 
@@ -107,6 +107,74 @@ public class Git {
 
             throw new GitException("No remote string found for origin (fetch).");
 
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static boolean hasBranchOnRemoteOrigin(Path repoPath, String branch) throws GitException {
+        List<String> commands = List.of("git", "branch", "-avv");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git branch -avv' exited with error code " + exitCode + ".");
+
+            for (String resultString : result) {
+                resultString = resultString.trim();
+                if (resultString.startsWith("remotes/origin/")) {
+                    String remotesOriginBranch = StringHelper.getColumn(resultString, 0);
+                    if (remotesOriginBranch.equals("remotes/origin/" + branch)) return true;
+                }
+            }
+
+            return false;
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static String getCurrentBranch(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "branch");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git branch' exited with error code " + exitCode + ".");
+
+            for (String resultString : result) {
+                if (resultString.startsWith("*")) {
+                    return resultString.substring(2).trim();
+                }
+            }
+
+            throw new GitException("No current branch name found.");
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static String getDefaultBranch(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "symbolic-ref", "refs/remotes/origin/HEAD");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git symbolic-ref refs/remotes/origin/HEAD' exited with error code " + exitCode + ".");
+
+            if (result.isEmpty())
+                throw new GitException("No default branch found. No output for 'git symbolic-ref refs/remotes/origin/HEAD'.");
+
+            String resultString = result.get(0);
+            String refLeading = "refs/remotes/origin/";
+
+            if (!resultString.startsWith(refLeading))
+                throw new GitException("No default branch found. Result of 'git symbolic-ref refs/remotes/origin/HEAD' does not start with '" + refLeading + "'");
+
+            return resultString.substring(refLeading.length());
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
