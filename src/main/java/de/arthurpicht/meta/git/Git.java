@@ -1,10 +1,13 @@
 package de.arthurpicht.meta.git;
 
+import de.arthurpicht.meta.helper.FilesHelper;
 import de.arthurpicht.meta.helper.InputStreamHelper;
+import de.arthurpicht.meta.helper.StringHelper;
 import de.arthurpicht.utils.core.collection.Lists;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -50,20 +53,6 @@ public class Git {
         }
     }
 
-    private static void outputResult(List<String> result, boolean verbose) {
-        if (!verbose) return;
-        for (String string : result) {
-            System.out.println(string);
-        }
-    }
-
-    private static void outputError(List<String> errorResult, boolean verbose) {
-        if (!verbose || errorResult.isEmpty()) return;
-        for (String string : errorResult) {
-            System.out.println(string);
-        }
-    }
-
     public static void checkout(Path repoPath, String branch, boolean verbose) throws GitException {
 
         List<String> commands = Lists.newArrayList("git", "-C", repoPath.toString(), "checkout", branch);
@@ -88,6 +77,122 @@ public class Git {
 
         } catch (IOException | IllegalArgumentException | InterruptedException e) {
             throw new GitException(e);
+        }
+    }
+
+    public static boolean isGitRepo(Path repoPath) {
+        if (!FilesHelper.isExistingDirectory(repoPath))
+            throw new IllegalArgumentException("Assertion failed. No existing directory: [" + repoPath + "].");
+
+        Path gitRepoDir = repoPath.resolve(".git");
+        return FilesHelper.isExistingDirectory(gitRepoDir);
+    }
+
+    public static String getRemoteUrlForOriginFetch(Path repoPath) throws GitException {
+
+        List<String> commands = List.of("git", "remote", "-v");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git remote -v' exited with error code " + exitCode + ".");
+
+            for (String resultString : result) {
+                resultString = resultString.trim();
+                if (resultString.startsWith("origin") && resultString.endsWith("(fetch)")) {
+                    return StringHelper.getColumn(resultString, 1);
+                }
+            }
+
+            throw new GitException("No remote string found for origin (fetch).");
+
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static boolean hasBranchOnRemoteOrigin(Path repoPath, String branch) throws GitException {
+        List<String> commands = List.of("git", "branch", "-avv");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git branch -avv' exited with error code " + exitCode + ".");
+
+            for (String resultString : result) {
+                resultString = resultString.trim();
+                if (resultString.startsWith("remotes/origin/")) {
+                    String remotesOriginBranch = StringHelper.getColumn(resultString, 0);
+                    if (remotesOriginBranch.equals("remotes/origin/" + branch)) return true;
+                }
+            }
+
+            return false;
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static String getCurrentBranch(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "branch");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git branch' exited with error code " + exitCode + ".");
+
+            for (String resultString : result) {
+                if (resultString.startsWith("*")) {
+                    return resultString.substring(2).trim();
+                }
+            }
+
+            throw new GitException("No current branch name found.");
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static String getDefaultBranch(Path repoPath) throws GitException {
+        // see: https://stackoverflow.com/questions/28666357/git-how-to-get-default-branch
+        List<String> commands = List.of("git", "symbolic-ref", "refs/remotes/origin/HEAD");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git symbolic-ref refs/remotes/origin/HEAD' exited with error code " + exitCode + ".");
+
+            if (result.isEmpty())
+                throw new GitException("No default branch found. No output for 'git symbolic-ref refs/remotes/origin/HEAD'.");
+
+            String resultString = result.get(0);
+            String refLeading = "refs/remotes/origin/";
+
+            if (!resultString.startsWith(refLeading))
+                throw new GitException("No default branch found. Result of 'git symbolic-ref refs/remotes/origin/HEAD' does not start with '" + refLeading + "'");
+
+            return resultString.substring(refLeading.length());
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+
+    }
+
+    private static void outputResult(List<String> result, boolean verbose) {
+        if (!verbose) return;
+        for (String string : result) {
+            System.out.println(string);
+        }
+    }
+
+    private static void outputError(List<String> errorResult, boolean verbose) {
+        if (!verbose || errorResult.isEmpty()) return;
+        for (String string : errorResult) {
+            System.out.println(string);
         }
     }
 

@@ -12,4 +12,9 @@ public class FilesHelper {
         return Files.list(dir).findAny().isPresent();
     }
 
+    public static boolean isExistingDirectory(Path dir) {
+        if (!Files.exists(dir)) return false;
+        return Files.isDirectory(dir);
+    }
+
 }
