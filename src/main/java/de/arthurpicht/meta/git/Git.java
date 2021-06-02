@@ -157,6 +157,7 @@ public class Git {
     }
 
     public static String getDefaultBranch(Path repoPath) throws GitException {
+        // see: https://stackoverflow.com/questions/28666357/git-how-to-get-default-branch
         List<String> commands = List.of("git", "symbolic-ref", "refs/remotes/origin/HEAD");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
