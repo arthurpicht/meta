@@ -3,8 +3,13 @@ package de.arthurpicht.meta.helper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FilesHelper {
+
+    public static Path getWorkingDir() {
+        return Paths.get(".").normalize().toAbsolutePath();
+    }
 
     public static boolean isDirectoryNonEmpty(Path dir) throws IOException {
         if (!Files.exists(dir)) return false;

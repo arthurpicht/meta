@@ -21,19 +21,7 @@ public class CloneExecutor implements CommandExecutor {
     public void execute(CliCall cliCall) throws CommandExecutorException {
 
         ExecutionContext.init(cliCall);
-
-        Target target = Target.DEV;
-        if (cliCall.getOptionParserResultSpecific().hasOption(Meta.OPTION_CLONE_TARGET)) {
-            String targetSpec = cliCall.getOptionParserResultSpecific().getValue(Meta.OPTION_CLONE_TARGET);
-            if (targetSpec.equalsIgnoreCase(Target.DEV.name())) {
-                target = Target.DEV;
-            } else if (targetSpec.equalsIgnoreCase(Target.PROD.name())) {
-                target = Target.PROD;
-            } else {
-                throw new CommandExecutorException("Illegal value for option [" + Meta.OPTION_CLONE_TARGET + "]: '" + targetSpec + "'." +
-                        " Must be either <dev> (default) or <prod>.");
-            }
-        }
+        Target target = obtainTarget(cliCall);
 
         try {
             ProjectConfig projectConfig = new ProjectConfig(ExecutionContext.getMetaDir());
@@ -48,7 +36,21 @@ public class CloneExecutor implements CommandExecutor {
         } catch (ConfigurationException | IOException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }
+    }
 
+    private Target obtainTarget(CliCall cliCall) throws CommandExecutorException {
+        if (cliCall.getOptionParserResultSpecific().hasOption(Meta.OPTION_CLONE_TARGET)) {
+            String targetSpec = cliCall.getOptionParserResultSpecific().getValue(Meta.OPTION_CLONE_TARGET);
+            if (targetSpec.equalsIgnoreCase(Target.DEV.name())) {
+                return Target.DEV;
+            } else if (targetSpec.equalsIgnoreCase(Target.PROD.name())) {
+                return Target.PROD;
+            } else {
+                throw new CommandExecutorException("Illegal value for option [" + Meta.OPTION_CLONE_TARGET + "]: '" + targetSpec + "'." +
+                        " Must be either <dev> (default) or <prod>.");
+            }
+        }
+        return Target.DEV;
     }
 
 }

@@ -2,6 +2,7 @@ package de.arthurpicht.meta.cli;
 
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.option.OptionParserResult;
+import de.arthurpicht.meta.helper.FilesHelper;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.nio.file.Files;
@@ -36,14 +37,13 @@ public class ExecutionContext {
         } else if (Strings.isSpecified(System.getenv(ENV__PROJECT_META_DIR))) {
             metaDirSpec = System.getenv(ENV__PROJECT_META_DIR);
         } else {
-            throw new RuntimeException("Execution directory not specified. Either use --directory option or set "
-                    + " environment variable '" + ENV__PROJECT_META_DIR + "'.");
+            metaDirSpec = FilesHelper.getWorkingDir().toString();
         }
         metaDir = Paths.get(metaDirSpec).normalize();
-        checkExistence();
+        assertExistenceOfMetaDir();
     }
 
-    private static void checkExistence() {
+    private static void assertExistenceOfMetaDir() {
         if (!Files.exists(metaDir))
             throw new RuntimeException("Value of " + ENV__PROJECT_META_DIR + " must reference an existing directory. Directory not found: [" + metaDir + "].");
         if (!Files.isDirectory(metaDir))
