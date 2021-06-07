@@ -4,12 +4,13 @@ import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
-import de.arthurpicht.meta.cli.Meta;
 import de.arthurpicht.meta.config.ConfigurationException;
 import de.arthurpicht.meta.config.ProjectConfig;
 import de.arthurpicht.meta.tasks.TaskSummary;
 import de.arthurpicht.meta.tasks.clone.Clone;
 import de.arthurpicht.meta.tasks.clone.CloneConfig;
+import de.arthurpicht.meta.tasks.clone.TargetFile;
+import de.arthurpicht.meta.tasks.clone.TargetOption;
 
 import java.io.IOException;
 
@@ -39,18 +40,43 @@ public class CloneExecutor implements CommandExecutor {
     }
 
     private Target obtainTarget(CliCall cliCall) throws CommandExecutorException {
-        if (cliCall.getOptionParserResultSpecific().hasOption(Meta.OPTION_CLONE_TARGET)) {
-            String targetSpec = cliCall.getOptionParserResultSpecific().getValue(Meta.OPTION_CLONE_TARGET);
-            if (targetSpec.equalsIgnoreCase(Target.DEV.name())) {
-                return Target.DEV;
-            } else if (targetSpec.equalsIgnoreCase(Target.PROD.name())) {
-                return Target.PROD;
-            } else {
-                throw new CommandExecutorException("Illegal value for option [" + Meta.OPTION_CLONE_TARGET + "]: '" + targetSpec + "'." +
-                        " Must be either <dev> (default) or <prod>.");
-            }
+
+        TargetFile targetFile = new TargetFile(ExecutionContext.getMetaDir());
+        TargetOption targetOption = new TargetOption(cliCall);
+
+        if (targetFile.exists() && targetOption.isSpecified())
+            throw new CommandExecutorException("Repos are initially cloned yet. " +
+                    "Hence option --target has no power here.");
+
+        if (targetFile.exists())
+            return readFromTargetFile(targetFile);
+
+        Target target;
+        if (!targetOption.isSpecified()) {
+            target = Target.DEV;
+        } else {
+            target = targetOption.getArgument();
         }
-        return Target.DEV;
+
+        writeToTargetFile(targetFile, target);
+
+        return target;
+    }
+
+    private Target readFromTargetFile(TargetFile targetFile) throws CommandExecutorException {
+        try {
+            return targetFile.read();
+        } catch (IOException e) {
+            throw new CommandExecutorException("Error reading target file: [" + targetFile.getPath() + "]", e);
+        }
+    }
+
+    private void writeToTargetFile(TargetFile targetFile, Target target) throws CommandExecutorException {
+        try {
+            targetFile.write(target);
+        } catch (IOException e) {
+            throw new CommandExecutorException("Error writing target file: [" + targetFile.getPath() + "]", e);
+        }
     }
 
 }

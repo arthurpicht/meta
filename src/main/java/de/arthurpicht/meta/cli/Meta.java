@@ -45,7 +45,7 @@ public class Meta {
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("meta\nhttps://github.com/arthurpicht/meta")
-                .withVersionByTag("0.1-SNAPSHOT", "2021-06-02")
+                .withVersionByTag("0.1-SNAPSHOT", "2021-06-07")
                 .build("meta");
 
         return new CliBuilder()

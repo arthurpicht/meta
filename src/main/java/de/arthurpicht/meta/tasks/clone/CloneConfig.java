@@ -38,6 +38,10 @@ public class CloneConfig {
         return stacktrace;
     }
 
+    public Target getTarget() {
+        return this.target;
+    }
+
     public boolean isTargetProd() {
         return this.target.equals(Target.PROD);
     }

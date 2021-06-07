@@ -20,6 +20,8 @@ public class Clone {
 
     public static TaskSummary execute(CloneConfig cloneConfig) throws IOException {
 
+        System.out.println("Cloning for target [" + cloneConfig.getTarget() + "] ...");
+
         TaskSummary taskSummary = new TaskSummary();
         ProjectConfig projectConfig = cloneConfig.getProjectConfig();
 
@@ -34,7 +36,7 @@ public class Clone {
             message(project, "Operation pending ...");
 
             if (isRepoDirPreexisting(repoConfig)) {
-                handlePreexistingRepoDir(project, repoConfig, taskSummary, cloneConfig.isVerbose());
+                handlePreexistingRepoDir(project, repoConfig, cloneConfig, taskSummary);
                 continue;
             }
 
@@ -74,18 +76,20 @@ public class Clone {
     }
 
     private static void handlePreexistingRepoDir(
-            String project, RepoConfig repoConfig, TaskSummary taskSummary, boolean verbose
+            String project, RepoConfig repoConfig, CloneConfig cloneConfig, TaskSummary taskSummary
     ) {
 
         String repoName = repoConfig.getRepoName();
+        boolean verbose = cloneConfig.isVerbose();
 
         if (isRepoDir(repoConfig)) {
-            if (isIntendedGitRepo(repoConfig) && isIntendedBranch(repoConfig)) {
+            boolean isTargetProd = cloneConfig.isTargetProd();
+            if (isIntendedGitRepo(repoConfig, isTargetProd) && isIntendedBranch(repoConfig)) {
                 taskSummary.addRepoWarning(repoName);
                 if (!verbose)
                     Output.deleteLastLine();
                 warning(project, "Repo already existing in intended branch. Consider performing update. Skip operation.");
-            } else if (isIntendedGitRepo(repoConfig) && !isIntendedBranch(repoConfig)) {
+            } else if (isIntendedGitRepo(repoConfig, isTargetProd) && !isIntendedBranch(repoConfig)) {
                 taskSummary.addRepoFailed(repoName);
                 if (!verbose)
                     Output.deleteLastLine();
@@ -96,7 +100,7 @@ public class Clone {
                 taskSummary.addRepoFailed(repoName);
                 if (!verbose)
                     Output.deleteLastLine();
-                error(project, "Wrong repo in destination. Expected: [" + repoConfig.getGitRepoUrl() + "]. " +
+                error(project, "Wrong repo in destination. Expected: [" + getConfiguredUrl(repoConfig, isTargetProd) + "]. " +
                         "Actual: [" + getRemoteUrl(repoConfig) + "].");
             }
         } else {
@@ -117,15 +121,16 @@ public class Clone {
         return Git.isGitRepo(repoDir);
     }
 
-    private static boolean isIntendedGitRepo(RepoConfig repoConfig) {
+    private static boolean isIntendedGitRepo(RepoConfig repoConfig, boolean isTargetProd) {
         Path repoDir = repoConfig.getDestinationPath().resolve(repoConfig.getRepoName());
+        String intendedUrl = getConfiguredUrl(repoConfig, isTargetProd);
         String repoUrl;
         try {
             repoUrl = Git.getRemoteUrlForOriginFetch(repoDir);
         } catch (GitException e) {
             throw new RuntimeException("Unexpected Git-Exception: " + e.getMessage(), e);
         }
-        return (repoConfig.getGitRepoUrl().equals(repoUrl));
+        return (intendedUrl.equals(repoUrl));
     }
 
     private static boolean isIntendedBranch(RepoConfig repoConfig) {
@@ -158,9 +163,14 @@ public class Clone {
     }
 
     private static void gitClone(RepoConfig repoConfig, boolean isTargetProd, boolean verbose) throws GitException {
+        String url = getConfiguredUrl(repoConfig, isTargetProd);
+        Git.clone(repoConfig.getDestinationPath(), url, repoConfig.getRepoName(), verbose);
+    }
+
+    private static String getConfiguredUrl(RepoConfig repoConfig, boolean isTargetProd) {
         String url = repoConfig.getGitRepoUrl();
         if (isTargetProd && repoConfig.hasGitRepoUrlReadOnly()) url = repoConfig.getGitRepoUrlReadOnly();
-        Git.clone(repoConfig.getDestinationPath(), url, repoConfig.getRepoName(), verbose);
+        return url;
     }
 
     private static void checkoutAlteredBranch(RepoConfig repoConfig, boolean verbose) throws GitException {
