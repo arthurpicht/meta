@@ -163,8 +163,17 @@ public class Git {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
             List<String> result = InputStreamHelper.asStringList(process.getInputStream());
             int exitCode = process.waitFor();
-            if (exitCode != 0)
+            if (exitCode != 0) {
+                // remotes/origin/HEAD is not always defined. In that case output of 'git branch -avv' also
+                // misses a line like '  remotes/origin/HEAD    -> origin/develop'.
+                // This seems true especially for newly created repos and/or (?) repos with default branch master.
+                // Calling 'git remote set-head origin --auto' fixes that.
+                List<String> errorResult = InputStreamHelper.asStringList(process.getErrorStream());
+                if (!errorResult.isEmpty() && errorResult.get(0).contains("is not a symbolic ref"))
+                    throw new GitException("Could not determine default branch. Consider calling 'git remote set-head origin --auto' in repo.");
+
                 throw new GitException("'git symbolic-ref refs/remotes/origin/HEAD' exited with error code " + exitCode + ".");
+            }
 
             if (result.isEmpty())
                 throw new GitException("No default branch found. No output for 'git symbolic-ref refs/remotes/origin/HEAD'.");
