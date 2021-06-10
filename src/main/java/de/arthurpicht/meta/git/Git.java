@@ -164,9 +164,12 @@ public class Git {
             List<String> result = InputStreamHelper.asStringList(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                // remotes/origin/HEAD is not always defined. In that case output of 'git branch -avv' also
+                // remotes/origin/HEAD is not always defined. Error message is:
+                // fatal: ref refs/remotes/origin/HEAD is not a symbolic ref
+                // In that case output of 'git branch -avv' also
                 // misses a line like '  remotes/origin/HEAD    -> origin/develop'.
-                // This seems true especially for newly created repos and/or (?) repos with default branch master.
+                // This seems true especially for newly created EMPTY repos, created on (bitbucket) web.
+                // After cloning symbolic ref HEAD is missing.
                 // Calling 'git remote set-head origin --auto' fixes that.
                 List<String> errorResult = InputStreamHelper.asStringList(process.getErrorStream());
                 if (!errorResult.isEmpty() && errorResult.get(0).contains("is not a symbolic ref"))
