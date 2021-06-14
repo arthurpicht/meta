@@ -81,11 +81,24 @@ public class Git {
     }
 
     public static boolean isGitRepo(Path repoPath) {
+        // TODO: replace with "git rev-parse --show-toplevel" ...
         if (!FilesHelper.isExistingDirectory(repoPath))
             throw new IllegalArgumentException("Assertion failed. No existing directory: [" + repoPath + "].");
 
         Path gitRepoDir = repoPath.resolve(".git");
         return FilesHelper.isExistingDirectory(gitRepoDir);
+    }
+
+    public static boolean isUnderGitControl(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "rev-parse", "--git-dir");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            process.waitFor();
+            return (!result.isEmpty());
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
     }
 
     public static String getRemoteUrlForOriginFetch(Path repoPath) throws GitException {
