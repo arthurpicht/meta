@@ -204,7 +204,51 @@ public class Git {
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
+    }
 
+    public static boolean hasUncommitedChanges(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "status", "--porcelain");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git status --porcelain' exited with error code " + exitCode + ".");
+            return (result.size() > 0);
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static boolean hasUnpushedCommits(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "log", "@{u}..");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                // ignore intentionally
+                // will throw error 128 when executed on newly created branch before committed as upstream branch.
+                return false;
+            }
+            return (result.size() > 0);
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static boolean hasStash(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "stash", "list");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git stash list' exited with error code " + exitCode + ".");
+            return (result.size() > 0);
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
     }
 
     private static void outputResult(List<String> result, boolean verbose) {

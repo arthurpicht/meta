@@ -8,6 +8,7 @@ import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
 import de.arthurpicht.cli.option.*;
 import de.arthurpicht.meta.cli.executor.CloneExecutor;
+import de.arthurpicht.meta.cli.executor.StatusExecutor;
 import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.utils.core.strings.Strings;
 
@@ -40,6 +41,13 @@ public class Meta {
                 .withSpecificOptions(cloneOptions)
                 .withCommandExecutor(new CloneExecutor())
                 .withDescription("Clones all repos for respective target.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
+                .addCommand("status")
+                .withCommandExecutor(new StatusExecutor())
+                .withDescription("Shows status of all repos.")
                 .build()
         );
 
