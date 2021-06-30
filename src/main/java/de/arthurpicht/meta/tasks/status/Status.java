@@ -1,5 +1,6 @@
 package de.arthurpicht.meta.tasks.status;
 
+import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.output.Output;
 import de.arthurpicht.meta.config.ProjectConfig;
 import de.arthurpicht.meta.config.RepoConfig;
@@ -14,6 +15,8 @@ public class Status {
 
 //        System.out.println("Found projects: "
 //                + Strings.listing(projectConfig.getProjectNames(), " ", "", "", "[", "]"));
+
+        System.out.println("Status of [" + ExecutionContext.getMetaDir() + "] target [" + target + "]:");
 
         for (String project : projectConfig.getProjectNames()) {
 

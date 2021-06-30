@@ -16,21 +16,17 @@ public class ExecutionContext {
     private static Path metaDir;
     private static boolean stacktrace;
     private static boolean verbose;
-
     private static boolean initialized = false;
 
     public static void init(CliCall cliCall) {
         OptionParserResult optionParserResultGlobal = cliCall.getOptionParserResultGlobal();
-
-        obtainMetaDir(optionParserResultGlobal);
-
+        metaDir = obtainMetaDir(optionParserResultGlobal);
         verbose = optionParserResultGlobal.hasOption(Meta.OPTION_VERBOSE);
         stacktrace = optionParserResultGlobal.hasOption(Meta.OPTION_STACKTRACE);
-
         initialized = true;
     }
 
-    private static void obtainMetaDir(OptionParserResult optionParserResultGlobal) {
+    private static Path obtainMetaDir(OptionParserResult optionParserResultGlobal) {
         String metaDirSpec;
         if (optionParserResultGlobal.hasOption(Meta.OPTION_META_DIR)) {
             metaDirSpec = optionParserResultGlobal.getValue(Meta.OPTION_META_DIR);
@@ -39,11 +35,12 @@ public class ExecutionContext {
         } else {
             metaDirSpec = FilesHelper.getWorkingDir().toString();
         }
-        metaDir = Paths.get(metaDirSpec).normalize();
-        assertExistenceOfMetaDir();
+        Path metaDir = Paths.get(metaDirSpec).normalize();
+        assertExistenceOfMetaDir(metaDir);
+        return metaDir;
     }
 
-    private static void assertExistenceOfMetaDir() {
+    private static void assertExistenceOfMetaDir(Path metaDir) {
         if (!Files.exists(metaDir))
             throw new RuntimeException("Value of " + ENV__PROJECT_META_DIR + " must reference an existing directory. Directory not found: [" + metaDir + "].");
         if (!Files.isDirectory(metaDir))
