@@ -6,6 +6,7 @@ import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.config.ConfigurationException;
 import de.arthurpicht.meta.config.ProjectConfig;
+import de.arthurpicht.meta.tasks.Target;
 import de.arthurpicht.meta.tasks.TaskSummary;
 import de.arthurpicht.meta.tasks.clone.Clone;
 import de.arthurpicht.meta.tasks.clone.CloneConfig;
@@ -15,8 +16,6 @@ import de.arthurpicht.meta.tasks.clone.TargetOption;
 import java.io.IOException;
 
 public class CloneExecutor implements CommandExecutor {
-
-    public enum Target { DEV, PROD }
 
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
