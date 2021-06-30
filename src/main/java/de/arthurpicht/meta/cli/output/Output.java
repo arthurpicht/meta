@@ -28,12 +28,24 @@ public class Output {
         return Ansi.colorize("[" + tag + "] ", Colors.greenText);
     }
 
+    public static String greenBrace(String tag) {
+        return Ansi.colorize("(" + tag + ") ", Colors.greenText);
+    }
+
     public static String yellowTag(String tag) {
         return Ansi.colorize("[" + tag + "] ", Colors.yellowText);
     }
 
+    public static String yellowBrace(String tag) {
+        return Ansi.colorize("(" + tag + ") ", Colors.yellowText);
+    }
+
     public static String redTag(String tag) {
         return Ansi.colorize("[" + tag + "] ", Colors.redText);
+    }
+
+    public static String redBrace(String tag) {
+        return Ansi.colorize("(" + tag + ") ", Colors.redText);
     }
 
     public static void deleteLastLine() {
