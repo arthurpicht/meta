@@ -2,7 +2,7 @@ package de.arthurpicht.meta.tasks.clone;
 
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.config.ProjectConfig;
-import de.arthurpicht.meta.tasks.Target;
+import de.arthurpicht.meta.cli.target.Target;
 
 public class CloneConfig {
 

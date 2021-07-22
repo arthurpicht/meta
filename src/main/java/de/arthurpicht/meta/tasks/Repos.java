@@ -1,5 +1,6 @@
 package de.arthurpicht.meta.tasks;
 
+import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.ProjectConfig;
 import de.arthurpicht.meta.config.RepoConfig;
 

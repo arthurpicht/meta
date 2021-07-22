@@ -1,7 +1,5 @@
-package de.arthurpicht.meta.tasks.clone;
+package de.arthurpicht.meta.cli.target;
 
-import de.arthurpicht.meta.cli.executor.CloneExecutor;
-import de.arthurpicht.meta.tasks.Target;
 import de.arthurpicht.utils.io.file.SingleValueFile;
 
 import java.io.IOException;

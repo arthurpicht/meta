@@ -6,8 +6,8 @@ import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.config.ConfigurationException;
 import de.arthurpicht.meta.config.ProjectConfig;
-import de.arthurpicht.meta.tasks.Target;
-import de.arthurpicht.meta.tasks.clone.TargetFile;
+import de.arthurpicht.meta.cli.target.Target;
+import de.arthurpicht.meta.cli.target.TargetFile;
 import de.arthurpicht.meta.tasks.status.Status;
 
 import java.io.IOException;

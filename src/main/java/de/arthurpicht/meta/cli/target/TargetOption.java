@@ -1,9 +1,8 @@
-package de.arthurpicht.meta.tasks.clone;
+package de.arthurpicht.meta.cli.target;
 
 import de.arthurpicht.cli.CliCall;
-import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.Meta;
-import de.arthurpicht.meta.tasks.Target;
+import de.arthurpicht.meta.exception.MetaRuntimeException;
 
 public class TargetOption {
 
@@ -17,7 +16,7 @@ public class TargetOption {
         return cliCall.getOptionParserResultSpecific().hasOption(Meta.OPTION_CLONE_TARGET);
     }
 
-    public Target getArgument() throws CommandExecutorException {
+    public Target getArgument() {
         if (!isSpecified()) throw new IllegalStateException("CLI call has no target option.");
 
         String targetSpec = cliCall.getOptionParserResultSpecific().getValue(Meta.OPTION_CLONE_TARGET);
@@ -26,7 +25,7 @@ public class TargetOption {
         } else if (targetSpec.equalsIgnoreCase(Target.PROD.name())) {
             return Target.PROD;
         } else {
-            throw new CommandExecutorException("Illegal value for option [" + Meta.OPTION_CLONE_TARGET + "]: '" + targetSpec + "'." +
+            throw new MetaRuntimeException("Illegal value for option [" + Meta.OPTION_CLONE_TARGET + "]: '" + targetSpec + "'." +
                     " Must be either <dev> (default) or <prod>.");
         }
     }

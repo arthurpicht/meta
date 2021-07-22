@@ -10,6 +10,7 @@ import de.arthurpicht.cli.option.*;
 import de.arthurpicht.meta.cli.executor.CloneExecutor;
 import de.arthurpicht.meta.cli.executor.StatusExecutor;
 import de.arthurpicht.meta.cli.output.Colors;
+import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.utils.core.strings.Strings;
 
 public class Meta {
@@ -80,7 +81,7 @@ public class Meta {
 
         try {
             cli.execute(cliCall);
-        } catch (CommandExecutorException e) {
+        } catch (CommandExecutorException | MetaRuntimeException e) {
             if (e.getCause() != null) {
                 errorOut(e.getCause(), showStacktrace);
                 System.exit(10);
