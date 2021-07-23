@@ -1,6 +1,7 @@
 package de.arthurpicht.meta.cli.target;
 
 import de.arthurpicht.cli.CliCall;
+import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 
@@ -30,6 +31,16 @@ public class ProjectTarget {
         writeToTargetFile(targetFile, target);
 
         return target;
+    }
+
+    public static Target obtain() {
+
+        TargetFile targetFile = new TargetFile(ExecutionContext.getMetaDir());
+
+        if (!targetFile.exists())
+            throw new MetaRuntimeException("Target configuration not found. Are repos initially cloned yet?");
+
+        return readFromTargetFile(targetFile);
     }
 
     private static Target readFromTargetFile(TargetFile targetFile) {
