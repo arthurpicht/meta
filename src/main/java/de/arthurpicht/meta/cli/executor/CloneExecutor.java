@@ -29,7 +29,7 @@ public class CloneExecutor implements CommandExecutor {
 //            System.out.println("Found projects: "
 //                    + Strings.listing(projectConfig.getProjectNames(), " ", "", "", "[", "]"));
 
-            TaskSummary taskSummary = Clone.execute(cloneConfig);
+            TaskSummary taskSummary = Clone.execute(projectConfig, target);
             if (!taskSummary.hasSuccess()) throw new CommandExecutorException();
 
         } catch (ConfigurationException | IOException e) {

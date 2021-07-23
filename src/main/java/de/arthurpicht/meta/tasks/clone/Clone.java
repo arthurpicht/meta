@@ -1,8 +1,10 @@
 package de.arthurpicht.meta.tasks.clone;
 
 import com.diogonunes.jcolor.Ansi;
+import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.cli.output.Output;
+import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.ProjectConfig;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.git.Git;
@@ -18,52 +20,54 @@ import static de.arthurpicht.meta.cli.output.Output.*;
 
 public class Clone {
 
-    public static TaskSummary execute(CloneConfig cloneConfig) throws IOException {
+    public static TaskSummary execute(ProjectConfig projectConfig, Target target) throws IOException {
 
-        System.out.println("Cloning for target [" + cloneConfig.getTarget() + "] ...");
+        System.out.println("Cloning for target [" + target + "] ...");
+
+        boolean isTargetProd = target.equals(Target.PROD);
+        boolean isTargetDev = target.equals(Target.DEV);
 
         TaskSummary taskSummary = new TaskSummary();
-        ProjectConfig projectConfig = cloneConfig.getProjectConfig();
 
         for (String project : projectConfig.getProjectNames()) {
 
             RepoConfig repoConfig = projectConfig.getProjectConfig(project);
             String repoName = repoConfig.getRepoName();
 
-            if (cloneConfig.isTargetDev() && !repoConfig.hasTargetDev()) continue;
-            if (cloneConfig.isTargetProd() && !repoConfig.hasTargetProd()) continue;
+            if (isTargetDev && !repoConfig.hasTargetDev()) continue;
+            if (isTargetProd && !repoConfig.hasTargetProd()) continue;
 
             message(project, "Operation pending ...");
 
             if (isRepoDirPreexisting(repoConfig)) {
-                handlePreexistingRepoDir(project, repoConfig, cloneConfig, taskSummary);
+                handlePreexistingRepoDir(project, repoConfig, target, taskSummary);
                 continue;
             }
 
             Files.createDirectories(repoConfig.getDestinationPath());
 
             try {
-                gitClone(repoConfig, cloneConfig.isTargetProd(), cloneConfig.isVerbose());
+                gitClone(repoConfig, isTargetProd, ExecutionContext.isVerbose());
             } catch (GitException e) {
                 Output.error(project,"Git clone failed: " + e.getMessage());
-                if (cloneConfig.isStacktrace())
+                if (ExecutionContext.isStacktrace())
                     e.printStackTrace();
                 taskSummary.addRepoFailed(repoName);
                 continue;
             }
 
             try {
-                checkoutAlteredBranch(repoConfig, cloneConfig.isVerbose());
+                checkoutAlteredBranch(repoConfig, ExecutionContext.isVerbose());
             } catch (GitException e) {
                 Output.error(project,"Git checkout failed: " + e.getMessage());
-                if (cloneConfig.isStacktrace())
+                if (ExecutionContext.isStacktrace())
                     e.printStackTrace();
                 taskSummary.addRepoFailed(repoName);
                 continue;
             }
 
             taskSummary.addRepoSuccess(repoName);
-            if (!cloneConfig.isVerbose()) {
+            if (!ExecutionContext.isVerbose()) {
                 Output.deleteLastLine();
             }
 
@@ -76,14 +80,14 @@ public class Clone {
     }
 
     private static void handlePreexistingRepoDir(
-            String project, RepoConfig repoConfig, CloneConfig cloneConfig, TaskSummary taskSummary
+            String project, RepoConfig repoConfig, Target projectTarget, TaskSummary taskSummary
     ) {
 
         String repoName = repoConfig.getRepoName();
-        boolean verbose = cloneConfig.isVerbose();
+        boolean verbose = ExecutionContext.isVerbose();
 
         if (isRepoDir(repoConfig)) {
-            boolean isTargetProd = cloneConfig.isTargetProd();
+            boolean isTargetProd = projectTarget.equals(Target.PROD);
             if (isIntendedGitRepo(repoConfig, isTargetProd) && isIntendedBranch(repoConfig)) {
                 taskSummary.addRepoWarning(repoName);
                 if (!verbose)
