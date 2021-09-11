@@ -8,6 +8,7 @@ import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.ConfigurationException;
 import de.arthurpicht.meta.config.MetaConfig;
+import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.tasks.status.Status;
 
 public class StatusExecutor implements CommandExecutor {
@@ -15,6 +16,7 @@ public class StatusExecutor implements CommandExecutor {
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
 
+        CommandExecutorCommons.assertGitInstalled();
         ExecutionContext.init(cliCall);
         Target target = ProjectTarget.obtain();
 

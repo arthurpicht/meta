@@ -7,13 +7,11 @@ import de.arthurpicht.utils.core.collection.Lists;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
 public class Git {
 
-    // TODO invoke
     public static boolean hasGit() throws GitException {
         try {
             Process process = new ProcessBuilder("which", "git").start();

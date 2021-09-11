@@ -18,6 +18,7 @@ public class CloneExecutor implements CommandExecutor {
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
 
+        CommandExecutorCommons.assertGitInstalled();
         ExecutionContext.init(cliCall);
         Target target = ProjectTarget.obtain(cliCall);
 
