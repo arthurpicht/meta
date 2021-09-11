@@ -54,7 +54,7 @@ public class Meta {
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("meta\nhttps://github.com/arthurpicht/meta")
-                .withVersionByTag("0.1-SNAPSHOT", "2021-06-30")
+                .withVersionByTag("0.1-SNAPSHOT", "2021-09-10")
                 .build("meta");
 
         return new CliBuilder()
@@ -98,7 +98,7 @@ public class Meta {
     }
 
     private static void errorOut(Throwable e, boolean showStacktrace) {
-        System.out.println("");
+        System.out.println();
         System.out.println(Ansi.colorize("ERROR. OPERATION ABORTED.", Colors.redText));
         System.out.println(e.getMessage());
         if (showStacktrace) e.printStackTrace();

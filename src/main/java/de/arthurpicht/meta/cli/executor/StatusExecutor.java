@@ -7,7 +7,7 @@ import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.ConfigurationException;
-import de.arthurpicht.meta.config.ProjectConfig;
+import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.tasks.status.Status;
 
 public class StatusExecutor implements CommandExecutor {
@@ -19,8 +19,8 @@ public class StatusExecutor implements CommandExecutor {
         Target target = ProjectTarget.obtain();
 
         try {
-            ProjectConfig projectConfig = new ProjectConfig(ExecutionContext.getMetaDir());
-            Status.execute(projectConfig, target);
+            MetaConfig metaConfig = new MetaConfig(ExecutionContext.getMetaDir());
+            Status.execute(metaConfig, target);
         } catch (ConfigurationException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }

@@ -8,14 +8,14 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
-public class ProjectConfig {
+public class MetaConfig {
 
     public static final String META_CONF_NAME = "meta.conf";
     private static final String SECTION_GENERAL = "general";
 
     private final Map<String, RepoConfig> projectConfigMap;
 
-    public ProjectConfig(Path projectMetaDir) throws ConfigurationException {
+    public MetaConfig(Path projectMetaDir) throws ConfigurationException {
         this.projectConfigMap = new HashMap<>();
 
         ConfigurationFactory configurationFactory = new ConfigurationFactory();

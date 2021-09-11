@@ -1,8 +1,6 @@
 package de.arthurpicht.meta.tasks.clone;
 
-import com.diogonunes.jcolor.Ansi;
 import de.arthurpicht.meta.cli.ExecutionContext;
-import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.cli.output.Output;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.RepoConfig;
@@ -21,35 +19,42 @@ import static de.arthurpicht.meta.cli.output.Output.*;
 public class CloneRepoExecutor extends RepoExecutor {
 
     @Override
-    public void execute(RepoConfig repoConfig, TaskSummary taskSummary) {
+    public void execute(RepoConfig repoConfig, Target target, TaskSummary taskSummary) {
 
-        message(project, "Operation pending ...");
+        String repoName = repoConfig.getRepoName();
+        boolean isTargetProd = target.equals(Target.PROD);
+
+        message(repoName, "Operation pending ...");
 
         if (isRepoDirPreexisting(repoConfig)) {
-            handlePreexistingRepoDir(project, repoConfig, target, taskSummary);
-            continue;
+            handlePreexistingRepoDir(repoName, repoConfig, target, taskSummary);
+            return;
         }
 
-        Files.createDirectories(repoConfig.getDestinationPath());
+        try {
+            Files.createDirectories(repoConfig.getDestinationPath());
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected IO-Exception: " + e.getMessage(), e);
+        }
 
         try {
             gitClone(repoConfig, isTargetProd, ExecutionContext.isVerbose());
         } catch (GitException e) {
-            Output.error(project,"Git clone failed: " + e.getMessage());
+            Output.error(repoName,"Git clone failed: " + e.getMessage());
             if (ExecutionContext.isStacktrace())
                 e.printStackTrace();
             taskSummary.addRepoFailed(repoName);
-            continue;
+            return;
         }
 
         try {
             checkoutAlteredBranch(repoConfig, ExecutionContext.isVerbose());
         } catch (GitException e) {
-            Output.error(project,"Git checkout failed: " + e.getMessage());
+            Output.error(repoName,"Git checkout failed: " + e.getMessage());
             if (ExecutionContext.isStacktrace())
                 e.printStackTrace();
             taskSummary.addRepoFailed(repoName);
-            continue;
+            return;
         }
 
         taskSummary.addRepoSuccess(repoName);
@@ -57,9 +62,12 @@ public class CloneRepoExecutor extends RepoExecutor {
             Output.deleteLastLine();
         }
 
-        Output.ok(project,"Repo cloned successfully.");
+        Output.ok(repoName,"Repo cloned successfully.");
+    }
 
-
+    @Override
+    public boolean showSummary() {
+        return true;
     }
 
     private static void handlePreexistingRepoDir(
@@ -98,9 +106,13 @@ public class CloneRepoExecutor extends RepoExecutor {
         }
     }
 
-    private static boolean isRepoDirPreexisting(RepoConfig repoConfig) throws IOException {
+    private static boolean isRepoDirPreexisting(RepoConfig repoConfig) {
         Path repoDir = repoConfig.getDestinationPath().resolve(repoConfig.getRepoName());
-        return FilesHelper.isDirectoryNonEmpty(repoDir);
+        try {
+            return FilesHelper.isDirectoryNonEmpty(repoDir);
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected IO-Exception: " + e.getMessage(), e);
+        }
     }
 
     private static boolean isRepoDir(RepoConfig repoConfig) {
@@ -188,19 +200,5 @@ public class CloneRepoExecutor extends RepoExecutor {
             return getDefaultBranch(repoConfig);
         }
     }
-
-    private static void summaryOut(TaskSummary taskSummary) {
-        System.out.println();
-        if (taskSummary.hasSuccess()) {
-            System.out.println(Ansi.colorize("REPOS CLONED SUCCESSFULLY.", Colors.greenText));
-        } else {
-            System.out.println(Ansi.colorize("ERROR ON CLONING REPOS.", Colors.redText));
-        }
-        System.out.println(taskSummary.getNumberOfRepos() + " repos processed: "
-                + taskSummary.getNrOfReposSuccess() + " ok, "
-                + taskSummary.getNrOfReposWarning() + " with warnings, "
-                + taskSummary.getNrOfReposFailed() + " failed.");
-    }
-
 
 }

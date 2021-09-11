@@ -6,7 +6,7 @@ import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.config.ConfigurationException;
-import de.arthurpicht.meta.config.ProjectConfig;
+import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.tasks.TaskSummary;
 import de.arthurpicht.meta.tasks.clone.Clone;
@@ -22,12 +22,12 @@ public class CloneExecutor implements CommandExecutor {
         Target target = ProjectTarget.obtain(cliCall);
 
         try {
-            ProjectConfig projectConfig = new ProjectConfig(ExecutionContext.getMetaDir());
+            MetaConfig metaConfig = new MetaConfig(ExecutionContext.getMetaDir());
 
 //            System.out.println("Found projects: "
 //                    + Strings.listing(projectConfig.getProjectNames(), " ", "", "", "[", "]"));
 
-            TaskSummary taskSummary = Clone.execute(projectConfig, target);
+            TaskSummary taskSummary = Clone.execute(metaConfig, target);
             if (!taskSummary.hasSuccess()) throw new CommandExecutorException();
 
         } catch (ConfigurationException | IOException e) {

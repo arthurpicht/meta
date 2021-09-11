@@ -54,5 +54,4 @@ public class Output {
         System.out.print("\033[2K"); // Erase line content
     }
 
-
 }
