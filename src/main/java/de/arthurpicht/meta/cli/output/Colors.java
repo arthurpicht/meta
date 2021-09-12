@@ -11,5 +11,6 @@ public class Colors {
     public static final AnsiFormat blueText = new AnsiFormat(Attribute.BLUE_TEXT(), Attribute.BOLD());
     public static final AnsiFormat yellowText = new AnsiFormat(Attribute.YELLOW_TEXT(), Attribute.BOLD());
     public static final AnsiFormat whiteText = new AnsiFormat(Attribute.BRIGHT_WHITE_TEXT(), Attribute.BOLD());
+    public static final AnsiFormat magentaText = new AnsiFormat(Attribute.MAGENTA_TEXT(), Attribute.BOLD());
 
 }

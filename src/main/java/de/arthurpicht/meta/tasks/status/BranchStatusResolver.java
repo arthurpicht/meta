@@ -17,8 +17,9 @@ public class BranchStatusResolver {
         boolean hasUncommitedChanges = Git.hasUncommitedChanges(repoPath);
         boolean hasUnpushedCommits = Git.hasUnpushedCommits(repoPath);
         boolean hasStash = Git.hasStash(repoPath);
+        boolean hasCommitsAhead = Git.hasCommitsAhead(repoPath, currentBranchName);
 
-        return BranchStatus.getInstanceRepo(repoName, currentBranchName, hasUncommitedChanges, hasUnpushedCommits, hasStash);
+        return BranchStatus.getInstanceRepo(repoName, currentBranchName, hasUncommitedChanges, hasUnpushedCommits, hasStash, hasCommitsAhead);
     }
 
 }

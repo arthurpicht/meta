@@ -249,6 +249,34 @@ public class Git {
         }
     }
 
+    public static void fetch(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "fetch");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git fetch' exited with error code " + exitCode + ".");
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static boolean hasCommitsAhead(Path repoPath, String branch) throws GitException {
+        String remoteBranch = "origin/" + branch;
+        List<String> commands = List.of("git", "log", remoteBranch, "^" + branch, "--oneline");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git log " + remoteBranch + " ^" + branch + " --oneline' exited with error code " + exitCode + ".");
+            return (result.size() > 0);
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
     private static void outputResult(List<String> result, boolean verbose) {
         if (!verbose) return;
         for (String string : result) {

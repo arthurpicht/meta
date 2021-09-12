@@ -35,6 +35,10 @@ public class BranchOutput {
             output += Ansi.colorize("Stashes. ", Colors.yellowText);
         }
 
+        if (branchStatus.hasCommitsAhead()) {
+            output += Ansi.colorize("Commits ahead. ", Colors.magentaText);
+        }
+
         System.out.println(output);
     }
 

@@ -8,6 +8,7 @@ import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
 import de.arthurpicht.cli.option.*;
 import de.arthurpicht.meta.cli.executor.CloneExecutor;
+import de.arthurpicht.meta.cli.executor.FetchExecutor;
 import de.arthurpicht.meta.cli.executor.StatusExecutor;
 import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
@@ -49,6 +50,13 @@ public class Meta {
                 .addCommand("status")
                 .withCommandExecutor(new StatusExecutor())
                 .withDescription("Shows status of all repos.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
+                .addCommand("fetch")
+                .withCommandExecutor(new FetchExecutor())
+                .withDescription("Execute fetch on all repos.")
                 .build()
         );
 

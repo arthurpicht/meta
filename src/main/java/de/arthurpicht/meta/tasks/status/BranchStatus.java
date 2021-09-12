@@ -8,25 +8,34 @@ public class BranchStatus {
     private final boolean hasUncommitedChanges;
     private final boolean hasUnpushedCommits;
     private final boolean hasStash;
+    private final boolean hasCommitsAhead;
 
-    private BranchStatus(String repoName, boolean isRepo, String currentBranchName, boolean hasUncommitedChanges, boolean hasUnpushedCommits, boolean hasStash) {
+    private BranchStatus(
+            String repoName,
+            boolean isRepo,
+            String currentBranchName,
+            boolean hasUncommitedChanges,
+            boolean hasUnpushedCommits,
+            boolean hasStash,
+            boolean hasCommitsAhead) {
         this.repoName = repoName;
         this.isRepo = isRepo;
         this.currentBranchName = currentBranchName;
         this.hasUncommitedChanges = hasUncommitedChanges;
         this.hasUnpushedCommits = hasUnpushedCommits;
         this.hasStash = hasStash;
+        this.hasCommitsAhead = hasCommitsAhead;
     }
 
     public static BranchStatus getInstanceRepo(
             String repoName, String currentBranchName, boolean hasUncommitedChanges, boolean hasUnpushedCommits,
-            boolean hasStash
+            boolean hasStash, boolean hasCommitsAhead
     ) {
-        return new BranchStatus(repoName, true, currentBranchName, hasUncommitedChanges, hasUnpushedCommits, hasStash);
+        return new BranchStatus(repoName, true, currentBranchName, hasUncommitedChanges, hasUnpushedCommits, hasStash, hasCommitsAhead);
     }
 
     public static BranchStatus getInstanceNoRepo(String repoName) {
-        return new BranchStatus(repoName, false, "", false, false, false);
+        return new BranchStatus(repoName, false, "", false, false, false, false);
     }
 
     public String getRepoName() {
@@ -53,12 +62,16 @@ public class BranchStatus {
         return hasStash;
     }
 
+    public boolean hasCommitsAhead() {
+        return this.hasCommitsAhead;
+    }
+
     public boolean isStatusGreen() {
-        return this.isRepo && !hasUncommitedChanges && !hasUnpushedCommits && !hasStash;
+        return this.isRepo && !hasUncommitedChanges && !hasUnpushedCommits && !hasCommitsAhead && !hasStash;
     }
 
     public boolean isStatusYellow() {
-        return this.isRepo && !hasUncommitedChanges && !hasUnpushedCommits && hasStash;
+        return this.isRepo && !hasUncommitedChanges && !hasUnpushedCommits && !hasCommitsAhead && hasStash;
     }
 
 }

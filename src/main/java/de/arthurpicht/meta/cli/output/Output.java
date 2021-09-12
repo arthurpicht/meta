@@ -12,6 +12,10 @@ public class Output {
         System.out.println(greenTag("OK") + blueTag(projectName) + message);
     }
 
+    public static void okMagenta(String projectName, String message) {
+        System.out.println(greenTag("OK") + blueTag(projectName) + Ansi.colorize(message, Colors.magentaText));
+    }
+
     public static void warning(String projectName, String message) {
         System.out.println(yellowTag("WARN") + blueTag(projectName) + message);
     }
