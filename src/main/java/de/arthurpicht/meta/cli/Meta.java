@@ -9,6 +9,7 @@ import de.arthurpicht.cli.common.UnrecognizedArgumentException;
 import de.arthurpicht.cli.option.*;
 import de.arthurpicht.meta.cli.executor.CloneExecutor;
 import de.arthurpicht.meta.cli.executor.FetchExecutor;
+import de.arthurpicht.meta.cli.executor.PullExecutor;
 import de.arthurpicht.meta.cli.executor.StatusExecutor;
 import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
@@ -60,9 +61,16 @@ public class Meta {
                 .build()
         );
 
+        commands.add(new CommandSequenceBuilder()
+                .addCommand("pull")
+                .withCommandExecutor(new PullExecutor())
+                .withDescription("Execute pull on all repos without local changes. Else execute fetch.")
+                .build()
+        );
+
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("meta\nhttps://github.com/arthurpicht/meta")
-                .withVersionByTag("0.1-SNAPSHOT", "2021-09-10")
+                .withVersionByTag("0.1-SNAPSHOT", "2021-11-19")
                 .build("meta");
 
         return new CliBuilder()

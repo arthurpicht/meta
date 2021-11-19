@@ -235,6 +235,10 @@ public class Git {
         }
     }
 
+    public static boolean hasLocalChanges(Path repoPath) throws GitException {
+        return hasUncommitedChanges(repoPath) || hasUncommitedChanges(repoPath);
+    }
+
     public static boolean hasStash(Path repoPath) throws GitException {
         List<String> commands = List.of("git", "stash", "list");
         try {
@@ -262,6 +266,19 @@ public class Git {
         }
     }
 
+    public static void pull(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "pull");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git pull' exited with error code " + exitCode + ".");
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
     public static boolean hasCommitsAhead(Path repoPath, String branch) throws GitException {
         String remoteBranch = "origin/" + branch;
         List<String> commands = List.of("git", "log", remoteBranch, "^" + branch, "--oneline");
@@ -276,6 +293,23 @@ public class Git {
             throw new GitException(e);
         }
     }
+
+    public static String getLastCommitId(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "rev-parse", "HEAD");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git rev-parse HEAD' exited with error code " + exitCode + ".");
+            if (result.size() != 1)
+                throw new GitException("'git rev-parse HEAD' is expected to return exactly one line but is: " + result.size());
+            return (result.get(0));
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
 
     private static void outputResult(List<String> result, boolean verbose) {
         if (!verbose) return;
