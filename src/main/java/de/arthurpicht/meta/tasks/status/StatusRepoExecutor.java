@@ -18,8 +18,8 @@ public class StatusRepoExecutor extends RepoExecutor {
         try {
             BranchStatus branchStatus = BranchStatusResolver.resolve(repoPath, repoName);
             BranchOutput.output(branchStatus);
-        } catch (GitException e) {
-            Output.error(repoName, "Unexpected error: " + e.getMessage());
+        } catch (GitException | RuntimeException e) {
+            Output.error(repoName, "Error: " + e.getMessage());
         }
     }
 
