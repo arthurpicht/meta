@@ -26,12 +26,12 @@ class RepoConfigTest {
         Configuration testRepo1 = getSection("simple");
         Path referencePath = Paths.get("src/test/resources");
 
-        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+        RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, referencePath);
 
         assertEquals("simple", repoConfig.getRepoId());
         assertEquals("git@github.com:arthurpicht/testRepoSimple.git", repoConfig.getGitRepoUrl());
         assertFalse(repoConfig.hasGitRepoUrlReadOnly());
-        assertEquals("src/test/resources", repoConfig.getDestinationPath().toString());
+        assertEquals(Paths.get("src/test/resources").toAbsolutePath().toString(), repoConfig.getDestinationPath().toString());
         assertFalse(repoConfig.hasAlteredRepoName());
         assertEquals("testRepoSimple", repoConfig.getRepoName());
         assertFalse(repoConfig.hasAlteredBranch());
@@ -44,12 +44,12 @@ class RepoConfigTest {
         Configuration testRepo1 = getSection("testRepo1");
         Path referencePath = Paths.get("src/test/resources");
 
-        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+        RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, referencePath);
 
         assertEquals("testRepo1", repoConfig.getRepoId());
         assertEquals("git@github.com:arthurpicht/testRepo1.git", repoConfig.getGitRepoUrl());
-        assertEquals("src/test/resources/core", repoConfig.getDestinationPath().toString());
-        assertFalse(repoConfig.getDestinationPath().isAbsolute());
+        assertEquals(Paths.get("src/test/resources/core").toAbsolutePath().toString(), repoConfig.getDestinationPath().toString());
+        assertTrue(repoConfig.getDestinationPath().isAbsolute());
         assertFalse(repoConfig.hasAlteredRepoName());
         assertEquals("testRepo1", repoConfig.getRepoName());
         assertFalse(repoConfig.hasAlteredBranch());
@@ -60,7 +60,7 @@ class RepoConfigTest {
         Configuration testRepo1 = getSection("testRepo2");
         Path referencePath = Paths.get("src/test/resources");
 
-        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+        RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, referencePath);
 
         assertEquals("testRepo2", repoConfig.getRepoId());
         assertEquals("git@github.com:arthurpicht/testRepo2.git", repoConfig.getGitRepoUrl());
@@ -76,7 +76,7 @@ class RepoConfigTest {
         Configuration testRepo1 = getSection("testRepo3");
         Path referencePath = Paths.get("src/test/resources");
 
-        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+        RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, referencePath);
 
         assertTrue(repoConfig.hasAlteredBranch());
         assertEquals("develop", repoConfig.getBranch());
@@ -87,7 +87,7 @@ class RepoConfigTest {
         Configuration testRepo1 = getSection("testRepo4");
         Path referencePath = Paths.get("src/test/resources");
 
-        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+        RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, referencePath);
 
         assertTrue(repoConfig.hasAlteredRepoName());
         assertEquals("myCustomName", repoConfig.getRepoName());
@@ -99,7 +99,7 @@ class RepoConfigTest {
         Path referencePath = Paths.get("src/test/resources");
 
         try {
-            new RepoConfig(testRepo1, referencePath);
+            RepoConfigFactory.create(testRepo1, referencePath);
             fail(ConfigurationException.class.getSimpleName() + " expected.");
         } catch (ConfigurationException e) {
             // din
@@ -111,7 +111,7 @@ class RepoConfigTest {
         Configuration testRepo1 = getSection("testRepo6");
         Path referencePath = Paths.get("src/test/resources");
 
-        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+        RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, referencePath);
 
         assertEquals("git@github.com:arthurpicht/testRepo6.git", repoConfig.getGitRepoUrl());
         assertTrue(repoConfig.hasGitRepoUrlReadOnly());
@@ -123,7 +123,7 @@ class RepoConfigTest {
         Configuration testRepo1 = getSection("testRepo7");
         Path referencePath = Paths.get("src/test/resources");
 
-        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+        RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, referencePath);
 
         assertTrue(repoConfig.hasTargetDev());
         assertFalse(repoConfig.hasTargetProd());
@@ -134,7 +134,7 @@ class RepoConfigTest {
         Configuration testRepo1 = getSection("testRepo8");
         Path referencePath = Paths.get("src/test/resources");
 
-        RepoConfig repoConfig = new RepoConfig(testRepo1, referencePath);
+        RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, referencePath);
 
         assertFalse(repoConfig.hasTargetDev());
         assertTrue(repoConfig.hasTargetProd());
@@ -146,14 +146,12 @@ class RepoConfigTest {
         Path referencePath = Paths.get("src/test/resources");
 
         try {
-            new RepoConfig(testRepo1, referencePath);
+            RepoConfigFactory.create(testRepo1, referencePath);
             fail(ConfigurationException.class.getSimpleName() + " expected.");
         } catch (ConfigurationException e) {
             assertEquals("Illegal configuration value for repo [testRepo9] and key [target]: 'rubbish'. Must be either 'DEV' or 'PROD'.",
                     e.getMessage());
         }
     }
-
-
 
 }

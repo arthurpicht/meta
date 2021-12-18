@@ -14,7 +14,7 @@ public class GeneralConfig {
     private final Path referencePath;
 
     public GeneralConfig(Configuration configuration, Path metaPath) throws ConfigurationException {
-        ConfigHelper.assertKey(configuration, SECTION_GENERAL, KEY_REFERENCE);
+        ConfigHelper.assertKey(configuration, KEY_REFERENCE);
 
         Path referenceValue = Paths.get(configuration.getString(KEY_REFERENCE));
         if (referenceValue.isAbsolute()) {
