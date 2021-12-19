@@ -12,31 +12,31 @@ import java.util.Set;
 
 public class RepoConfigFactory {
 
-    private static final String KEY_URL = "url";
-    private static final String KEY_URL_RO = "urlReadOnly";
-    private static final String KEY_DESTINATION_DIR = "destinationDir";
-    private static final String KEY_REPO_NAME = "repoName";
-    private static final String KEY_BRANCH = "branch";
-    private static final String KEY_TARGET = "target";
+    private static final String urlKey = "url";
+    private static final String urlROKey = "urlReadOnly";
+    private static final String destinationDirKey = "destinationDir";
+    private static final String repoNameKey = "repoName";
+    private static final String branchKey = "branch";
+    private static final String targetKey = "target";
 
     public static RepoConfig create(Configuration configuration, Path referencePath) throws ConfigurationException {
         String repoId = configuration.getSectionName();
-        GitRepoUrl gitRepoUrl = createGitRepoUrl(configuration);
+        GitRepoUrl gitRepoUrl = obtainGitRepoUrl(configuration);
         Path destinationPath = obtainDestinationPath(configuration, referencePath);
         String repoName = obtainRepoName(configuration, gitRepoUrl);
-        boolean isRepoNameAltered = obtainIsRepoNameAltered(configuration, repoName, gitRepoUrl);
+        boolean isRepoNameAltered = obtainIsRepoNameAltered(repoName, gitRepoUrl);
         String branch = obtainBranch(configuration);
         Set<Target> targets = obtainTargets(configuration, repoId);
 
         return new RepoConfig(repoId, gitRepoUrl, destinationPath, repoName, isRepoNameAltered, branch, targets);
     }
 
-    private static GitRepoUrl createGitRepoUrl(Configuration configuration) throws ConfigurationException {
-        ConfigHelper.assertKey(configuration, KEY_URL);
-        String urlString = configuration.getString(KEY_URL);
+    private static GitRepoUrl obtainGitRepoUrl(Configuration configuration) throws ConfigurationException {
+        ConfigHelper.assertKey(configuration, urlKey);
+        String urlString = configuration.getString(urlKey);
 
-        if (configuration.containsKey(KEY_URL_RO)) {
-            String urlRoString = configuration.getString(KEY_URL_RO);
+        if (configuration.containsKey(urlROKey)) {
+            String urlRoString = configuration.getString(urlROKey);
             return new GitRepoUrl(urlString, urlRoString);
         } else {
             return new GitRepoUrl(urlString);
@@ -45,8 +45,8 @@ public class RepoConfigFactory {
 
     private static Path obtainDestinationPath(Configuration configuration, Path referencePath) {
         Path destinationPath;
-        if (configuration.containsKey(KEY_DESTINATION_DIR)) {
-            Path destinationDirPath = Paths.get(configuration.getString(KEY_DESTINATION_DIR));
+        if (configuration.containsKey(destinationDirKey)) {
+            Path destinationDirPath = Paths.get(configuration.getString(destinationDirKey));
             if (destinationDirPath.isAbsolute()) {
                 destinationPath = destinationDirPath;
             } else {
@@ -59,20 +59,20 @@ public class RepoConfigFactory {
     }
 
     private static String obtainRepoName(Configuration configuration, GitRepoUrl gitRepoUrl) {
-        if (configuration.containsKey(KEY_REPO_NAME)) {
-            return configuration.getString(KEY_REPO_NAME);
+        if (configuration.containsKey(repoNameKey)) {
+            return configuration.getString(repoNameKey);
         } else {
             return gitRepoUrl.getRepoName();
         }
     }
 
-    private static boolean obtainIsRepoNameAltered(Configuration configuration, String repoName, GitRepoUrl gitRepoUrl) {
+    private static boolean obtainIsRepoNameAltered(String repoName, GitRepoUrl gitRepoUrl) {
         return !repoName.equals(gitRepoUrl.getRepoName());
     }
 
     private static String obtainBranch(Configuration configuration) {
-        if (configuration.containsKey(KEY_BRANCH)) {
-            return configuration.getString(KEY_BRANCH);
+        if (configuration.containsKey(branchKey)) {
+            return configuration.getString(branchKey);
         } else {
             return "";
         }
@@ -80,8 +80,8 @@ public class RepoConfigFactory {
 
     private static Set<Target> obtainTargets(Configuration configuration, String repoId) throws ConfigurationException {
         Set<Target> targets = new HashSet<>();
-        if (configuration.containsKey(KEY_TARGET)) {
-            List<String> targetStrings = configuration.getStringList(KEY_TARGET);
+        if (configuration.containsKey(targetKey)) {
+            List<String> targetStrings = configuration.getStringList(targetKey);
             for (String targetString : targetStrings) {
                 if (targetString.equalsIgnoreCase(Target.DEV.name())) {
                     targets.add(Target.DEV);
@@ -89,7 +89,7 @@ public class RepoConfigFactory {
                     targets.add(Target.PROD);
                 } else {
                     throw new ConfigurationException("Illegal configuration value for repo [" + repoId + "] and key "
-                            + "[" + KEY_TARGET + "]: '" + targetString + "'. Must be either '" + Target.DEV + "' or '"
+                            + "[" + targetKey + "]: '" + targetString + "'. Must be either '" + Target.DEV + "' or '"
                             + Target.PROD + "'.");
                 }
             }
@@ -99,6 +99,5 @@ public class RepoConfigFactory {
         }
         return targets;
     }
-
 
 }
