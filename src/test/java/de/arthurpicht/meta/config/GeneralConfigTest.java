@@ -16,7 +16,7 @@ class GeneralConfigTest {
 
     private Configuration getSectionGeneral() throws IOException, ConfigurationFileNotFoundException {
         ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        configurationFactory.addConfigurationFileFromFilesystem(new File("src/test/resources/meta/meta1.conf"));
+        configurationFactory.addConfigurationFileFromFilesystem(new File("src/test/resources/meta1/meta.conf"));
         assertTrue(configurationFactory.hasSection(GeneralConfig.SECTION_GENERAL));
         return configurationFactory.getConfiguration(GeneralConfig.SECTION_GENERAL);
     }
@@ -26,7 +26,7 @@ class GeneralConfigTest {
         System.out.println(System.getProperty("user.dir"));
 
         Configuration generalConfiguration = getSectionGeneral();
-        Path metaPath = Paths.get("src/test/resources/meta");
+        Path metaPath = Paths.get("src/test/resources/meta1");
 
         GeneralConfig generalConfig = new GeneralConfig(generalConfiguration, metaPath);
         Path referencePath = generalConfig.getReferencePath();

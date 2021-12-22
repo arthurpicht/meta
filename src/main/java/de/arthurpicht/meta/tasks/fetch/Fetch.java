@@ -9,9 +9,7 @@ import de.arthurpicht.meta.tasks.status.StatusRepoExecutor;
 public class Fetch {
 
     public static void execute(MetaConfig metaConfig, Target target) {
-
-        System.out.println("Executing fetch on [" + ExecutionContext.getMetaDir() + "] target [" + target + "]:");
-
+        System.out.println("Executing fetch on [" + ExecutionContext.getMetaDir() + "] target [" + target.getName() + "]:");
         Repos.executeForAll(metaConfig, target, new FetchRepoExecutor());
     }
 

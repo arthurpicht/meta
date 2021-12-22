@@ -3,6 +3,8 @@ package de.arthurpicht.meta.config;
 import de.arthurpicht.configuration.Configuration;
 import de.arthurpicht.configuration.ConfigurationFactory;
 import de.arthurpicht.configuration.ConfigurationFileNotFoundException;
+import de.arthurpicht.meta.cli.target.RedundantTargetException;
+import de.arthurpicht.meta.cli.target.UnknownTargetException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,18 +15,23 @@ public class MetaConfig {
     public static final String META_CONF_NAME = "meta.conf";
     private static final String SECTION_GENERAL = "general";
 
+    private final GeneralConfig generalConfig;
     private final Map<String, RepoConfig> projectConfigMap;
 
-    public MetaConfig(Path projectMetaDir) throws ConfigurationException {
+    public MetaConfig(Path projectMetaDir) throws ConfigurationException, RedundantTargetException, UnknownTargetException {
         ConfigurationFactory configurationFactory = bindConfigurationFile(projectMetaDir);
-        GeneralConfig generalConfig = obtainGeneralConfig(projectMetaDir, configurationFactory);
-        this.projectConfigMap = obtainProjectConfigs(configurationFactory, generalConfig);
+        this.generalConfig = obtainGeneralConfig(projectMetaDir, configurationFactory);
+        this.projectConfigMap = obtainProjectConfigs(configurationFactory, this.generalConfig);
     }
 
     public List<String> getProjectNames() {
         List<String> projectNames = new ArrayList<>(this.projectConfigMap.keySet());
         Collections.sort(projectNames);
         return projectNames;
+    }
+
+    public GeneralConfig getGeneralConfig() {
+        return this.generalConfig;
     }
 
     public RepoConfig getProjectConfig(String projectName) {
@@ -52,13 +59,14 @@ public class MetaConfig {
         return new GeneralConfig(generalSection, projectMetaDir);
     }
 
-    private Map<String, RepoConfig> obtainProjectConfigs(ConfigurationFactory configurationFactory, GeneralConfig generalConfig) throws ConfigurationException {
+    private Map<String, RepoConfig> obtainProjectConfigs(ConfigurationFactory configurationFactory, GeneralConfig generalConfig)
+            throws ConfigurationException, RedundantTargetException, UnknownTargetException {
         Set<String> sectionNames = configurationFactory.getSectionNames();
         sectionNames.remove(SECTION_GENERAL);
         Map<String, RepoConfig> projectConfigMap = new HashMap<>();
         for (String sectionName : sectionNames) {
             Configuration configuration = configurationFactory.getConfiguration(sectionName);
-            RepoConfig repoConfig = RepoConfigFactory.create(configuration, generalConfig.getReferencePath());
+            RepoConfig repoConfig = RepoConfigFactory.create(configuration, generalConfig);
             projectConfigMap.put(sectionName, repoConfig);
         }
         return projectConfigMap;

@@ -10,9 +10,7 @@ import java.io.IOException;
 public class Clone {
 
     public static TaskSummary execute(MetaConfig metaConfig, Target target) throws IOException {
-
-        System.out.println("Cloning for target [" + target + "] ...");
-
+        System.out.println("Cloning for target [" + target.getName() + "] ...");
         return Repos.executeForAll(metaConfig, target, new CloneRepoExecutor());
     }
 

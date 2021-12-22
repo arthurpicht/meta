@@ -22,7 +22,7 @@ public class CloneRepoExecutor extends RepoExecutor {
     public void execute(RepoConfig repoConfig, Target target, TaskSummary taskSummary) {
 
         String repoName = repoConfig.getRepoName();
-        boolean isTargetProd = target.equals(Target.PROD);
+        boolean isTargetProd = target.isProd();
 
         message(repoName, "Operation pending ...");
 
@@ -78,7 +78,7 @@ public class CloneRepoExecutor extends RepoExecutor {
         boolean verbose = ExecutionContext.isVerbose();
 
         if (isRepoDir(repoConfig)) {
-            boolean isTargetProd = projectTarget.equals(Target.PROD);
+            boolean isTargetProd = projectTarget.isProd();
             if (isIntendedGitRepo(repoConfig, isTargetProd) && isIntendedBranch(repoConfig)) {
                 taskSummary.addRepoWarning(repoName);
                 if (!verbose)

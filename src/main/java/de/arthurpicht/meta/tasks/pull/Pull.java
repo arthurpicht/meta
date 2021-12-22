@@ -8,9 +8,7 @@ import de.arthurpicht.meta.tasks.Repos;
 public class Pull {
 
     public static void execute(MetaConfig metaConfig, Target target) {
-
-        System.out.println("Executing pull on [" + ExecutionContext.getMetaDir() + "] target [" + target + "]:");
-
+        System.out.println("Executing pull on [" + ExecutionContext.getMetaDir() + "] target [" + target.getName() + "]:");
         Repos.executeForAll(metaConfig, target, new PullRepoExecutor());
     }
 

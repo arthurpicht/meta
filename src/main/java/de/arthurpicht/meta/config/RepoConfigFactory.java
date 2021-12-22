@@ -1,14 +1,16 @@
 package de.arthurpicht.meta.config;
 
 import de.arthurpicht.configuration.Configuration;
-import de.arthurpicht.meta.cli.target.Target;
+import de.arthurpicht.meta.cli.target.RedundantTargetException;
+import de.arthurpicht.meta.cli.target.Targets;
+import de.arthurpicht.meta.cli.target.UnknownTargetException;
 import de.arthurpicht.meta.git.GitRepoUrl;
+import de.arthurpicht.utils.core.collection.Lists;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class RepoConfigFactory {
 
@@ -19,14 +21,15 @@ public class RepoConfigFactory {
     private static final String branchKey = "branch";
     private static final String targetKey = "target";
 
-    public static RepoConfig create(Configuration configuration, Path referencePath) throws ConfigurationException {
+    public static RepoConfig create(Configuration configuration, GeneralConfig generalConfig)
+            throws ConfigurationException, RedundantTargetException, UnknownTargetException {
         String repoId = configuration.getSectionName();
         GitRepoUrl gitRepoUrl = obtainGitRepoUrl(configuration);
-        Path destinationPath = obtainDestinationPath(configuration, referencePath);
+        Path destinationPath = obtainDestinationPath(configuration, generalConfig.getReferencePath());
         String repoName = obtainRepoName(configuration, gitRepoUrl);
         boolean isRepoNameAltered = obtainIsRepoNameAltered(repoName, gitRepoUrl);
         String branch = obtainBranch(configuration);
-        Set<Target> targets = obtainTargets(configuration, repoId);
+        Targets targets = obtainTargets(configuration, generalConfig);
 
         return new RepoConfig(repoId, gitRepoUrl, destinationPath, repoName, isRepoNameAltered, branch, targets);
     }
@@ -78,26 +81,35 @@ public class RepoConfigFactory {
         }
     }
 
-    private static Set<Target> obtainTargets(Configuration configuration, String repoId) throws ConfigurationException {
-        Set<Target> targets = new HashSet<>();
-        if (configuration.containsKey(targetKey)) {
-            List<String> targetStrings = configuration.getStringList(targetKey);
-            for (String targetString : targetStrings) {
-                if (targetString.equalsIgnoreCase(Target.DEV.name())) {
-                    targets.add(Target.DEV);
-                } else if (targetString.equalsIgnoreCase(Target.PROD.name())) {
-                    targets.add(Target.PROD);
-                } else {
-                    throw new ConfigurationException("Illegal configuration value for repo [" + repoId + "] and key "
-                            + "[" + targetKey + "]: '" + targetString + "'. Must be either '" + Target.DEV + "' or '"
-                            + Target.PROD + "'.");
-                }
-            }
+    private static Targets obtainTargets(Configuration repoConfiguration, GeneralConfig generalConfig)
+            throws RedundantTargetException, UnknownTargetException {
+        if (repoConfiguration.containsKey(targetKey)) {
+            Set<String> targetStrings =
+                    getDistinctTargetStrings(
+                            repoConfiguration.getStringList(targetKey), repoConfiguration.getSectionName()
+                    );
+            checkSub(repoConfiguration.getSectionName(), generalConfig.getTargets().getAllTargetNames(), targetStrings);
+            return new Targets(targetStrings);
         } else {
-            targets.add(Target.DEV);
-            targets.add(Target.PROD);
+            return generalConfig.getTargets();
         }
-        return targets;
+    }
+
+    private static Set<String> getDistinctTargetStrings(List<String> configuredTargetStrings, String projectName) throws RedundantTargetException {
+        Set<String> targetStrings = new HashSet<>();
+        for (String targetString : configuredTargetStrings) {
+            targetString = targetString.toLowerCase();
+            boolean distinct = targetStrings.add(targetString);
+            if (!distinct) throw new RedundantTargetException(projectName, targetString);
+        }
+        return targetStrings;
+    }
+
+    private static void checkSub(String projectName, Set<String> configuredTargetNames, Set<String> repoTargetNames) throws UnknownTargetException {
+        for (String repoTargetName : repoTargetNames) {
+            if (!configuredTargetNames.contains(repoTargetName))
+                throw new UnknownTargetException(projectName, repoTargetName);
+        }
     }
 
 }

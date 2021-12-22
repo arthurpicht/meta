@@ -8,6 +8,7 @@ import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.config.ConfigurationException;
 import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.cli.target.Target;
+import de.arthurpicht.meta.exception.MetaException;
 import de.arthurpicht.meta.tasks.TaskSummary;
 import de.arthurpicht.meta.tasks.clone.Clone;
 
@@ -19,19 +20,27 @@ public class CloneExecutor implements CommandExecutor {
     public void execute(CliCall cliCall) throws CommandExecutorException {
 
         CommandExecutorCommons.assertGitInstalled();
+
         ExecutionContext.init(cliCall);
-        Target target = ProjectTarget.obtain(cliCall);
+        MetaConfig metaConfig = initMetaConfig();
+        Target target = ProjectTarget.obtainInitializedTarget(metaConfig.getGeneralConfig().getTargets());
 
+        TaskSummary taskSummary = execute(metaConfig, target);
+        if (!taskSummary.hasSuccess()) throw new CommandExecutorException();
+    }
+
+    private MetaConfig initMetaConfig() throws CommandExecutorException {
         try {
-            MetaConfig metaConfig = new MetaConfig(ExecutionContext.getMetaDir());
+            return new MetaConfig(ExecutionContext.getMetaDir());
+        } catch (ConfigurationException | MetaException e) {
+            throw new CommandExecutorException(e.getMessage(), e);
+        }
+    }
 
-//            System.out.println("Found projects: "
-//                    + Strings.listing(projectConfig.getProjectNames(), " ", "", "", "[", "]"));
-
-            TaskSummary taskSummary = Clone.execute(metaConfig, target);
-            if (!taskSummary.hasSuccess()) throw new CommandExecutorException();
-
-        } catch (ConfigurationException | IOException e) {
+    private TaskSummary execute(MetaConfig metaConfig, Target target) throws CommandExecutorException {
+        try {
+            return Clone.execute(metaConfig, target);
+        } catch (IOException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }
     }

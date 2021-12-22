@@ -8,12 +8,7 @@ import de.arthurpicht.meta.cli.target.Target;
 public class Status {
 
     public static void execute(MetaConfig metaConfig, Target target) {
-
-//        System.out.println("Found projects: "
-//                + Strings.listing(projectConfig.getProjectNames(), " ", "", "", "[", "]"));
-
-        System.out.println("Status of [" + ExecutionContext.getMetaDir() + "] target [" + target + "]:");
-
+        System.out.println("Status of [" + ExecutionContext.getMetaDir() + "] target [" + target.getName() + "]:");
         Repos.executeForAll(metaConfig, target, new StatusRepoExecutor());
     }
 
