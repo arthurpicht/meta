@@ -5,7 +5,6 @@ import de.arthurpicht.meta.config.exceptions.RedundantTargetException;
 import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import de.arthurpicht.meta.config.exceptions.UnknownTargetException;
-import de.arthurpicht.meta.git.GitRepoUrl;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

@@ -3,13 +3,13 @@ package de.arthurpicht.meta.config;
 import de.arthurpicht.configuration.Configuration;
 import de.arthurpicht.configuration.ConfigurationFactory;
 import de.arthurpicht.configuration.ConfigurationFileNotFoundException;
-import de.arthurpicht.meta.config.exceptions.RedundantTargetException;
 import de.arthurpicht.meta.config.exceptions.ConfigurationException;
-import de.arthurpicht.meta.config.exceptions.UnknownTargetException;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class MetaConfigFactory {
 
@@ -53,7 +53,7 @@ public class MetaConfigFactory {
             throws ConfigurationException {
         Set<String> sectionNames = configurationFactory.getSectionNames();
         sectionNames.remove(SECTION_GENERAL);
-        Map<String, RepoConfig> repoConfigMap = new HashMap<>();
+        Map<String, RepoConfig> repoConfigMap = new LinkedHashMap<>();
         for (String sectionName : sectionNames) {
             Configuration configuration = configurationFactory.getConfiguration(sectionName);
             RepoConfig repoConfig = RepoConfigFactory.create(configuration, generalConfig);

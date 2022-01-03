@@ -1,5 +1,6 @@
-package de.arthurpicht.meta.git;
+package de.arthurpicht.meta.config;
 
+import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import de.arthurpicht.utils.core.strings.Strings;
 
 public class GitRepoUrl {
@@ -9,28 +10,28 @@ public class GitRepoUrl {
 
     private final String repoName;
 
-    public GitRepoUrl(String url) {
+    public GitRepoUrl(String url) throws ConfigurationException {
         this.url = url;
         this.repoName = extractRepoName(url);
         this.urlRo = "";
     }
 
-    public GitRepoUrl(String url, String urlRo) {
+    public GitRepoUrl(String url, String urlRo) throws ConfigurationException {
         this.url = url;
         this.urlRo = urlRo;
         String repoName = extractRepoName(url);
         String repoNameRo = extractRepoName(urlRo);
         if (!repoName.equals(repoNameRo))
-            throw new RuntimeException("repo names not matching for URLs: [" + url + "] != [" + urlRo + "]. Names: [" + repoName + "] != [" + repoNameRo + "].");
+            throw new ConfigurationException("repo names not matching for URLs: [" + url + "] != [" + urlRo + "]. Names: [" + repoName + "] != [" + repoNameRo + "].");
         this.repoName = repoName;
     }
 
-    private String extractRepoName(String url) {
+    private String extractRepoName(String url) throws ConfigurationException {
         int lastIndexOfSlash = url.lastIndexOf('/');
         int lastIndexOfDot = url.lastIndexOf(".");
 
         if (lastIndexOfSlash <= 0 || lastIndexOfDot <=0 || !(lastIndexOfDot > lastIndexOfSlash))
-            throw new RuntimeException("Error parsing repo name from url.");
+            throw new ConfigurationException("Error parsing repo name from url: [" + url + "].");
 
         return url.substring(lastIndexOfSlash + 1, lastIndexOfDot);
     }

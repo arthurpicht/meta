@@ -23,7 +23,7 @@ public class CloneExecutor implements CommandExecutor {
 
         ExecutionContext.init(cliCall);
         MetaConfig metaConfig = initMetaConfig();
-        Target target = ProjectTarget.obtainInitializedTarget(metaConfig.getGeneralConfig().getTargets());
+        Target target = ProjectTarget.obtain(cliCall, metaConfig.getGeneralConfig().getTargets());
 
         TaskSummary taskSummary = execute(metaConfig, target);
         if (!taskSummary.hasSuccess()) throw new CommandExecutorException();

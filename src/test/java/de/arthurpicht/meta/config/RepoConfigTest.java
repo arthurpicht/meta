@@ -39,7 +39,7 @@ class RepoConfigTest {
     }
 
     @Test
-    void testSimple() throws IOException, ConfigurationFileNotFoundException, ConfigurationException, RedundantTargetException, UnknownTargetException {
+    void testSimple() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
         Configuration testRepo1 = getSection("simple");
         RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, generalConfig);
 
@@ -55,7 +55,7 @@ class RepoConfigTest {
     }
 
     @Test
-    void testDestinationDirRelative() throws IOException, ConfigurationFileNotFoundException, ConfigurationException, RedundantTargetException, UnknownTargetException {
+    void testDestinationDirRelative() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
         Configuration testRepo1 = getSection("testRepo1");
         RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, generalConfig);
 
@@ -69,7 +69,7 @@ class RepoConfigTest {
     }
 
     @Test
-    void testDestinationDirAbsolute() throws IOException, ConfigurationFileNotFoundException, ConfigurationException, RedundantTargetException, UnknownTargetException {
+    void testDestinationDirAbsolute() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
         Configuration testRepo1 = getSection("testRepo2");
         RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, generalConfig);
 
@@ -83,7 +83,7 @@ class RepoConfigTest {
     }
 
     @Test
-    void testDestinationAlteredBranch() throws IOException, ConfigurationFileNotFoundException, ConfigurationException, RedundantTargetException, UnknownTargetException {
+    void testDestinationAlteredBranch() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
         Configuration testRepo1 = getSection("testRepo3");
         RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, generalConfig);
 
@@ -92,7 +92,7 @@ class RepoConfigTest {
     }
 
     @Test
-    void testDestinationAlteredRepoName() throws IOException, ConfigurationFileNotFoundException, ConfigurationException, RedundantTargetException, UnknownTargetException {
+    void testDestinationAlteredRepoName() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
         Configuration testRepo1 = getSection("testRepo4");
         RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, generalConfig);
 
@@ -101,7 +101,7 @@ class RepoConfigTest {
     }
 
     @Test
-    void urlMissing_neg() throws IOException, ConfigurationFileNotFoundException, RedundantTargetException, UnknownTargetException {
+    void urlMissing_neg() throws IOException, ConfigurationFileNotFoundException {
         Configuration testRepo1 = getSection("testRepo5");
         try {
             RepoConfigFactory.create(testRepo1, generalConfig);
@@ -112,7 +112,7 @@ class RepoConfigTest {
     }
 
     @Test
-    void testUrlReadOnly() throws IOException, ConfigurationFileNotFoundException, ConfigurationException, RedundantTargetException, UnknownTargetException {
+    void testUrlReadOnly() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
         Configuration testRepo1 = getSection("testRepo6");
 
         RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, generalConfig);
@@ -123,7 +123,7 @@ class RepoConfigTest {
     }
 
     @Test
-    void testTargetDev() throws IOException, ConfigurationFileNotFoundException, ConfigurationException, RedundantTargetException, UnknownTargetException {
+    void testTargetDev() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
         Configuration testRepo1 = getSection("testRepo7");
 
         RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, generalConfig);
@@ -133,7 +133,7 @@ class RepoConfigTest {
     }
 
     @Test
-    void testTargetProd() throws IOException, ConfigurationFileNotFoundException, ConfigurationException, RedundantTargetException, UnknownTargetException {
+    void testTargetProd() throws IOException, ConfigurationFileNotFoundException, ConfigurationException {
         Configuration testRepo1 = getSection("testRepo8");
 
         RepoConfig repoConfig = RepoConfigFactory.create(testRepo1, generalConfig);
