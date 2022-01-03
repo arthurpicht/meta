@@ -5,12 +5,10 @@ import de.arthurpicht.meta.cli.target.RedundantTargetException;
 import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.meta.cli.target.UnknownTargetException;
 import de.arthurpicht.meta.git.GitRepoUrl;
-import de.arthurpicht.utils.core.collection.Lists;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RepoConfigFactory {
 
@@ -84,28 +82,28 @@ public class RepoConfigFactory {
     private static Targets obtainTargets(Configuration repoConfiguration, GeneralConfig generalConfig)
             throws RedundantTargetException, UnknownTargetException {
         if (repoConfiguration.containsKey(targetKey)) {
-            Set<String> targetStrings =
-                    getDistinctTargetStrings(
-                            repoConfiguration.getStringList(targetKey), repoConfiguration.getSectionName()
-                    );
-            checkSub(repoConfiguration.getSectionName(), generalConfig.getTargets().getAllTargetNames(), targetStrings);
-            return new Targets(targetStrings);
+            List<String> targetStringsConfigured = repoConfiguration.getStringList(targetKey);
+            Set<String> targetStringsNormalized
+                    = getNormalizedTargetStrings(targetStringsConfigured, repoConfiguration.getSectionName());
+            assertSubsetOfConfiguredTargetNames(generalConfig.getTargets().getAllTargetNames(), targetStringsNormalized, repoConfiguration.getSectionName());
+            return new Targets(targetStringsNormalized);
         } else {
             return generalConfig.getTargets();
         }
     }
 
-    private static Set<String> getDistinctTargetStrings(List<String> configuredTargetStrings, String projectName) throws RedundantTargetException {
-        Set<String> targetStrings = new HashSet<>();
-        for (String targetString : configuredTargetStrings) {
+    private static Set<String> getNormalizedTargetStrings(List<String> configuredRepoTargetStrings, String projectName)
+            throws RedundantTargetException {
+        Set<String> normalizedTargetStrings = new HashSet<>();
+        for (String targetString : configuredRepoTargetStrings) {
             targetString = targetString.toLowerCase();
-            boolean distinct = targetStrings.add(targetString);
+            boolean distinct = normalizedTargetStrings.add(targetString);
             if (!distinct) throw new RedundantTargetException(projectName, targetString);
         }
-        return targetStrings;
+        return normalizedTargetStrings;
     }
 
-    private static void checkSub(String projectName, Set<String> configuredTargetNames, Set<String> repoTargetNames) throws UnknownTargetException {
+    private static void assertSubsetOfConfiguredTargetNames(Set<String> configuredTargetNames, Set<String> repoTargetNames, String projectName) throws UnknownTargetException {
         for (String repoTargetName : repoTargetNames) {
             if (!configuredTargetNames.contains(repoTargetName))
                 throw new UnknownTargetException(projectName, repoTargetName);

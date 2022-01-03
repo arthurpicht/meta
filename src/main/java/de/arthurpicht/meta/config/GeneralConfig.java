@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class GeneralConfig {
@@ -44,12 +45,11 @@ public class GeneralConfig {
     }
 
     private Targets obtainTargets(Configuration configuration) throws ConfigurationException {
-        if (!configuration.containsKey(KEY_TARGETS))
-            return new Targets();
-        List<String> targetNames = configuration.getStringList(KEY_TARGETS);
+        List<String> targetNames = configuration.getStringList(KEY_TARGETS, "dev", "prod");
         Set<String> targetNameSet = new HashSet<>();
         for (String targetName : targetNames) {
-            boolean distinct = targetNameSet.add(targetName);
+            String targetNameNormalized = targetName.toLowerCase(Locale.ROOT);
+            boolean distinct = targetNameSet.add(targetNameNormalized);
             if (!distinct) throw new ConfigurationException("Redundant definition in section [" + SECTION_GENERAL + "] " +
                     "parameter [" + KEY_TARGETS + "]: [" + targetName + "].");
         }
