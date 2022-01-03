@@ -5,6 +5,7 @@ import de.arthurpicht.configuration.ConfigurationFactory;
 import de.arthurpicht.configuration.ConfigurationFileNotFoundException;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.cli.target.Targets;
+import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import de.arthurpicht.utils.core.strings.Strings;
 import org.junit.jupiter.api.Test;
 

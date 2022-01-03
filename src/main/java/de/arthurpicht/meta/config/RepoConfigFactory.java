@@ -1,9 +1,10 @@
 package de.arthurpicht.meta.config;
 
 import de.arthurpicht.configuration.Configuration;
-import de.arthurpicht.meta.cli.target.RedundantTargetException;
+import de.arthurpicht.meta.config.exceptions.RedundantTargetException;
 import de.arthurpicht.meta.cli.target.Targets;
-import de.arthurpicht.meta.cli.target.UnknownTargetException;
+import de.arthurpicht.meta.config.exceptions.ConfigurationException;
+import de.arthurpicht.meta.config.exceptions.UnknownTargetException;
 import de.arthurpicht.meta.git.GitRepoUrl;
 
 import java.nio.file.Path;
@@ -20,7 +21,8 @@ public class RepoConfigFactory {
     private static final String targetKey = "target";
 
     public static RepoConfig create(Configuration configuration, GeneralConfig generalConfig)
-            throws ConfigurationException, RedundantTargetException, UnknownTargetException {
+            throws ConfigurationException {
+
         String repoId = configuration.getSectionName();
         GitRepoUrl gitRepoUrl = obtainGitRepoUrl(configuration);
         Path destinationPath = obtainDestinationPath(configuration, generalConfig.getReferencePath());
@@ -81,6 +83,7 @@ public class RepoConfigFactory {
 
     private static Targets obtainTargets(Configuration repoConfiguration, GeneralConfig generalConfig)
             throws RedundantTargetException, UnknownTargetException {
+
         if (repoConfiguration.containsKey(targetKey)) {
             List<String> targetStringsConfigured = repoConfiguration.getStringList(targetKey);
             Set<String> targetStringsNormalized
@@ -94,6 +97,7 @@ public class RepoConfigFactory {
 
     private static Set<String> getNormalizedTargetStrings(List<String> configuredRepoTargetStrings, String projectName)
             throws RedundantTargetException {
+
         Set<String> normalizedTargetStrings = new HashSet<>();
         for (String targetString : configuredRepoTargetStrings) {
             targetString = targetString.toLowerCase();

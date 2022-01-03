@@ -2,6 +2,7 @@ package de.arthurpicht.meta.config;
 
 import de.arthurpicht.configuration.Configuration;
 import de.arthurpicht.meta.cli.target.Targets;
+import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

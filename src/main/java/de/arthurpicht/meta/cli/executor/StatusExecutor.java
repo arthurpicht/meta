@@ -6,9 +6,9 @@ import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.cli.target.Target;
-import de.arthurpicht.meta.config.ConfigurationException;
 import de.arthurpicht.meta.config.MetaConfig;
-import de.arthurpicht.meta.exception.MetaException;
+import de.arthurpicht.meta.config.MetaConfigFactory;
+import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import de.arthurpicht.meta.tasks.status.Status;
 
 public class StatusExecutor implements CommandExecutor {
@@ -27,8 +27,8 @@ public class StatusExecutor implements CommandExecutor {
 
     private MetaConfig initMetaConfig() throws CommandExecutorException {
         try {
-            return new MetaConfig(ExecutionContext.getMetaDir());
-        } catch (ConfigurationException | MetaException e) {
+            return MetaConfigFactory.create(ExecutionContext.getMetaDir());
+        } catch (ConfigurationException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }
     }

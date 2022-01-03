@@ -1,4 +1,4 @@
-package de.arthurpicht.meta.config;
+package de.arthurpicht.meta.config.exceptions;
 
 public class ConfigurationException extends Exception {
 
