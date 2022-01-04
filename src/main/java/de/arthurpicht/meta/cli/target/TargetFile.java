@@ -25,13 +25,13 @@ public class TargetFile {
 
     public Target read() throws IOException {
         String targetString = this.targetFile.read();
-        return Target.valueOf(targetString);
+        return new Target(targetString);
     }
 
     public void write(Target target) throws IOException {
         Path parentDir = targetFile.getPath().getParent();
         if (!Files.exists(parentDir)) Files.createDirectories(parentDir);
-        this.targetFile.write(target.toString());
+        this.targetFile.write(target.getName());
     }
 
 }

@@ -3,6 +3,7 @@ package de.arthurpicht.meta.tasks;
 import com.diogonunes.jcolor.Ansi;
 import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.cli.target.Target;
+import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.config.RepoConfig;
 
@@ -14,9 +15,8 @@ public class Repos {
 
         for (String project : metaConfig.getProjectNames()) {
             RepoConfig repoConfig = metaConfig.getProjectConfig(project);
-
-            if (target == Target.DEV && !repoConfig.hasTargetDev()) continue;
-            if (target == Target.PROD && !repoConfig.hasTargetProd()) continue;
+            Targets repoTargets = repoConfig.getTargets();
+            if (!repoTargets.hasTarget(target)) continue;
 
             repoExecutor.execute(repoConfig, target, taskSummary);
         }

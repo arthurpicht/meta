@@ -6,8 +6,9 @@ import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.cli.target.Target;
-import de.arthurpicht.meta.config.ConfigurationException;
 import de.arthurpicht.meta.config.MetaConfig;
+import de.arthurpicht.meta.config.MetaConfigFactory;
+import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import de.arthurpicht.meta.tasks.pull.Pull;
 
 public class PullExecutor implements CommandExecutor {
@@ -16,12 +17,17 @@ public class PullExecutor implements CommandExecutor {
     public void execute(CliCall cliCall) throws CommandExecutorException {
 
         CommandExecutorCommons.assertGitInstalled();
-        ExecutionContext.init(cliCall);
-        Target target = ProjectTarget.obtain();
 
+        ExecutionContext.init(cliCall);
+        MetaConfig metaConfig = initMetaConfig();
+        Target target = ProjectTarget.obtainInitializedTarget(metaConfig.getGeneralConfig().getTargets());
+
+        Pull.execute(metaConfig, target);
+    }
+
+    private MetaConfig initMetaConfig() throws CommandExecutorException {
         try {
-            MetaConfig metaConfig = new MetaConfig(ExecutionContext.getMetaDir());
-            Pull.execute(metaConfig, target);
+            return MetaConfigFactory.create(ExecutionContext.getMetaDir());
         } catch (ConfigurationException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }

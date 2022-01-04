@@ -1,11 +1,9 @@
 package de.arthurpicht.meta.config;
 
-import de.arthurpicht.meta.cli.target.Target;
-import de.arthurpicht.meta.git.GitRepoUrl;
+import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.nio.file.Path;
-import java.util.Set;
 
 public class RepoConfig {
 
@@ -15,9 +13,9 @@ public class RepoConfig {
     private final String repoName;
     private final boolean isRepoNameAltered;
     private final String branch;
-    private final Set<Target> targets;
+    private final Targets targets;
 
-    public RepoConfig(String repoId, GitRepoUrl gitRepoUrl, Path destinationPath, String repoName, boolean isRepoNameAltered, String branch, Set<Target> targets) {
+    public RepoConfig(String repoId, GitRepoUrl gitRepoUrl, Path destinationPath, String repoName, boolean isRepoNameAltered, String branch, Targets targets) {
         this.repoId = repoId;
         this.gitRepoUrl = gitRepoUrl;
         this.destinationPath = destinationPath;
@@ -67,12 +65,12 @@ public class RepoConfig {
         return this.destinationPath.resolve(this.repoName);
     }
 
-    public boolean hasTargetDev() {
-        return this.targets.contains(Target.DEV);
+    public Targets getTargets() {
+        return this.targets;
     }
 
-    public boolean hasTargetProd() {
-        return this.targets.contains(Target.PROD);
+    public boolean hasTarget(String targetName) {
+        return this.targets.hasTarget(targetName);
     }
 
 }

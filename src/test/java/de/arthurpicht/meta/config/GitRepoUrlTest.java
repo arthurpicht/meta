@@ -1,6 +1,7 @@
-package de.arthurpicht.meta.helper;
+package de.arthurpicht.meta.config;
 
-import de.arthurpicht.meta.git.GitRepoUrl;
+import de.arthurpicht.meta.config.GitRepoUrl;
+import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GitRepoUrlTest {
 
     @Test
-    public void testSsh() {
+    public void testSsh() throws ConfigurationException {
         String url = "git@bitbucket.org:mentalizr/m7r-backend-proc.git";
         GitRepoUrl gitRepoUrl = new GitRepoUrl(url);
 
@@ -16,14 +17,14 @@ class GitRepoUrlTest {
     }
 
     @Test
-    public void testHttps() {
+    public void testHttps() throws ConfigurationException {
         String url = "https://github.com/arthurpicht/testRepo5.git";
         GitRepoUrl gitRepoUrl = new GitRepoUrl(url);
         assertEquals("testRepo5", gitRepoUrl.getRepoName());
     }
 
     @Test
-    public void test() {
+    public void test() throws ConfigurationException {
         String url = "git@github.com:arthurpicht/testRepo5.git";
         String urlReadOnly = "https://github.com/arthurpicht/testRepo5.git";
         GitRepoUrl gitRepoUrl = new GitRepoUrl(url, urlReadOnly);

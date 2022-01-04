@@ -1,71 +1,32 @@
 package de.arthurpicht.meta.config;
 
-import de.arthurpicht.configuration.Configuration;
-import de.arthurpicht.configuration.ConfigurationFactory;
-import de.arthurpicht.configuration.ConfigurationFileNotFoundException;
-
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 
 public class MetaConfig {
 
-    public static final String META_CONF_NAME = "meta.conf";
-    private static final String SECTION_GENERAL = "general";
+    private final List<String> projectNames;
+    private final GeneralConfig generalConfig;
+    private final Map<String, RepoConfig> repoConfigMap;
 
-    private final Map<String, RepoConfig> projectConfigMap;
-
-    public MetaConfig(Path projectMetaDir) throws ConfigurationException {
-        ConfigurationFactory configurationFactory = bindConfigurationFile(projectMetaDir);
-        GeneralConfig generalConfig = obtainGeneralConfig(projectMetaDir, configurationFactory);
-        this.projectConfigMap = obtainProjectConfigs(configurationFactory, generalConfig);
+    public MetaConfig(GeneralConfig generalConfig, Map<String, RepoConfig> repoConfigMap) {
+        String[] projectNames = repoConfigMap.keySet().toArray(new String[0]);
+        this.projectNames = List.of(projectNames);
+        this.generalConfig = generalConfig;
+        this.repoConfigMap = Collections.unmodifiableMap(new LinkedHashMap<>(repoConfigMap));
     }
 
     public List<String> getProjectNames() {
-        List<String> projectNames = new ArrayList<>(this.projectConfigMap.keySet());
-        Collections.sort(projectNames);
-        return projectNames;
+        return this.projectNames;
+    }
+
+    public GeneralConfig getGeneralConfig() {
+        return this.generalConfig;
     }
 
     public RepoConfig getProjectConfig(String projectName) {
-        if (!this.projectConfigMap.containsKey(projectName))
+        if (!this.repoConfigMap.containsKey(projectName))
             throw new IllegalArgumentException("Project not found: [" + projectName + "]");
-        return this.projectConfigMap.get(projectName);
-    }
-
-    private ConfigurationFactory bindConfigurationFile(Path projectMetaDir) throws ConfigurationException {
-        ConfigurationFactory configurationFactory = new ConfigurationFactory();
-        Path metaConfigFile = getMetaConfigFile(projectMetaDir);
-        try {
-            configurationFactory.addConfigurationFileFromFilesystem(metaConfigFile.toFile());
-        } catch (ConfigurationFileNotFoundException | IOException e) {
-            throw new ConfigurationException("meta file not found: [" + metaConfigFile.toAbsolutePath() + "].", e);
-        }
-        return configurationFactory;
-    }
-
-    private GeneralConfig obtainGeneralConfig(Path projectMetaDir, ConfigurationFactory configurationFactory) throws ConfigurationException {
-        Path metaConfigFile = getMetaConfigFile(projectMetaDir);
-        if (!configurationFactory.hasSection(SECTION_GENERAL))
-            throw new ConfigurationException("Section [general] not found in meta config file [" + metaConfigFile + "]");
-        Configuration generalSection = configurationFactory.getConfiguration(SECTION_GENERAL);
-        return new GeneralConfig(generalSection, projectMetaDir);
-    }
-
-    private Map<String, RepoConfig> obtainProjectConfigs(ConfigurationFactory configurationFactory, GeneralConfig generalConfig) throws ConfigurationException {
-        Set<String> sectionNames = configurationFactory.getSectionNames();
-        sectionNames.remove(SECTION_GENERAL);
-        Map<String, RepoConfig> projectConfigMap = new HashMap<>();
-        for (String sectionName : sectionNames) {
-            Configuration configuration = configurationFactory.getConfiguration(sectionName);
-            RepoConfig repoConfig = RepoConfigFactory.create(configuration, generalConfig.getReferencePath());
-            projectConfigMap.put(sectionName, repoConfig);
-        }
-        return projectConfigMap;
-    }
-
-    private Path getMetaConfigFile(Path projectMetaDir) {
-        return projectMetaDir.resolve(META_CONF_NAME);
+        return this.repoConfigMap.get(projectName);
     }
 
 }
