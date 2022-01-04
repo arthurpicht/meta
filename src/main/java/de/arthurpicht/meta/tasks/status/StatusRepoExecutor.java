@@ -3,6 +3,7 @@ package de.arthurpicht.meta.tasks.status;
 import de.arthurpicht.meta.cli.output.Output;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.RepoConfig;
+import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.git.GitException;
 import de.arthurpicht.meta.tasks.RepoExecutor;
 import de.arthurpicht.meta.tasks.TaskSummary;
@@ -18,6 +19,8 @@ public class StatusRepoExecutor extends RepoExecutor {
         try {
             BranchStatus branchStatus = BranchStatusResolver.resolve(repoPath, repoName);
             BranchOutput.output(branchStatus);
+        } catch (MetaRuntimeException e) {
+            Output.error(repoName, e.getMessage());
         } catch (GitException | RuntimeException e) {
             Output.error(repoName, "Error: " + e.getMessage());
         }

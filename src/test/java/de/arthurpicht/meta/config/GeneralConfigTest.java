@@ -56,6 +56,9 @@ class GeneralConfigTest {
         Configuration generalConfiguration = getSectionGeneral(metaDir);
 
         GeneralConfig generalConfig = new GeneralConfig(generalConfiguration, metaDir);
+
+        assertEquals(generalConfig.getReferencePath(), metaDir.getParent().toAbsolutePath());
+
         Targets targets = generalConfig.getTargets();
 
         System.out.println(Strings.listing(targets.getAllTargetNames(), ", "));
@@ -65,6 +68,20 @@ class GeneralConfigTest {
         assertTrue(targets.hasTarget("prod-b"));
 
         assertEquals(3, targets.getAllTargetNames().size());
+    }
+
+    @Test
+    void defaultGeneralSection() throws ConfigurationException {
+        Path metaDir = Paths.get("src/test/resources/noGeneral");
+        GeneralConfig generalConfig = new GeneralConfig(metaDir);
+
+        assertEquals(generalConfig.getReferencePath(), metaDir.getParent().toAbsolutePath());
+
+        Targets targets = generalConfig.getTargets();
+
+        assertTrue(targets.hasTarget(Target.DEV));
+        assertTrue(targets.hasTarget(Target.PROD));
+        assertEquals(2, targets.getAllTargetNames().size());
     }
 
 }

@@ -1,13 +1,17 @@
 package de.arthurpicht.meta.config;
 
+import de.arthurpicht.meta.cli.target.Target;
+import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import de.arthurpicht.utils.core.collection.Lists;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MetaConfigTest {
 
@@ -28,6 +32,21 @@ public class MetaConfigTest {
     public void getProjectConfig() {
         RepoConfig repoConfig = metaConfig3.getProjectConfig("simple");
         assertEquals("simple", repoConfig.getRepoId());
+    }
+
+    @Test
+    public void defaultGeneralSection() throws ConfigurationException {
+        Path metaDir = Paths.get("src/test/resources/noGeneral");
+        MetaConfig metaConfig = MetaConfigFactory.create(metaDir);
+        GeneralConfig generalConfig = metaConfig.getGeneralConfig();
+
+        assertEquals(generalConfig.getReferencePath(), metaDir.getParent().toAbsolutePath());
+
+        Targets targets = generalConfig.getTargets();
+
+        assertTrue(targets.hasTarget(Target.DEV));
+        assertTrue(targets.hasTarget(Target.PROD));
+        assertEquals(2, targets.getAllTargetNames().size());
     }
 
 }

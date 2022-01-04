@@ -3,6 +3,9 @@ package de.arthurpicht.meta.config;
 import de.arthurpicht.configuration.Configuration;
 import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.meta.config.exceptions.ConfigurationException;
+import de.arthurpicht.meta.helper.FilesHelper;
+import de.arthurpicht.utils.core.collection.Lists;
+import de.arthurpicht.utils.core.collection.Sets;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +17,7 @@ import java.util.Set;
 public class GeneralConfig {
 
     public static final String SECTION_GENERAL = "general";
+    public static final Set<String> TARGETS_DEFAULT = Sets.newHashSet("dev", "prod");
 
     private static final String KEY_REFERENCE_DIR = "referenceDir";
     private static final String KEY_TARGETS = "targets";
@@ -21,9 +25,12 @@ public class GeneralConfig {
     private final Path referencePath;
     private final Targets targets;
 
-    public GeneralConfig(Configuration configuration, Path metaPath) throws ConfigurationException {
-        ConfigHelper.assertKey(configuration, KEY_REFERENCE_DIR);
+    public GeneralConfig(Path metaPath) throws ConfigurationException {
+        referencePath = getDefaultReferencePath(metaPath);
+        targets = getDefaultTargets();
+    }
 
+    public GeneralConfig(Configuration configuration, Path metaPath) throws ConfigurationException {
         referencePath = obtainReferencePath(configuration, metaPath);
         targets = obtainTargets(configuration);
     }
@@ -36,8 +43,13 @@ public class GeneralConfig {
         return this.targets;
     }
 
-    private Path obtainReferencePath(Configuration configuration, Path metaPath) {
-        Path referenceValue = Paths.get(configuration.getString(KEY_REFERENCE_DIR));
+    private Path obtainReferencePath(Configuration configuration, Path metaPath) throws ConfigurationException {
+        if (!configuration.containsKey(KEY_REFERENCE_DIR))
+            return getDefaultReferencePath(metaPath);
+
+        String referenceDirValue = configuration.getString(KEY_REFERENCE_DIR);
+        Path referenceValue = Paths.get(referenceDirValue);
+
         if (referenceValue.isAbsolute()) {
             return referenceValue.toAbsolutePath().normalize();
         } else {
@@ -45,8 +57,17 @@ public class GeneralConfig {
         }
     }
 
+    private Path getDefaultReferencePath(Path metaPath) throws ConfigurationException {
+        if (FilesHelper.isRootDirectory(metaPath))
+            throw new ConfigurationException("Meta path [" + metaPath.toAbsolutePath() + "] is root directory.");
+        return metaPath.resolve("..").toAbsolutePath().normalize();
+    }
+
     private Targets obtainTargets(Configuration configuration) throws ConfigurationException {
-        List<String> targetNames = configuration.getStringList(KEY_TARGETS, "dev", "prod");
+        if (!configuration.containsKey(KEY_TARGETS))
+            return getDefaultTargets();
+
+        List<String> targetNames = configuration.getStringList(KEY_TARGETS);
         Set<String> targetNameSet = new HashSet<>();
         for (String targetName : targetNames) {
             String targetNameNormalized = targetName.toLowerCase(Locale.ROOT);
@@ -55,6 +76,10 @@ public class GeneralConfig {
                     "parameter [" + KEY_TARGETS + "]: [" + targetName + "].");
         }
         return new Targets(targetNameSet);
+    }
+
+    private Targets getDefaultTargets() {
+        return new Targets(TARGETS_DEFAULT);
     }
 
 }

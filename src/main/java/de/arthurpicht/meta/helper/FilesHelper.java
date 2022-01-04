@@ -22,4 +22,10 @@ public class FilesHelper {
         return Files.isDirectory(dir);
     }
 
+    public static boolean isRootDirectory(Path path) {
+        if (!Files.isDirectory(path)) throw new IllegalArgumentException("Specified path [" + path + "] is not a directory.");
+        Path canonicalPath = path.normalize().toAbsolutePath();
+        return (canonicalPath.getParent() == null);
+    }
+
 }

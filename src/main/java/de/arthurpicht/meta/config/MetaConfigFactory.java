@@ -42,9 +42,8 @@ public class MetaConfigFactory {
     }
 
     private GeneralConfig obtainGeneralConfig(Path metaDir, ConfigurationFactory configurationFactory) throws ConfigurationException {
-        Path metaFile = getMetaFile(metaDir);
         if (!configurationFactory.hasSection(SECTION_GENERAL))
-            throw new ConfigurationException("Section [general] not found in meta file [" + metaFile + "]");
+            return new GeneralConfig(metaDir);
         Configuration generalSection = configurationFactory.getConfiguration(SECTION_GENERAL);
         return new GeneralConfig(generalSection, metaDir);
     }
