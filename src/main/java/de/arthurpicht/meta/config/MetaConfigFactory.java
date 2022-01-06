@@ -3,6 +3,7 @@ package de.arthurpicht.meta.config;
 import de.arthurpicht.configuration.Configuration;
 import de.arthurpicht.configuration.ConfigurationFactory;
 import de.arthurpicht.configuration.ConfigurationFileNotFoundException;
+import de.arthurpicht.meta.Const;
 import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 
 import java.io.IOException;
@@ -13,7 +14,6 @@ import java.util.Set;
 
 public class MetaConfigFactory {
 
-    public static final String META_FILE_NAME = "meta.conf";
     private static final String SECTION_GENERAL = "general";
 
     private final GeneralConfig generalConfig;
@@ -36,7 +36,7 @@ public class MetaConfigFactory {
         try {
             configurationFactory.addConfigurationFileFromFilesystem(metaFile.toFile());
         } catch (ConfigurationFileNotFoundException | IOException e) {
-            throw new ConfigurationException(META_FILE_NAME + " not found: [" + metaFile.toAbsolutePath() + "].", e);
+            throw new ConfigurationException(Const.META_CONF__FILE_NAME + " not found: [" + metaFile.toAbsolutePath() + "].", e);
         }
         return configurationFactory;
     }
@@ -62,7 +62,7 @@ public class MetaConfigFactory {
     }
 
     private Path getMetaFile(Path metaDir) {
-        return metaDir.resolve(META_FILE_NAME);
+        return metaDir.resolve(Const.META_CONF__FILE_NAME);
     }
 
 }

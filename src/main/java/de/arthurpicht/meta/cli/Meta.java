@@ -7,6 +7,7 @@ import de.arthurpicht.cli.command.Commands;
 import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
 import de.arthurpicht.cli.option.*;
+import de.arthurpicht.meta.Const;
 import de.arthurpicht.meta.cli.executor.CloneExecutor;
 import de.arthurpicht.meta.cli.executor.FetchExecutor;
 import de.arthurpicht.meta.cli.executor.PullExecutor;
@@ -70,7 +71,7 @@ public class Meta {
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("meta\nhttps://github.com/arthurpicht/meta")
-                .withVersionByTag("0.1-SNAPSHOT", "2022-01-03")
+                .withVersionByTag(Const.VERSION_TAG, Const.VERSION_DATE)
                 .build("meta");
 
         return new CliBuilder()

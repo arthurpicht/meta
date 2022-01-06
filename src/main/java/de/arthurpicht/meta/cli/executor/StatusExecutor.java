@@ -27,7 +27,7 @@ public class StatusExecutor implements CommandExecutor {
 
     private MetaConfig initMetaConfig() throws CommandExecutorException {
         try {
-            return MetaConfigFactory.create(ExecutionContext.getMetaDir());
+            return MetaConfigFactory.create(ExecutionContext.getMetaDirAsPath());
         } catch (ConfigurationException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }

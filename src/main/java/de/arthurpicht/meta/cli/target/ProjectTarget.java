@@ -11,7 +11,7 @@ public class ProjectTarget {
 
     public static Target obtain(CliCall cliCall, Targets configuredTargets) {
 
-        TargetFile targetFile = new TargetFile(ExecutionContext.getMetaDir());
+        TargetFile targetFile = new TargetFile(ExecutionContext.getMetaDirAsPath());
         TargetOption targetOption = new TargetOption(cliCall);
 
         if (targetFile.exists() && targetOption.isSpecified())
@@ -25,7 +25,7 @@ public class ProjectTarget {
     }
 
     public static Target obtainInitializedTarget(Targets configuredTargets) {
-        TargetFile targetFile = new TargetFile(ExecutionContext.getMetaDir());
+        TargetFile targetFile = new TargetFile(ExecutionContext.getMetaDirAsPath());
         if (!targetFile.exists())
             throw new MetaRuntimeException("Target configuration not found. Are repos initially cloned yet?");
         return readFromTargetFile(targetFile, configuredTargets);
