@@ -30,8 +30,7 @@ Add the `bin` directory of the local arthurpicht/meta repository to your PATH va
 Check the installation by calling:
 
     meta --version
- that are unpushed
-
+ 
 ## Definitions
 
 Just to make some words clear...
@@ -72,7 +71,7 @@ binding meta.conf:
 
 If no other configuration is applied, meta will look for a meta.conf in the current working directory.
 
-If the environment variable `META_DIR` is found, meta will look for a meta.conf file in the directory, which is
+If the environment variable `META_DIR` is set, meta will look for a meta.conf file in the directory, which is
 denoted by `META_DIR`. This overrides the default behaviour, meaning that it will always bind META_DIR/meta.conf, even
 if a meta.conf file is existing in current working directory.
 
