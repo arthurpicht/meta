@@ -6,7 +6,7 @@ executing *status*.
 
 The configuration of meta is done by a configuration file with name `meta.conf`. The idea is to store `meta.conf` in a git
 repository on its own. When starting developing or deploying on a new location, only that single meta
-repository needs to be cloned. All other repositories needed to be cloned will be handled by meta subsequently.
+repository needs to be cloned. All subsequent clones and further git operations will then be handled by meta.
 
 Meta is intentionally restricted to "reading" operations.
 
