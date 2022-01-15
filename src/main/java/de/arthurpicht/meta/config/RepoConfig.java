@@ -1,5 +1,6 @@
 package de.arthurpicht.meta.config;
 
+import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.utils.core.strings.Strings;
 
@@ -71,6 +72,10 @@ public class RepoConfig {
 
     public boolean hasTarget(String targetName) {
         return this.targets.hasTarget(targetName);
+    }
+
+    public boolean hasTarget(Target target) {
+        return this.targets.hasTarget(target);
     }
 
 }

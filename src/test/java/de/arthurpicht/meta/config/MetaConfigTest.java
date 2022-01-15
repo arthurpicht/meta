@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,15 +26,29 @@ public class MetaConfigTest {
     }
 
     @Test
-    public void projectNamesMeta1() {
-        assertEquals(8, metaConfig3.getProjectNames().size());
-        assertEquals(Lists.newArrayList("simple", "testRepo1", "testRepo2", "testRepo3", "testRepo4", "testRepo5", "testRepo6", "testRepo7"), metaConfig3.getProjectNames());
+    public void getRepoNamesMeta1() {
+        assertEquals(8, metaConfig3.getRepoNames().size());
+        assertEquals(
+                Lists.newArrayList("simple", "testRepo1", "testRepo2", "testRepo3", "testRepo4", "testRepo5", "testRepo6", "testRepo7"),
+                metaConfig3.getRepoNames()
+        );
     }
 
     @Test
-    public void getProjectConfig() {
-        RepoConfig repoConfig = metaConfig3.getProjectConfig("simple");
+    public void getRepoConfig() {
+        RepoConfig repoConfig = metaConfig3.getRepoConfig("simple");
         assertEquals("simple", repoConfig.getRepoId());
+    }
+
+    @Test
+    public void getRepoConfigsForTarget() {
+        Target devTarget = new Target("dev");
+        List<RepoConfig> repoConfigList = metaConfig3.getRepoConfigsForTarget(devTarget);
+
+        List<String> actualRepoIdList = repoConfigList.stream().map(RepoConfig::getRepoId).collect(Collectors.toUnmodifiableList());
+        List<String> expectedRepoIdList = Lists.newArrayList("simple", "testRepo1", "testRepo2", "testRepo3", "testRepo4", "testRepo5", "testRepo6");
+
+        assertEquals(expectedRepoIdList, actualRepoIdList);
     }
 
     @Test
