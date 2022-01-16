@@ -1,5 +1,6 @@
-package de.arthurpicht.meta.cli.target;
+package de.arthurpicht.meta.cli.persistence.project;
 
+import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.utils.io.file.SingleValueFile;
 
 import java.io.IOException;
@@ -8,10 +9,11 @@ import java.nio.file.Path;
 
 public class TargetFile {
 
+    private static final String targetFileName = "target";
     private final SingleValueFile targetFile;
 
     public TargetFile(Path metaDir) {
-        Path targetFile = metaDir.resolve(".meta/local/target");
+        Path targetFile = metaDir.resolve(PersistenceProjectLocalDir.PERSISTENCE_LOCAL_DIR).resolve(targetFileName);
         this.targetFile = new SingleValueFile(targetFile);
     }
 
@@ -29,7 +31,7 @@ public class TargetFile {
     }
 
     public void write(Target target) throws IOException {
-        Path parentDir = targetFile.getPath().getParent();
+        Path parentDir = this.targetFile.getPath().getParent();
         if (!Files.exists(parentDir)) Files.createDirectories(parentDir);
         this.targetFile.write(target.getName());
     }

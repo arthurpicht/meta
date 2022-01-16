@@ -21,7 +21,7 @@ public class MetaConfigFactory {
 
     public static MetaConfig create(Path metaDir) throws ConfigurationException {
         MetaConfigFactory metaConfigFactory = new MetaConfigFactory(metaDir);
-        return new MetaConfig(metaConfigFactory.generalConfig, metaConfigFactory.repoConfigMap);
+        return new MetaConfig(metaDir, metaConfigFactory.generalConfig, metaConfigFactory.repoConfigMap);
     }
 
     private MetaConfigFactory(Path metaDir) throws ConfigurationException {

@@ -4,7 +4,6 @@ import de.arthurpicht.configuration.Configuration;
 import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import de.arthurpicht.meta.helper.FilesHelper;
-import de.arthurpicht.utils.core.collection.Lists;
 import de.arthurpicht.utils.core.collection.Sets;
 
 import java.nio.file.Path;

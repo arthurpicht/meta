@@ -2,6 +2,7 @@ package de.arthurpicht.meta.cli.target;
 
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.meta.cli.ExecutionContext;
+import de.arthurpicht.meta.cli.persistence.project.TargetFile;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.utils.core.strings.Strings;
 
