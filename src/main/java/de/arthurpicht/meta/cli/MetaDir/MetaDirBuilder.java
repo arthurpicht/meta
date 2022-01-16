@@ -3,10 +3,11 @@ package de.arthurpicht.meta.cli.MetaDir;
 import de.arthurpicht.cli.option.OptionParserResult;
 import de.arthurpicht.meta.Const;
 import de.arthurpicht.meta.cli.Meta;
+import de.arthurpicht.meta.cli.persistence.user.MetaDirFile;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.helper.FilesHelper;
-import de.arthurpicht.utils.core.strings.Strings;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,12 +25,13 @@ public class MetaDirBuilder {
     private static MetaDir obtainMetaDir(OptionParserResult optionParserResultGlobal) {
         String metaDirString;
         MetaDirSpecifier metaDirSpecifier;
+        MetaDirFile metaDirFile = new MetaDirFile();
         if (optionParserResultGlobal.hasOption(Meta.OPTION_META_DIR)) {
             metaDirString = optionParserResultGlobal.getValue(Meta.OPTION_META_DIR);
             metaDirSpecifier = MetaDirSpecifier.CLI;
-        } else if (Strings.isSpecified(System.getenv(Const.META_DIR__ENV_VAR))) {
-            metaDirString = System.getenv(Const.META_DIR__ENV_VAR);
-            metaDirSpecifier = MetaDirSpecifier.ENV_VAR;
+        } else if (metaDirFile.exists()) {
+            metaDirString = readMetaDirFromFile();
+            metaDirSpecifier = MetaDirSpecifier.META_DIR_FILE;
         } else {
             metaDirString = FilesHelper.getWorkingDir().toString();
             metaDirSpecifier = MetaDirSpecifier.WORKING_DIR;
@@ -41,13 +43,23 @@ public class MetaDirBuilder {
 
     private static void assertExistenceOfMetaDir(MetaDir metaDir) {
         if (!Files.exists(metaDir.asPath()) || !Files.isDirectory(metaDir.asPath()))
-            throw new MetaRuntimeException("Meta directory as specified by " + metaDir.getSpecifier().getText() + " not found: [" + metaDir.asPath() + "].");
+            throw new MetaRuntimeException("Meta directory as specified by " + metaDir.getSpecifier().getText()
+                    + " not found: [" + metaDir.asPath() + "].");
     }
 
     private static void assertContainsMetaConf(MetaDir metaDir) {
         Path metaConf = metaDir.asPath().resolve(Const.META_CONF__FILE_NAME);
         if (!Files.exists(metaConf) || !Files.isRegularFile(metaConf))
             throw new MetaRuntimeException("No " + Const.META_CONF__FILE_NAME + " [" + metaConf.toAbsolutePath() + "] found.");
+    }
+
+    private static String readMetaDirFromFile() {
+        MetaDirFile metaDirFile = new MetaDirFile();
+        try {
+            return metaDirFile.read();
+        } catch (IOException e) {
+            throw new MetaRuntimeException("File [" + metaDirFile.asPath() + "] not found. Cause: " + e.getMessage());
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-package de.arthurpicht.meta.tasks.clone;
+package de.arthurpicht.meta.cli.persistence.project;
 
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.MetaConfig;
@@ -9,11 +9,11 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MetaPathFileInitializer {
+public class MetaPathsFileInitializer {
 
     private final List<String> pathStringList;
 
-    public MetaPathFileInitializer(MetaConfig metaConfig, Target target) {
+    public MetaPathsFileInitializer(MetaConfig metaConfig, Target target) {
         List<RepoConfig> repoConfigList = metaConfig.getRepoConfigsForTarget(target);
 
         this.pathStringList = obtainRepoDirs(repoConfigList);
