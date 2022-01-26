@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.arthurpicht:utils-core:1.4.0'
-    implementation 'com.github.arthurpicht:utils-io:0.0.6'
+    implementation 'com.github.arthurpicht:utils-core:1.6.0'
+    implementation 'com.github.arthurpicht:utils-io:0.0.8'
     implementation 'com.github.arthurpicht:cli:0.1-beta1'
     implementation 'com.github.arthurpicht:AP-Configuration:0.1.6'
 
