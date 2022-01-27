@@ -4,13 +4,13 @@ meta is a linux tool for managing multi git projects. It allows for performing g
 *fetch* and *pull* as bulk operations on all configured repositories. It produces concise output, in particular when
 executing *status*.
 
-The configuration of meta is done by a configuration file with name `meta.conf`. The idea is to store `meta.conf` in a git
+The configuration of meta is done by a configuration file named `meta.conf`. The idea is to store `meta.conf` in a git
 repository on its own. When starting developing or deploying on a new location, only that single meta
 repository needs to be cloned. All subsequent clones and further git operations will then be handled by meta.
 
-Meta is intentionally restricted to "reading" operations.
+Meta is restricted to "reading" operations intentionally.
 
-Meta is intentionally restricted to git repos that are either accessible via ssh by keys or via https anonymously.
+Meta is restricted to git repos intentionally that are either accessible via ssh by keys or via https anonymously.
 Thus, authentication by username/password is not supported.
 
 ## Build
@@ -61,6 +61,41 @@ Default: `dev`, `prod`
 
 Each contained repository is configured by a section on its own. The name of the section can be chosen freely and must
 be unique within the configuration file.
+
+#### url
+
+URL of git repository.
+
+#### urlReadonly
+
+Optional. URL of git repository for anonymous read access, like public open source repositories.
+If target is of type `prod` and parameter `urlReadonly`is specified, given URL is bound for git operations.
+
+Specifying this parameter allows CI/CD pipelines on production machines for accessing public git repositories
+without granting access by ssh keys.
+
+#### destinationDir
+
+Optional. Default is [referenceDir](#referencedir). Local destination directory for git repository.
+Specified as relative or absolute path. If specified as relative path, it will be evaluated relative to 
+[referenceDir](#referencedir).
+
+#### repoName
+
+Optional. Default is the name of the repository as specified on remote.
+If specified, target directory of git repository will be named accordingly.
+
+#### branch
+
+Optional. Default is default git branch.
+If specified, repository will be checked out autmatically for given branch after
+performing `clone`.
+
+#### target
+
+Optional. Default are all targets specified by [parameter targets in general section](#targets).
+List of targets. Subset of targets specified by [parameter targets in general section](#targets).
+Meta will only include repository in execution if current target is included in list.
 
 ## Execution
 
@@ -134,3 +169,7 @@ The following directories are displayed for selection:
 * all repository directories belonging to initialized target
 * all parent directories of repository directories
 * meta directory
+
+## license
+
+Apache-2.0 License
