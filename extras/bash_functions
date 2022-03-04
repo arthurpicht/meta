@@ -1,0 +1,21 @@
+#!/bin/bash
+
+function m() {
+    meta_dir_file=~/.meta/meta_dir
+    if [ ! -f "${meta_dir_file}" ]; then
+        echo "File ${meta_dir_file} not found."
+        return 1
+    fi
+  meta_paths="$(head -n 1 ~/.meta/meta_dir)/.meta-local/paths"
+  if [ ! -f "$meta_paths" ]; then
+      echo "File ${meta_path} not found."
+      return 1
+  fi
+  dir=$(cat "${meta_paths}" | fzf --height 40% --layout=reverse)
+  if [ ! -z "$dir" ]; then
+      cd $dir
+  else
+      echo $? > /dev/null
+  fi
+}
+
