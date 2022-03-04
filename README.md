@@ -35,7 +35,7 @@ Check the installation by calling:
 
 Just to make some words clear...
 
-`meta.conf`: name of the configuration file to be created by the user
+`meta.conf`: name of the configuration file to be created by the user    
 `meta directory` or `META_DIR`: the directory containing `meta.conf`
 
 ## Configuration
@@ -142,8 +142,9 @@ changes.
 Prerequisite: 
 
 * [fzf](https://github.com/junegunn/fzf) is installed.
-* `meta clone` is called at least one time, and hence file `META_DIR/.meta-local/paths` exists.
-* Add the following snippet to users `.bashrc` file:
+* `~/.meta/meta_dir` is configured [as described](#meta.conf-binding-strategy).
+* `meta clone` is called at least one time before, and hence file `META_DIR/.meta-local/paths` exists.
+* Source file `extras/bash_functions` from the cloned arthurpicht/meta repository within your `.bashrc` file. OR: Add the following snippet to users `.bashrc` file:
     ```bash
     function m() {
         meta_dir_file=~/.meta/meta_dir
@@ -175,8 +176,8 @@ The following directories are displayed for selection:
 
 ## meta repo
 
-As mentioned before, putting `meta.conf` into a repository on its own (the
-meta repo) is considered a good idea. When doing so, include subdirectory
+As mentioned before, putting `meta.conf` into a repository on its own *("the
+meta repo")* is considered a good idea. When doing so, include subdirectory
 `.meta-local` into `.gitignore` as it is created by meta and
 contains information about specific local circumstances.
 ## license
