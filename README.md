@@ -35,14 +35,16 @@ Check the installation by calling:
 
 Just to make some words clear...
 
-`meta.conf`: name of the configuration file    
-`meta directory`: the directory containing `meta.conf`
+`meta.conf`: name of the configuration file to be created by the user
+`meta directory` or `META_DIR`: the directory containing `meta.conf`
 
 ## Configuration
 
 ### Section [general]
 
 Section [general] is optional. If not specified, all default values for respective configuration parameters are applied.
+
+It can contain the following configuration parameters.
 
 #### referenceDir
 
@@ -139,7 +141,8 @@ changes.
 
 Prerequisite: 
 
-* [fzf]() is installed.
+* [fzf](https://github.com/junegunn/fzf) is installed.
+* `meta clone` is called at least one time, and hence file `META_DIR/.meta-local/paths` exists.
 * Add the following snippet to users `.bashrc` file:
     ```bash
     function m() {
@@ -170,6 +173,12 @@ The following directories are displayed for selection:
 * all parent directories of repository directories
 * meta directory
 
+## meta repo
+
+As mentioned before, putting `meta.conf` into a repository on its own (the
+meta repo) is considered a good idea. When doing so, include subdirectory
+`.meta-local` into `.gitignore` as it is created by meta and
+contains information about specific local circumstances.
 ## license
 
 Apache-2.0 License
