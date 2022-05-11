@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.github.arthurpicht'
-version '0.1-SNAPSHOT'
+version '0.1'
 
 java {
     toolchain {
@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.arthurpicht:utils-core:1.6.0'
-    implementation 'com.github.arthurpicht:utils-io:0.0.8'
+    implementation 'com.github.arthurpicht:utils-core:1.9.0'
+    implementation 'com.github.arthurpicht:utils-io:0.0.14'
     implementation 'com.github.arthurpicht:cli:0.1-beta1'
     implementation 'com.github.arthurpicht:AP-Configuration:0.1.6'
 
