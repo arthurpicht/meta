@@ -1,4 +1,4 @@
-package de.arthurpicht.meta.cli.MetaDir;
+package de.arthurpicht.meta.cli.metaDir;
 
 import de.arthurpicht.cli.option.OptionParserResult;
 import de.arthurpicht.meta.Const;

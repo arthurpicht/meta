@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
+@Deprecated
 public class FilesHelper {
 
     public static Path getWorkingDir() {
@@ -17,9 +19,12 @@ public class FilesHelper {
         return Files.list(dir).findAny().isPresent();
     }
 
-    public static boolean isExistingDirectory(Path dir) {
+    public static boolean isDirectoryNonEmptyAlternate(Path dir) throws IOException {
         if (!Files.exists(dir)) return false;
-        return Files.isDirectory(dir);
+        if (!Files.isDirectory(dir)) return false;
+        try (Stream<Path> files = Files.list(dir)) {
+            return files.findAny().isPresent();
+        }
     }
 
     public static boolean isRootDirectory(Path path) {

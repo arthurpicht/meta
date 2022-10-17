@@ -8,9 +8,9 @@ import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
-import de.arthurpicht.meta.helper.FilesHelper;
 import de.arthurpicht.meta.tasks.RepoExecutor;
 import de.arthurpicht.meta.tasks.TaskSummary;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.nio.file.Path;
 
@@ -27,7 +27,7 @@ public class FetchRepoExecutor extends RepoExecutor {
         message(repoName, "Operation pending ...");
 
         try {
-            if (!FilesHelper.isExistingDirectory(repoPath))
+            if (!FileUtils.isExistingDirectory(repoPath))
                 throw new MetaRuntimeException("Repo [" + repoPath.toAbsolutePath() + "] not found. Consider calling clone.");
 
             Git.fetch(repoPath);

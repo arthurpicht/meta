@@ -2,8 +2,8 @@ package de.arthurpicht.meta.cli;
 
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.option.OptionParserResult;
-import de.arthurpicht.meta.cli.MetaDir.MetaDir;
-import de.arthurpicht.meta.cli.MetaDir.MetaDirBuilder;
+import de.arthurpicht.meta.cli.metaDir.MetaDir;
+import de.arthurpicht.meta.cli.metaDir.MetaDirBuilder;
 
 import java.nio.file.Path;
 

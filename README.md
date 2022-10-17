@@ -90,7 +90,7 @@ If specified, target directory of git repository will be named accordingly.
 #### branch
 
 Optional. Default is default git branch.
-If specified, repository will be checked out autmatically for given branch after
+If specified, repository will be checked out automatically for given branch after
 performing `clone`.
 
 #### target

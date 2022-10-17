@@ -1,4 +1,4 @@
-package de.arthurpicht.meta.cli.MetaDir;
+package de.arthurpicht.meta.cli.metaDir;
 
 import de.arthurpicht.meta.cli.Meta;
 

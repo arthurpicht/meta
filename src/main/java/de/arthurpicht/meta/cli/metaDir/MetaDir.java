@@ -1,4 +1,4 @@
-package de.arthurpicht.meta.cli.MetaDir;
+package de.arthurpicht.meta.cli.metaDir;
 
 import java.nio.file.Path;
 

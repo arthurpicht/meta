@@ -1,10 +1,10 @@
 package de.arthurpicht.meta.git;
 
-import de.arthurpicht.meta.helper.FilesHelper;
 import de.arthurpicht.meta.helper.InputStreamHelper;
 import de.arthurpicht.meta.helper.StringHelper;
 import de.arthurpicht.utils.core.collection.Lists;
 import de.arthurpicht.utils.core.strings.Strings;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -80,11 +80,11 @@ public class Git {
 
     public static boolean isGitRepo(Path repoPath) {
         // TODO: replace with "git rev-parse --show-toplevel" ...
-        if (!FilesHelper.isExistingDirectory(repoPath))
+        if (!FileUtils.isExistingDirectory(repoPath))
             throw new IllegalArgumentException("Assertion failed. No existing directory: [" + repoPath + "].");
 
         Path gitRepoDir = repoPath.resolve(".git");
-        return FilesHelper.isExistingDirectory(gitRepoDir);
+        return FileUtils.isExistingDirectory(gitRepoDir);
     }
 
     public static boolean isUnderGitControl(Path repoPath) throws GitException {
@@ -204,7 +204,7 @@ public class Git {
         }
     }
 
-    public static boolean hasUncommitedChanges(Path repoPath) throws GitException {
+    public static boolean hasUncommittedChanges(Path repoPath) throws GitException {
         List<String> commands = List.of("git", "status", "--porcelain");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
@@ -236,7 +236,7 @@ public class Git {
     }
 
     public static boolean hasLocalChanges(Path repoPath) throws GitException {
-        return hasUncommitedChanges(repoPath) || hasUncommitedChanges(repoPath);
+        return hasUncommittedChanges(repoPath) || hasUncommittedChanges(repoPath);
     }
 
     public static boolean hasStash(Path repoPath) throws GitException {

@@ -1,6 +1,6 @@
 package de.arthurpicht.meta.cli.persistence.project;
 
-import de.arthurpicht.meta.helper.FilesHelper;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.nio.file.Path;
 
@@ -14,7 +14,7 @@ public class PersistenceProjectLocalDir {
 
     public static boolean exists(Path metaDir) {
         Path localPersistenceDir = asPath(metaDir);
-        return FilesHelper.isExistingDirectory(localPersistenceDir);
+        return FileUtils.isExistingDirectory(localPersistenceDir);
     }
 
 }

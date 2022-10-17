@@ -23,8 +23,8 @@ public class BranchOutput {
             output += Output.redBrace(branchStatus.getCurrentBranchName());
         }
 
-        if (branchStatus.hasUncommitedChanges()) {
-            output += Ansi.colorize("Uncommited changes. ", Colors.redText);
+        if (branchStatus.hasUncommittedChanges()) {
+            output += Ansi.colorize("Uncommitted changes. ", Colors.redText);
         }
 
         if (branchStatus.hasUnpushedCommits()) {

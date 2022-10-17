@@ -1,9 +1,9 @@
 package de.arthurpicht.meta.cli.target;
 
-import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
-
 import java.util.Locale;
 import java.util.Objects;
+
+import static de.arthurpicht.utils.core.assertion.MethodPreconditions.assertArgumentNotNull;
 
 public final class Target {
 
@@ -13,7 +13,7 @@ public final class Target {
     private final String name;
 
     public Target(String name) {
-        AssertMethodPrecondition.parameterNotNull("name", name);
+        assertArgumentNotNull("name", name);
         this.name = name.toLowerCase(Locale.ROOT);
         if (!isDev() && !isProd()) throw new IllegalArgumentException("Illegal task name: [" + name + "].");
     }

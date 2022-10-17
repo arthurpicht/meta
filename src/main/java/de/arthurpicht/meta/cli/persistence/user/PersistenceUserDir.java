@@ -1,6 +1,6 @@
 package de.arthurpicht.meta.cli.persistence.user;
 
-import de.arthurpicht.meta.helper.FilesHelper;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +16,7 @@ public class PersistenceUserDir {
 
     public static boolean exists() {
         Path path = asPath();
-        return FilesHelper.isExistingDirectory(path);
+        return FileUtils.isExistingDirectory(path);
     }
 
 }
