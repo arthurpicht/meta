@@ -6,9 +6,9 @@ import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
-import de.arthurpicht.meta.helper.FilesHelper;
 import de.arthurpicht.meta.tasks.RepoExecutor;
 import de.arthurpicht.meta.tasks.TaskSummary;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -109,7 +109,7 @@ public class CloneRepoExecutor extends RepoExecutor {
     private static boolean isRepoDirPreexisting(RepoConfig repoConfig) {
         Path repoDir = repoConfig.getDestinationPath().resolve(repoConfig.getRepoName());
         try {
-            return FilesHelper.isDirectoryNonEmpty(repoDir);
+            return FileUtils.isNonEmptyDirectory(repoDir);
         } catch (IOException e) {
             throw new RuntimeException("Unexpected IO-Exception: " + e.getMessage(), e);
         }

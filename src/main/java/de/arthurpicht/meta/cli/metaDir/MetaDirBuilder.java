@@ -5,7 +5,7 @@ import de.arthurpicht.meta.Const;
 import de.arthurpicht.meta.cli.Meta;
 import de.arthurpicht.meta.cli.persistence.user.MetaDirFile;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
-import de.arthurpicht.meta.helper.FilesHelper;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,7 +33,7 @@ public class MetaDirBuilder {
             metaDirString = readMetaDirFromFile();
             metaDirSpecifier = MetaDirSpecifier.META_DIR_FILE;
         } else {
-            metaDirString = FilesHelper.getWorkingDir().toString();
+            metaDirString = FileUtils.getWorkingDir().toString();
             metaDirSpecifier = MetaDirSpecifier.WORKING_DIR;
         }
 

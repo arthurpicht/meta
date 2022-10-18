@@ -3,8 +3,8 @@ package de.arthurpicht.meta.config;
 import de.arthurpicht.configuration.Configuration;
 import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.meta.config.exceptions.ConfigurationException;
-import de.arthurpicht.meta.helper.FilesHelper;
 import de.arthurpicht.utils.core.collection.Sets;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,7 +57,7 @@ public class GeneralConfig {
     }
 
     private Path getDefaultReferencePath(Path metaPath) throws ConfigurationException {
-        if (FilesHelper.isRootDirectory(metaPath))
+        if (FileUtils.isRootDirectory(metaPath))
             throw new ConfigurationException("Meta path [" + metaPath.toAbsolutePath() + "] is root directory.");
         return metaPath.resolve("..").toAbsolutePath().normalize();
     }

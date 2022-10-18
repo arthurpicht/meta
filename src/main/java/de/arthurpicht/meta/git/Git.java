@@ -1,9 +1,9 @@
 package de.arthurpicht.meta.git;
 
-import de.arthurpicht.meta.helper.InputStreamHelper;
 import de.arthurpicht.meta.helper.StringHelper;
 import de.arthurpicht.utils.core.collection.Lists;
 import de.arthurpicht.utils.core.strings.Strings;
+import de.arthurpicht.utils.io.InputStreams;
 import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ public class Git {
     public static boolean hasGit() throws GitException {
         try {
             Process process = new ProcessBuilder("which", "git").start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             if (process.waitFor() > 0) return false;
             return (result.size() > 0);
         } catch (IOException | InterruptedException e) {
@@ -36,8 +36,8 @@ public class Git {
             if (verbose) processBuilder.inheritIO();
             Process process = processBuilder.start();
 
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
-            List<String> errorResult = InputStreamHelper.asStringList(process.getErrorStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
+            List<String> errorResult = InputStreams.toStrings(process.getErrorStream());
 
             outputResult(result, verbose);
             outputError(errorResult, verbose);
@@ -63,8 +63,8 @@ public class Git {
                 processBuilder.inheritIO();
             Process process = processBuilder.start();
 
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
-            List<String> errorResult = InputStreamHelper.asStringList(process.getErrorStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
+            List<String> errorResult = InputStreams.toStrings(process.getErrorStream());
 
             outputResult(result, verbose);
             outputError(errorResult, verbose);
@@ -91,7 +91,7 @@ public class Git {
         List<String> commands = List.of("git", "rev-parse", "--git-dir");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             process.waitFor();
             return (!result.isEmpty());
         } catch (IOException | InterruptedException e) {
@@ -104,7 +104,7 @@ public class Git {
         List<String> commands = List.of("git", "remote", "-v");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git remote -v' exited with error code " + exitCode + ".");
@@ -127,7 +127,7 @@ public class Git {
         List<String> commands = List.of("git", "branch", "-avv");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git branch -avv' exited with error code " + exitCode + ".");
@@ -150,7 +150,7 @@ public class Git {
         List<String> commands = List.of("git", "branch");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git branch' exited with error code " + exitCode + ".");
@@ -172,7 +172,7 @@ public class Git {
         List<String> commands = List.of("git", "symbolic-ref", "refs/remotes/origin/HEAD");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 // remotes/origin/HEAD is not always defined. Error message is:
@@ -182,7 +182,7 @@ public class Git {
                 // This seems true especially for newly created EMPTY repos, created on (bitbucket) web.
                 // After cloning symbolic ref HEAD is missing.
                 // Calling 'git remote set-head origin --auto' fixes that.
-                List<String> errorResult = InputStreamHelper.asStringList(process.getErrorStream());
+                List<String> errorResult = InputStreams.toStrings(process.getErrorStream());
                 if (!errorResult.isEmpty() && errorResult.get(0).contains("is not a symbolic ref"))
                     throw new GitException("Could not determine default branch. Consider calling 'git remote set-head origin --auto' in repo.");
 
@@ -208,7 +208,7 @@ public class Git {
         List<String> commands = List.of("git", "status", "--porcelain");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git status --porcelain' exited with error code " + exitCode + ".");
@@ -222,7 +222,7 @@ public class Git {
         List<String> commands = List.of("git", "log", "@{u}..");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 // ignore intentionally
@@ -243,7 +243,7 @@ public class Git {
         List<String> commands = List.of("git", "stash", "list");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git stash list' exited with error code " + exitCode + ".");
@@ -257,7 +257,7 @@ public class Git {
         List<String> commands = List.of("git", "fetch");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            InputStreamHelper.asStringList(process.getInputStream());
+            InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git fetch' exited with error code " + exitCode + ".");
@@ -270,7 +270,7 @@ public class Git {
         List<String> commands = List.of("git", "pull");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            InputStreamHelper.asStringList(process.getInputStream());
+            InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git pull' exited with error code " + exitCode + ".");
@@ -284,7 +284,7 @@ public class Git {
         List<String> commands = List.of("git", "log", remoteBranch, "^" + branch, "--oneline");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git log " + remoteBranch + " ^" + branch + " --oneline' exited with error code " + exitCode + ".");
@@ -298,7 +298,7 @@ public class Git {
         List<String> commands = List.of("git", "rev-parse", "HEAD");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
-            List<String> result = InputStreamHelper.asStringList(process.getInputStream());
+            List<String> result = InputStreams.toStrings(process.getInputStream());
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git rev-parse HEAD' exited with error code " + exitCode + ".");
