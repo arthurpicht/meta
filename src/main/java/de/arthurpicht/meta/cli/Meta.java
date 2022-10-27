@@ -8,10 +8,7 @@ import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
 import de.arthurpicht.cli.option.*;
 import de.arthurpicht.meta.Const;
-import de.arthurpicht.meta.cli.executor.CloneExecutor;
-import de.arthurpicht.meta.cli.executor.FetchExecutor;
-import de.arthurpicht.meta.cli.executor.PullExecutor;
-import de.arthurpicht.meta.cli.executor.StatusExecutor;
+import de.arthurpicht.meta.cli.executor.*;
 import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.utils.core.strings.Strings;
@@ -66,6 +63,13 @@ public class Meta {
                 .addCommand("pull")
                 .withCommandExecutor(new PullExecutor())
                 .withDescription("Execute pull on all repos without local changes. Else execute fetch.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
+                .addCommands("feature", "show")
+                .withCommandExecutor(new FeatureShowExecutor())
+                .withDescription("Show all features.")
                 .build()
         );
 

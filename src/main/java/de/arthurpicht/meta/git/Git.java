@@ -9,6 +9,7 @@ import de.arthurpicht.utils.io.nio2.FileUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Git {
 
@@ -162,6 +163,24 @@ public class Git {
             }
 
             throw new GitException("No current branch name found.");
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static List<String> getLocalBranches(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "branch");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreams.toStrings(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git branch' exited with error code " + exitCode + ".");
+
+            return result.stream()
+                    .map(branch -> branch.substring(2).trim())
+                    .collect(Collectors.toList());
+
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
