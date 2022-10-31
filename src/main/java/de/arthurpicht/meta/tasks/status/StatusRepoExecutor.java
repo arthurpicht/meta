@@ -14,15 +14,13 @@ public class StatusRepoExecutor extends RepoExecutor {
 
     @Override
     public void execute(RepoConfig repoConfig, Target target, TaskSummary taskSummary) {
-        String repoName = repoConfig.getRepoName();
-        Path repoPath = repoConfig.getRepoPath();
         try {
-            BranchStatus branchStatus = BranchStatusResolver.resolve(repoPath, repoName);
-            BranchOutput.output(branchStatus);
+            RepoProperties repoProperties = new RepoProperties(repoConfig);
+            RepoStatusOutput.output(repoProperties);
         } catch (MetaRuntimeException e) {
-            Output.error(repoName, e.getMessage());
+            Output.error(repoConfig.getRepoName(), e.getMessage());
         } catch (GitException | RuntimeException e) {
-            Output.error(repoName, "Error: " + e.getMessage());
+            Output.error(repoConfig.getRepoName(), "Error: " + e.getMessage());
         }
     }
 
