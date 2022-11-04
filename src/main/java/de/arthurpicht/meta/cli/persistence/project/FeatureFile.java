@@ -26,9 +26,8 @@ public class FeatureFile {
         return this.featureFile.exists();
     }
 
-    public Target read() throws IOException {
-        String targetString = this.featureFile.read();
-        return new Target(targetString);
+    public String read() throws IOException {
+        return this.featureFile.read();
     }
 
     public void write(Feature feature) throws IOException {

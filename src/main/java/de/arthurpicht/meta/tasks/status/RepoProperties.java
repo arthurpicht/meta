@@ -1,16 +1,22 @@
 package de.arthurpicht.meta.tasks.status;
 
+import de.arthurpicht.meta.Const;
+import de.arthurpicht.meta.cli.feature.Feature;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
+import de.arthurpicht.meta.tasks.feature.scanner.FeatureInventory;
 import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RepoProperties {
 
     private final RepoConfig repoConfig;
     private final Boolean isRepoPathExisting;
+    private final Feature feature;
     private Boolean isRepo = null;
     private String currentBranchName = null;
     private String defaultBranchName = null;
@@ -19,9 +25,10 @@ public class RepoProperties {
     private Boolean hasStash = null;
     private Boolean hasCommitsAhead = null;
 
-    public RepoProperties(RepoConfig repoConfig) {
+    public RepoProperties(RepoConfig repoConfig, Feature feature) {
         this.repoConfig = repoConfig;
         this.isRepoPathExisting = FileUtils.isExistingDirectory(this.repoConfig.getRepoPath());
+        this.feature = feature;
     }
 
     public String getRepoName() {
@@ -66,6 +73,11 @@ public class RepoProperties {
         }
     }
 
+//    public String getIntendedBranchName() {
+//        assertExistingRepo();
+//        if (this.feature.hasFeature())
+//    }
+
     public boolean hasUncommittedChanges() throws GitException {
         assertExistingRepo();
         if (this.hasUncommittedChanges == null)
@@ -99,6 +111,13 @@ public class RepoProperties {
             throw new IllegalStateException("Repo path not existing.");
         if (!isRepo())
             throw new IllegalStateException("Not a git repo.");
+    }
+
+    private List<String> getFeatureBranches() throws GitException {
+        List<String> localBranches = Git.getLocalBranches(getRepoPath());
+        return localBranches.stream()
+                .filter(brachName -> brachName.startsWith(Const.FEATURE_BRANCH_PREFIX))
+                .collect(Collectors.toList());
     }
 
 }

@@ -1,5 +1,6 @@
 package de.arthurpicht.meta.tasks.status;
 
+import de.arthurpicht.meta.cli.feature.Feature;
 import de.arthurpicht.meta.cli.output.Output;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.RepoConfig;
@@ -12,10 +13,16 @@ import java.nio.file.Path;
 
 public class StatusRepoExecutor extends RepoExecutor {
 
+    private final Feature feature;
+
+    public StatusRepoExecutor(Feature feature) {
+        this.feature = feature;
+    }
+
     @Override
     public void execute(RepoConfig repoConfig, Target target, TaskSummary taskSummary) {
         try {
-            RepoProperties repoProperties = new RepoProperties(repoConfig);
+            RepoProperties repoProperties = new RepoProperties(repoConfig, this.feature);
             RepoStatusOutput.output(repoProperties);
         } catch (MetaRuntimeException e) {
             Output.error(repoConfig.getRepoName(), e.getMessage());
