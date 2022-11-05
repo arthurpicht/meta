@@ -5,7 +5,7 @@ import de.arthurpicht.meta.cli.feature.Feature;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
-import de.arthurpicht.meta.tasks.feature.scanner.FeatureInventory;
+import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.nio.file.Path;
@@ -16,7 +16,7 @@ public class RepoProperties {
 
     private final RepoConfig repoConfig;
     private final Boolean isRepoPathExisting;
-    private final Feature feature;
+    private final FeatureInfo featureInfo;
     private Boolean isRepo = null;
     private String currentBranchName = null;
     private String defaultBranchName = null;
@@ -25,10 +25,10 @@ public class RepoProperties {
     private Boolean hasStash = null;
     private Boolean hasCommitsAhead = null;
 
-    public RepoProperties(RepoConfig repoConfig, Feature feature) {
+    public RepoProperties(RepoConfig repoConfig, FeatureInfo featureInfo) {
         this.repoConfig = repoConfig;
         this.isRepoPathExisting = FileUtils.isExistingDirectory(this.repoConfig.getRepoPath());
-        this.feature = feature;
+        this.featureInfo = featureInfo;
     }
 
     public String getRepoName() {
@@ -73,10 +73,17 @@ public class RepoProperties {
         }
     }
 
-//    public String getIntendedBranchName() {
-//        assertExistingRepo();
-//        if (this.feature.hasFeature())
-//    }
+    public String getIntendedBranchName() throws GitException {
+        assertExistingRepo();
+        if (this.featureInfo.hasFeature()) {
+            String repoName = this.repoConfig.getRepoName();
+            String featureName = this.featureInfo.getFeature().getName();
+            boolean hasFeature = this.featureInfo.getFeatureInventory().hasRepoFeature(repoName, featureName);
+
+            if (hasFeature) return Const.FEATURE_BRANCH_PREFIX + "featureName";
+        }
+        return getBaseBranchName();
+    }
 
     public boolean hasUncommittedChanges() throws GitException {
         assertExistingRepo();

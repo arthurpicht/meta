@@ -20,7 +20,7 @@ public class Feature {
         return new Feature(name);
     }
 
-    private static Feature createWithNoFeature() {
+    public static Feature createWithNoFeature() {
         return new Feature("");
     }
 

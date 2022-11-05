@@ -1,15 +1,13 @@
 package de.arthurpicht.meta.tasks.feature.scanner;
 
-import de.arthurpicht.meta.Const;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
-import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
+import de.arthurpicht.meta.git.GitHighLevel;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FeatureScanner {
 
@@ -21,32 +19,31 @@ public class FeatureScanner {
     }
 
     private static void scanRepo(RepoConfig repoConfig, FeatureInventory featureInventory) {
-        List<String> branchNameList = getRemoteBranchNames(repoConfig);
-        List<String> featureNameList = extractFeatureNames(branchNameList);
+        List<String> featureNameList = getFeatureNames(repoConfig);
         featureInventory.add(featureNameList, repoConfig.getRepoName());
     }
 
-//    private static List<String> getLocalBranchNames(RepoConfig repoConfig) {
-//        try {
-//            return Git.getLocalBranches(repoConfig.getRepoPath());
-//        } catch (GitException e) {
-//            throw new MetaRuntimeException("Could not determine local branches.", e);
-//        }
-//    }
-
-    private static List<String> getRemoteBranchNames(RepoConfig repoConfig) {
+    private static List<String> getFeatureNames(RepoConfig repoConfig) {
         try {
-            return Git.getRemoteBranches(repoConfig.getRepoPath());
+            return GitHighLevel.getFeatureBranchNameList(repoConfig.getRepoPath());
         } catch (GitException e) {
             throw new MetaRuntimeException("Could not determine remote branches.", e);
         }
     }
 
-    private static List<String> extractFeatureNames(List<String> localBranchNameList) {
-        return localBranchNameList.stream()
-                .filter(localBranchName -> localBranchName.startsWith(Const.FEATURE_BRANCH_PREFIX))
-                .map(localBranchName -> localBranchName.substring(Const.FEATURE_BRANCH_PREFIX.length()))
-                .collect(Collectors.toList());
-    }
+//    private static List<String> getRemoteBranchNames(RepoConfig repoConfig) {
+//        try {
+//            return Git.getRemoteBranches(repoConfig.getRepoPath());
+//        } catch (GitException e) {
+//            throw new MetaRuntimeException("Could not determine remote branches.", e);
+//        }
+//    }
+//
+//    private static List<String> extractFeatureNames(List<String> localBranchNameList) {
+//        return localBranchNameList.stream()
+//                .filter(localBranchName -> localBranchName.startsWith(Const.FEATURE_BRANCH_PREFIX))
+//                .map(localBranchName -> localBranchName.substring(Const.FEATURE_BRANCH_PREFIX.length()))
+//                .collect(Collectors.toList());
+//    }
 
 }

@@ -4,10 +4,10 @@ import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
-import de.arthurpicht.meta.cli.feature.Feature;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.MetaConfig;
+import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.meta.tasks.status.Status;
 
 import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.assertGitInstalled;
@@ -23,9 +23,9 @@ public class StatusExecutor implements CommandExecutor {
         ExecutionContext.init(cliCall);
         MetaConfig metaConfig = initMetaConfig();
         Target target = ProjectTarget.obtainInitializedTarget(metaConfig.getGeneralConfig().getTargets());
-        Feature feature = Feature.load();
+        FeatureInfo featureInfo = FeatureInfo.createFromPersistence(metaConfig, target);
 
-        Status.execute(metaConfig, target, feature);
+        Status.execute(metaConfig, target, featureInfo);
     }
 
 }

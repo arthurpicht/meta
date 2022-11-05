@@ -35,12 +35,17 @@ public class FeatureInventory {
 
     public List<String> getRepoNames(String featureName) {
         if (!this.featureMap.containsKey(featureName))
-            throw new IllegalArgumentException("Nu such featureName: [" + featureName + "].");
+            throw new IllegalArgumentException("No such featureName: [" + featureName + "].");
         return this.featureMap.get(featureName).stream().sorted().collect(Collectors.toList());
     }
 
     public boolean isEmpty() {
         return this.featureMap.isEmpty();
+    }
+
+    public boolean hasRepoFeature(String repoName, String featureName) {
+        Set<String> repoNames = this.featureMap.get(featureName);
+        return repoNames.contains(repoName);
     }
 
 }
