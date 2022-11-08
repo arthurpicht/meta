@@ -33,6 +33,10 @@ public class FeatureInventory {
         return this.featureMap.keySet().stream().sorted().collect(Collectors.toList());
     }
 
+    public boolean hasFeatureName(String featureName) {
+        return this.featureMap.containsKey(featureName);
+    }
+
     public List<String> getRepoNames(String featureName) {
         if (!this.featureMap.containsKey(featureName))
             throw new IllegalArgumentException("No such featureName: [" + featureName + "].");

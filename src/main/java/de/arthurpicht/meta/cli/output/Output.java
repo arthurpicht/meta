@@ -62,4 +62,8 @@ public class Output {
         System.out.print("\033[2K"); // Erase line content
     }
 
+//    public static String bracedBranch(String branchName, Colors colors) {
+//
+//    }
+
 }

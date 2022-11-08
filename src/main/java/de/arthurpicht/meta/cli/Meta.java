@@ -7,6 +7,8 @@ import de.arthurpicht.cli.command.Commands;
 import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
 import de.arthurpicht.cli.option.*;
+import de.arthurpicht.cli.parameter.ParametersN;
+import de.arthurpicht.cli.parameter.ParametersOne;
 import de.arthurpicht.meta.Const;
 import de.arthurpicht.meta.cli.executor.*;
 import de.arthurpicht.meta.cli.output.Colors;
@@ -70,6 +72,14 @@ public class Meta {
                 .addCommands("feature", "show")
                 .withCommandExecutor(new FeatureShowExecutor())
                 .withDescription("Show all features.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
+                .addCommands("feature", "checkout")
+                .withCommandExecutor(new FeatureCheckoutExecutor())
+                .withParameters(new ParametersOne())
+                .withDescription("Checkout feature.")
                 .build()
         );
 

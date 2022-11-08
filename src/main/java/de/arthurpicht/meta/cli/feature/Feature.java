@@ -15,7 +15,7 @@ public class Feature {
         this.name = featureName;
     }
 
-    private static Feature createFeatureByName(String name) {
+    public static Feature createFeatureByName(String name) {
         MethodPreconditions.assertArgumentNotNullAndNotEmpty("name", name);
         return new Feature(name);
     }
@@ -38,7 +38,7 @@ public class Feature {
     }
 
     public boolean hasFeature() {
-        return this.name != null;
+        return Strings.isSpecified(this.name);
     }
 
     public String getName() {
