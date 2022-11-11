@@ -12,13 +12,13 @@ import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
+import de.arthurpicht.meta.git.Repos;
 import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.meta.tasks.feature.scanner.FeatureInventory;
 import de.arthurpicht.meta.tasks.feature.scanner.FeatureScanner;
 import de.arthurpicht.meta.tasks.status.RepoProperties;
 import de.arthurpicht.utils.core.strings.Strings;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +47,8 @@ public class FeatureCheckoutExecutor implements CommandExecutor {
         FeatureInfo destinationFeatureInfo = createFeatureInfoFromPreexisting(featureInventory, destinationFeatureName);
 
         List<String> affectedRepos = determineAffectedRepos(sourceFeatureInfo, destinationFeatureInfo);
-        List<String> uncommittedChangedRepos = extractReposWithUncommittedChanges(metaConfig, affectedRepos);
+        List<RepoConfig> uncommittedChangedRepos = Repos.selectReposWithUncommittedChanges(affectedRepos, metaConfig);
+
         if (!uncommittedChangedRepos.isEmpty())
             throw new CommandExecutorException(
                     "Cannot checkout feature. The following repos are affected and have " +
@@ -63,7 +64,7 @@ public class FeatureCheckoutExecutor implements CommandExecutor {
     private void checkoutBase(MetaConfig metaConfig, FeatureInfo sourceFeatureInfo) {
         if (!sourceFeatureInfo.hasFeature()) return;
 
-        List<String> repos = sourceFeatureInfo.getRelatedRepos();
+        List<String> repos = sourceFeatureInfo.getRelatedRepoNames();
         for (String repo : repos) {
             RepoConfig repoConfig = metaConfig.getRepoConfig(repo);
             RepoProperties repoProperties = new RepoProperties(repoConfig, sourceFeatureInfo);
@@ -76,7 +77,7 @@ public class FeatureCheckoutExecutor implements CommandExecutor {
     }
 
     private void checkoutFeature(MetaConfig metaConfig, FeatureInfo destFeatureInfo) {
-        List<String> repos = destFeatureInfo.getRelatedRepos();
+        List<String> repos = destFeatureInfo.getRelatedRepoNames();
         for (String repo : repos) {
             RepoConfig repoConfig = metaConfig.getRepoConfig(repo);
             RepoProperties repoProperties = new RepoProperties(repoConfig, destFeatureInfo);
@@ -97,29 +98,11 @@ public class FeatureCheckoutExecutor implements CommandExecutor {
             FeatureInfo sourceFeatureInfo, FeatureInfo destinationFeatureInfo) {
 
         List<String> affectedRepos = sourceFeatureInfo.hasFeature() ?
-                sourceFeatureInfo.getRelatedRepos() :
+                sourceFeatureInfo.getRelatedRepoNames() :
                 new ArrayList<>();
-        affectedRepos.addAll(destinationFeatureInfo.getRelatedRepos());
+        affectedRepos.addAll(destinationFeatureInfo.getRelatedRepoNames());
 
         return affectedRepos;
-    }
-
-    private List<String> extractReposWithUncommittedChanges(MetaConfig metaConfig, List<String> affectedRepos) {
-        List<String> reposWithUncommittedChanges = new ArrayList<>();
-        for (String repo : affectedRepos) {
-            RepoConfig repoConfig = metaConfig.getRepoConfig(repo);
-            if (hasUncommittedChanges(repoConfig.getRepoPath()))
-                reposWithUncommittedChanges.add(repo);
-        }
-        return reposWithUncommittedChanges;
-    }
-
-    private boolean hasUncommittedChanges(Path repoPath) {
-        try {
-            return Git.hasUncommittedChanges(repoPath);
-        } catch (GitException e) {
-            throw new MetaRuntimeException(e.getMessage(), e);
-        }
     }
 
 }

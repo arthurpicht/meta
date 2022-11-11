@@ -2,6 +2,7 @@ package de.arthurpicht.meta.cli.persistence.project;
 
 import de.arthurpicht.meta.cli.feature.Feature;
 import de.arthurpicht.meta.cli.target.Target;
+import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.utils.io.file.SingleValueFile;
 
 import java.io.IOException;
@@ -26,16 +27,32 @@ public class FeatureFile {
         return this.featureFile.exists();
     }
 
-    public String read() throws IOException {
-        return this.featureFile.read();
+    public String read() {
+        try {
+            return this.featureFile.read();
+        } catch (IOException e) {
+            throw new MetaRuntimeException(e.getMessage(), e);
+        }
     }
 
-    public void write(Feature feature) throws IOException {
+    public void write(Feature feature) {
         if (!feature.hasFeature())
             throw new IllegalArgumentException("No feature to write.");
         Path parentDir = this.featureFile.getPath().getParent();
-        if (!Files.exists(parentDir)) Files.createDirectories(parentDir);
-        this.featureFile.write(feature.getName());
+        try {
+            if (!Files.exists(parentDir)) Files.createDirectories(parentDir);
+            this.featureFile.write(feature.getName());
+        } catch (IOException e) {
+            throw new MetaRuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public void delete() {
+        try {
+            this.featureFile.deleteIfExists();
+        } catch (IOException e) {
+            throw new MetaRuntimeException(e.getMessage(), e);
+        }
     }
 
 }

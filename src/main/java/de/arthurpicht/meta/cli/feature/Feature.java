@@ -27,13 +27,9 @@ public class Feature {
     public static Feature load() {
         FeatureFile featureFile = new FeatureFile(ExecutionContext.getMetaDirAsPath());
         if (featureFile.exists()) {
-            try {
-                String featureName = featureFile.read();
-                return createFeatureByName(featureName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+            String featureName = featureFile.read();
+            return createFeatureByName(featureName);
+    }
         return createWithNoFeature();
     }
 

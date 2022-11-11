@@ -10,6 +10,7 @@ import de.arthurpicht.cli.option.*;
 import de.arthurpicht.cli.parameter.ParametersN;
 import de.arthurpicht.cli.parameter.ParametersOne;
 import de.arthurpicht.meta.Const;
+import de.arthurpicht.meta.cli.definitions.FeatureResetDef;
 import de.arthurpicht.meta.cli.executor.*;
 import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
@@ -82,6 +83,8 @@ public class Meta {
                 .withDescription("Checkout feature.")
                 .build()
         );
+
+        commands.add(FeatureResetDef.getCommandSequence());
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("meta\nhttps://github.com/arthurpicht/meta")

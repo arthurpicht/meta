@@ -1,6 +1,8 @@
 package de.arthurpicht.meta.cli.output;
 
 import com.diogonunes.jcolor.Ansi;
+import com.diogonunes.jcolor.AnsiFormat;
+import de.arthurpicht.meta.tasks.feature.FeatureBranchName;
 
 public class Output {
 
@@ -36,24 +38,12 @@ public class Output {
         return Ansi.colorize("[" + tag + "] ", Colors.greenText);
     }
 
-    public static String greenBrace(String tag) {
-        return Ansi.colorize("(" + tag + ") ", Colors.greenText);
-    }
-
     public static String yellowTag(String tag) {
         return Ansi.colorize("[" + tag + "] ", Colors.yellowText);
     }
 
-    public static String yellowBrace(String tag) {
-        return Ansi.colorize("(" + tag + ") ", Colors.yellowText);
-    }
-
     public static String redTag(String tag) {
         return Ansi.colorize("[" + tag + "] ", Colors.redText);
-    }
-
-    public static String redBrace(String tag) {
-        return Ansi.colorize("(" + tag + ") ", Colors.redText);
     }
 
     public static void deleteLastLine() {
@@ -62,8 +52,15 @@ public class Output {
         System.out.print("\033[2K"); // Erase line content
     }
 
-//    public static String bracedBranch(String branchName, Colors colors) {
-//
-//    }
+    public static String bracedBranch(String branchName, AnsiFormat ansiFormat) {
+        if (FeatureBranchName.isFeatureBranchName(branchName)) {
+            FeatureBranchName featureBranchName = FeatureBranchName.createByBranchName(branchName);
+            return Ansi.colorize("(" + FeatureBranchName.FEATURE_BRANCH_PREFIX, ansiFormat)
+                    + Ansi.colorize(featureBranchName.getFeatureName(), Colors.whiteText)
+                    + Ansi.colorize(") ", ansiFormat);
+        } else {
+            return Ansi.colorize("(" + branchName + ") ", ansiFormat);
+        }
+    }
 
 }

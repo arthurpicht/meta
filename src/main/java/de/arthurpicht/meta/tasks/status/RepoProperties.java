@@ -1,10 +1,9 @@
 package de.arthurpicht.meta.tasks.status;
 
-import de.arthurpicht.meta.Const;
-import de.arthurpicht.meta.cli.feature.Feature;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
+import de.arthurpicht.meta.tasks.feature.FeatureBranchName;
 import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.utils.io.nio2.FileUtils;
 
@@ -29,6 +28,11 @@ public class RepoProperties {
         this.repoConfig = repoConfig;
         this.isRepoPathExisting = FileUtils.isExistingDirectory(this.repoConfig.getRepoPath());
         this.featureInfo = featureInfo;
+    }
+
+    public static RepoProperties createForNoFeature(RepoConfig repoConfig) {
+        FeatureInfo featureInfo = FeatureInfo.createForNoFeature();
+        return new RepoProperties(repoConfig, featureInfo);
     }
 
     public String getRepoName() {
@@ -80,9 +84,17 @@ public class RepoProperties {
             String featureName = this.featureInfo.getFeature().getName();
             boolean hasFeature = this.featureInfo.getFeatureInventory().hasRepoFeature(repoName, featureName);
 
-            if (hasFeature) return Const.FEATURE_BRANCH_PREFIX + "featureName";
+            if (hasFeature) return FeatureBranchName.FEATURE_BRANCH_PREFIX + "featureName";
         }
         return getBaseBranchName();
+    }
+
+    public boolean isOnIntendedBranch() throws GitException {
+        return getIntendedBranchName().equals(getCurrentBranchName());
+    }
+
+    public boolean isOnBaseBranch() throws GitException {
+        return getBaseBranchName().equals(getCurrentBranchName());
     }
 
     public boolean hasUncommittedChanges() throws GitException {
@@ -123,7 +135,7 @@ public class RepoProperties {
     private List<String> getFeatureBranches() throws GitException {
         List<String> localBranches = Git.getLocalBranches(getRepoPath());
         return localBranches.stream()
-                .filter(brachName -> brachName.startsWith(Const.FEATURE_BRANCH_PREFIX))
+                .filter(brachName -> brachName.startsWith(FeatureBranchName.FEATURE_BRANCH_PREFIX))
                 .collect(Collectors.toList());
     }
 

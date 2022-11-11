@@ -16,9 +16,9 @@ public class FeatureInfo {
     private final Feature feature;
     private final FeatureInventory featureInventory;
 
-//    public static FeatureInfo createForNoFeature() {
-//        return new FeatureInfo(Feature.createWithNoFeature(), null);
-//    }
+    public static FeatureInfo createForNoFeature() {
+        return new FeatureInfo(Feature.createWithNoFeature(), null);
+    }
 
     public static FeatureInfo createFromPersistence(MetaConfig metaConfig, Target target) {
         Feature feature = Feature.load();
@@ -27,7 +27,6 @@ public class FeatureInfo {
             FeatureInventory featureInventory = FeatureScanner.scan(metaConfig, target);
             return new FeatureInfo(feature, featureInventory);
         } else {
-            System.out.println("no feature.");
             return new FeatureInfo(feature, null);
         }
     }
@@ -65,7 +64,7 @@ public class FeatureInfo {
         return this.featureInventory;
     }
 
-    public List<String> getRelatedRepos() {
+    public List<String> getRelatedRepoNames() {
         assertFeature();
         return this.featureInventory.getRepoNames(this.feature.getName());
     }

@@ -4,8 +4,10 @@ import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.utils.core.collection.Maps;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MetaConfig {
@@ -39,6 +41,12 @@ public class MetaConfig {
         if (!this.repoConfigMap.containsKey(repoName))
             throw new IllegalArgumentException("Repo config not found: [" + repoName + "]");
         return this.repoConfigMap.get(repoName);
+    }
+
+    public List<RepoConfig> getRepoConfigs(List<String> repoNames) {
+        return repoNames.stream()
+                .map(this::getRepoConfig)
+                .collect(Collectors.toList());
     }
 
     public List<RepoConfig> getRepoConfigsForTarget(Target target) {

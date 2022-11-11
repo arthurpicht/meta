@@ -25,11 +25,11 @@ public class RepoStatusOutput {
         String output = Output.blueTag(repoProperties.getRepoName());
 
         if (isStatusGreen(repoProperties)) {
-            output += Output.greenBrace(repoProperties.getCurrentBranchName());
+            output += Output.bracedBranch(repoProperties.getCurrentBranchName(), Colors.greenText);
         } else if (isStatusYellow(repoProperties)) {
-            output += Output.yellowBrace(repoProperties.getCurrentBranchName());
+            output += Output.bracedBranch(repoProperties.getCurrentBranchName(), Colors.yellowText);
         } else {
-            output += Output.redBrace(repoProperties.getCurrentBranchName());
+            output += Output.bracedBranch(repoProperties.getCurrentBranchName(), Colors.redText);
         }
 
         if (repoProperties.hasUncommittedChanges()) {
