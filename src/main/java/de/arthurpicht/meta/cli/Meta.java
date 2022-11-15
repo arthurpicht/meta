@@ -2,88 +2,42 @@ package de.arthurpicht.meta.cli;
 
 import com.diogonunes.jcolor.Ansi;
 import de.arthurpicht.cli.*;
-import de.arthurpicht.cli.command.CommandSequenceBuilder;
 import de.arthurpicht.cli.command.Commands;
 import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
-import de.arthurpicht.cli.option.*;
-import de.arthurpicht.cli.parameter.ParametersN;
-import de.arthurpicht.cli.parameter.ParametersOne;
+import de.arthurpicht.cli.option.ManOption;
+import de.arthurpicht.cli.option.OptionBuilder;
+import de.arthurpicht.cli.option.Options;
+import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.meta.Const;
-import de.arthurpicht.meta.cli.definitions.FeatureResetDef;
-import de.arthurpicht.meta.cli.executor.*;
+import de.arthurpicht.meta.cli.definitions.*;
 import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.utils.core.strings.Strings;
 
 public class Meta {
 
-    public static final String OPTION_STACKTRACE = "stacktrace";
-    public static final String OPTION_META_DIR = "metaDir";
-    public static final String OPTION_VERBOSE = "verbose";
-
-    public static final String OPTION_CLONE_TARGET = "target";
+    public static final String GLOBAL_OPTION__STACKTRACE = "stacktrace";
+    public static final String GLOBAL_OPTION__META_DIR = "metaDir";
+    public static final String GLOBAL_OPTION__VERBOSE = "verbose";
 
     private static Cli createCli() {
 
         Options globalOptions = new Options()
                 .add(new VersionOption())
                 .add(new ManOption())
-                .add(new OptionBuilder().withShortName('s').withLongName("stacktrace").withDescription("Show stacktrace when running on error.").build(OPTION_STACKTRACE))
-                .add(new OptionBuilder().withShortName('d').withLongName("metaDir").withArgumentName("metaDir").withDescription("meta directory").build(OPTION_META_DIR))
-                .add(new OptionBuilder().withLongName("verbose").withDescription("verbose output").build(OPTION_VERBOSE));
+                .add(new OptionBuilder().withShortName('s').withLongName("stacktrace").withDescription("Show stacktrace when running on error.").build(GLOBAL_OPTION__STACKTRACE))
+                .add(new OptionBuilder().withShortName('d').withLongName("metaDir").withArgumentName("metaDir").withDescription("meta directory").build(GLOBAL_OPTION__META_DIR))
+                .add(new OptionBuilder().withLongName("verbose").withDescription("verbose output").build(GLOBAL_OPTION__VERBOSE));
 
         Commands commands = new Commands();
-
         commands.setDefaultCommand(new InfoDefaultCommand());
-
-        Options cloneOptions = new Options()
-                .add(new OptionBuilder().withShortName('t').withLongName("target").withArgumentName("target").withDescription("Target environment. Either <dev> (default) or <prod>.").build(OPTION_CLONE_TARGET));
-
-        commands.add(new CommandSequenceBuilder()
-                .addCommands("clone")
-                .withSpecificOptions(cloneOptions)
-                .withCommandExecutor(new CloneExecutor())
-                .withDescription("Clones all repos for respective target.")
-                .build()
-        );
-
-        commands.add(new CommandSequenceBuilder()
-                .addCommand("status")
-                .withCommandExecutor(new StatusExecutor())
-                .withDescription("Shows status of all repos.")
-                .build()
-        );
-
-        commands.add(new CommandSequenceBuilder()
-                .addCommand("fetch")
-                .withCommandExecutor(new FetchExecutor())
-                .withDescription("Execute fetch on all repos.")
-                .build()
-        );
-
-        commands.add(new CommandSequenceBuilder()
-                .addCommand("pull")
-                .withCommandExecutor(new PullExecutor())
-                .withDescription("Execute pull on all repos without local changes. Else execute fetch.")
-                .build()
-        );
-
-        commands.add(new CommandSequenceBuilder()
-                .addCommands("feature", "show")
-                .withCommandExecutor(new FeatureShowExecutor())
-                .withDescription("Show all features.")
-                .build()
-        );
-
-        commands.add(new CommandSequenceBuilder()
-                .addCommands("feature", "checkout")
-                .withCommandExecutor(new FeatureCheckoutExecutor())
-                .withParameters(new ParametersOne())
-                .withDescription("Checkout feature.")
-                .build()
-        );
-
+        commands.add(StatusDef.getCommandSequence());
+        commands.add(CloneDef.getCommandSequence());
+        commands.add(FetchDef.getCommandSequence());
+        commands.add(PullDef.getCommandSequence());
+        commands.add(FeatureShowDef.getCommandSequence());
+        commands.add(FeatureCheckoutDef.getCommandSequence());
         commands.add(FeatureResetDef.getCommandSequence());
 
         CliDescription cliDescription = new CliDescriptionBuilder()
@@ -111,7 +65,7 @@ public class Meta {
             System.exit(1);
         }
 
-        boolean showStacktrace = cliCall.getOptionParserResultGlobal().hasOption(OPTION_STACKTRACE);
+        boolean showStacktrace = cliCall.getOptionParserResultGlobal().hasOption(GLOBAL_OPTION__STACKTRACE);
 
         try {
             cli.execute(cliCall);

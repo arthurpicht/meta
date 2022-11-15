@@ -33,7 +33,7 @@ public class FeatureResetExecutor implements CommandExecutor {
 
         FeatureInfo featureInfo = FeatureInfo.createFromPersistence(metaConfig, target);
 
-        boolean verbose = cliCall.getOptionParserResultGlobal().hasOption(Meta.OPTION_VERBOSE);
+        boolean verbose = cliCall.getOptionParserResultGlobal().hasOption(Meta.GLOBAL_OPTION__VERBOSE);
         boolean all = cliCall.getOptionParserResultSpecific().hasOption(FeatureResetDef.OPTION_ALL);
         boolean force = cliCall.getOptionParserResultSpecific().hasOption(FeatureResetDef.OPTION_FORCE);
 

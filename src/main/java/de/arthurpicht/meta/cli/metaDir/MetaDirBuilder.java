@@ -26,8 +26,8 @@ public class MetaDirBuilder {
         String metaDirString;
         MetaDirSpecifier metaDirSpecifier;
         MetaDirFile metaDirFile = new MetaDirFile();
-        if (optionParserResultGlobal.hasOption(Meta.OPTION_META_DIR)) {
-            metaDirString = optionParserResultGlobal.getValue(Meta.OPTION_META_DIR);
+        if (optionParserResultGlobal.hasOption(Meta.GLOBAL_OPTION__META_DIR)) {
+            metaDirString = optionParserResultGlobal.getValue(Meta.GLOBAL_OPTION__META_DIR);
             metaDirSpecifier = MetaDirSpecifier.CLI;
         } else if (metaDirFile.exists()) {
             metaDirString = readMetaDirFromFile();

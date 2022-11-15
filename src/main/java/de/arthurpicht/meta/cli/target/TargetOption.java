@@ -1,7 +1,7 @@
 package de.arthurpicht.meta.cli.target;
 
 import de.arthurpicht.cli.CliCall;
-import de.arthurpicht.meta.cli.Meta;
+import de.arthurpicht.meta.cli.definitions.CloneDef;
 
 public class TargetOption {
 
@@ -12,12 +12,12 @@ public class TargetOption {
     }
 
     public boolean isSpecified() {
-        return cliCall.getOptionParserResultSpecific().hasOption(Meta.OPTION_CLONE_TARGET);
+        return cliCall.getOptionParserResultSpecific().hasOption(CloneDef.CLONE__OPTION__TARGET);
     }
 
     public String getTargetArgument() {
         if (!isSpecified()) throw new IllegalStateException("CLI call has no target option.");
-        return cliCall.getOptionParserResultSpecific().getValue(Meta.OPTION_CLONE_TARGET);
+        return cliCall.getOptionParserResultSpecific().getValue(CloneDef.CLONE__OPTION__TARGET);
     }
 
 }

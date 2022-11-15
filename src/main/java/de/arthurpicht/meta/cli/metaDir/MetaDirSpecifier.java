@@ -6,7 +6,7 @@ public enum MetaDirSpecifier {
 
     META_DIR_FILE("user specific meta_dir file"),
     WORKING_DIR("current working directory"),
-    CLI("global cli parameter '" + Meta.OPTION_META_DIR + "'");
+    CLI("global cli parameter '" + Meta.GLOBAL_OPTION__META_DIR + "'");
 
     private final String text;
 

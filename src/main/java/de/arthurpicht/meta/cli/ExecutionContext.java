@@ -17,8 +17,8 @@ public class ExecutionContext {
     public static void init(CliCall cliCall) {
         OptionParserResult optionParserResultGlobal = cliCall.getOptionParserResultGlobal();
         metaDir = MetaDirBuilder.obtain(optionParserResultGlobal);
-        verbose = optionParserResultGlobal.hasOption(Meta.OPTION_VERBOSE);
-        stacktrace = optionParserResultGlobal.hasOption(Meta.OPTION_STACKTRACE);
+        verbose = optionParserResultGlobal.hasOption(Meta.GLOBAL_OPTION__VERBOSE);
+        stacktrace = optionParserResultGlobal.hasOption(Meta.GLOBAL_OPTION__STACKTRACE);
         initialized = true;
     }
 
