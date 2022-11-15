@@ -10,7 +10,7 @@ public class CloneDef {
 
     public static final String CLONE__OPTION__TARGET = "target";
 
-    public static CommandSequence getCommandSequence() {
+    public static CommandSequence get() {
         Options cloneOptions = new Options()
                 .add(new OptionBuilder()
                         .withShortName('t')

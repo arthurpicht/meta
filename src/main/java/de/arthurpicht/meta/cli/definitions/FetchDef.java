@@ -6,7 +6,7 @@ import de.arthurpicht.meta.cli.executor.FetchExecutor;
 
 public class FetchDef {
 
-    public static CommandSequence getCommandSequence() {
+    public static CommandSequence get() {
 
         return new CommandSequenceBuilder()
                 .addCommand("fetch")

@@ -6,7 +6,8 @@ import de.arthurpicht.meta.cli.executor.StatusExecutor;
 
 public class StatusDef {
 
-    public static CommandSequence getCommandSequence() {
+    public static CommandSequence get() {
+
         return new CommandSequenceBuilder()
                 .addCommand("status")
                 .withCommandExecutor(new StatusExecutor())

@@ -4,8 +4,8 @@ import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
-import de.arthurpicht.meta.cli.Meta;
 import de.arthurpicht.meta.cli.definitions.FeatureResetDef;
+import de.arthurpicht.meta.cli.definitions.GlobalOptionsDef;
 import de.arthurpicht.meta.cli.persistence.project.FeatureFile;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.cli.target.Target;
@@ -33,7 +33,7 @@ public class FeatureResetExecutor implements CommandExecutor {
 
         FeatureInfo featureInfo = FeatureInfo.createFromPersistence(metaConfig, target);
 
-        boolean verbose = cliCall.getOptionParserResultGlobal().hasOption(Meta.GLOBAL_OPTION__VERBOSE);
+        boolean verbose = cliCall.getOptionParserResultGlobal().hasOption(GlobalOptionsDef.VERBOSE);
         boolean all = cliCall.getOptionParserResultSpecific().hasOption(FeatureResetDef.OPTION_ALL);
         boolean force = cliCall.getOptionParserResultSpecific().hasOption(FeatureResetDef.OPTION_FORCE);
 

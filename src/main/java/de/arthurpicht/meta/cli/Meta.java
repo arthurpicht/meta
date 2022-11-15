@@ -5,10 +5,6 @@ import de.arthurpicht.cli.*;
 import de.arthurpicht.cli.command.Commands;
 import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
-import de.arthurpicht.cli.option.ManOption;
-import de.arthurpicht.cli.option.OptionBuilder;
-import de.arthurpicht.cli.option.Options;
-import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.meta.Const;
 import de.arthurpicht.meta.cli.definitions.*;
 import de.arthurpicht.meta.cli.output.Colors;
@@ -17,28 +13,17 @@ import de.arthurpicht.utils.core.strings.Strings;
 
 public class Meta {
 
-    public static final String GLOBAL_OPTION__STACKTRACE = "stacktrace";
-    public static final String GLOBAL_OPTION__META_DIR = "metaDir";
-    public static final String GLOBAL_OPTION__VERBOSE = "verbose";
-
     private static Cli createCli() {
-
-        Options globalOptions = new Options()
-                .add(new VersionOption())
-                .add(new ManOption())
-                .add(new OptionBuilder().withShortName('s').withLongName("stacktrace").withDescription("Show stacktrace when running on error.").build(GLOBAL_OPTION__STACKTRACE))
-                .add(new OptionBuilder().withShortName('d').withLongName("metaDir").withArgumentName("metaDir").withDescription("meta directory").build(GLOBAL_OPTION__META_DIR))
-                .add(new OptionBuilder().withLongName("verbose").withDescription("verbose output").build(GLOBAL_OPTION__VERBOSE));
 
         Commands commands = new Commands();
         commands.setDefaultCommand(new InfoDefaultCommand());
-        commands.add(StatusDef.getCommandSequence());
-        commands.add(CloneDef.getCommandSequence());
-        commands.add(FetchDef.getCommandSequence());
-        commands.add(PullDef.getCommandSequence());
-        commands.add(FeatureShowDef.getCommandSequence());
-        commands.add(FeatureCheckoutDef.getCommandSequence());
-        commands.add(FeatureResetDef.getCommandSequence());
+        commands.add(StatusDef.get());
+        commands.add(CloneDef.get());
+        commands.add(FetchDef.get());
+        commands.add(PullDef.get());
+        commands.add(FeatureShowDef.get());
+        commands.add(FeatureCheckoutDef.get());
+        commands.add(FeatureResetDef.get());
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("meta\nhttps://github.com/arthurpicht/meta")
@@ -46,7 +31,7 @@ public class Meta {
                 .build("meta");
 
         return new CliBuilder()
-                .withGlobalOptions(globalOptions)
+                .withGlobalOptions(GlobalOptionsDef.get())
                 .withCommands(commands)
                 .withAutoHelp()
                 .build(cliDescription);
@@ -65,7 +50,7 @@ public class Meta {
             System.exit(1);
         }
 
-        boolean showStacktrace = cliCall.getOptionParserResultGlobal().hasOption(GLOBAL_OPTION__STACKTRACE);
+        boolean showStacktrace = cliCall.getOptionParserResultGlobal().hasOption(GlobalOptionsDef.STACKTRACE);
 
         try {
             cli.execute(cliCall);

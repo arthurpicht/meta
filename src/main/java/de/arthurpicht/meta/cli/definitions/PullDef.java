@@ -6,7 +6,7 @@ import de.arthurpicht.meta.cli.executor.PullExecutor;
 
 public class PullDef {
 
-    public static CommandSequence getCommandSequence() {
+    public static CommandSequence get() {
         return new CommandSequenceBuilder()
                 .addCommand("pull")
                 .withCommandExecutor(new PullExecutor())

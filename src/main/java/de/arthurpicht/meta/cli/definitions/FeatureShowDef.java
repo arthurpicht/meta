@@ -6,7 +6,7 @@ import de.arthurpicht.meta.cli.executor.FeatureShowExecutor;
 
 public class FeatureShowDef {
 
-    public static CommandSequence getCommandSequence() {
+    public static CommandSequence get() {
 
         return new CommandSequenceBuilder()
                 .addCommands("feature", "show")

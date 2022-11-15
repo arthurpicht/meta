@@ -11,7 +11,7 @@ public class FeatureResetDef {
     public static final String OPTION_ALL = "FEATURE_RESET__OPTION__ALL";
     public static final String OPTION_FORCE = "FEATURE_RESET__OPTION__FORCE";
 
-    public static CommandSequence getCommandSequence() {
+    public static CommandSequence get() {
 
         Options options = new Options()
                 .add(new OptionBuilder()

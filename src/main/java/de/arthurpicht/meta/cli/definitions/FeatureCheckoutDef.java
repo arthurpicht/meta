@@ -7,7 +7,7 @@ import de.arthurpicht.meta.cli.executor.FeatureCheckoutExecutor;
 
 public class FeatureCheckoutDef {
 
-    public static CommandSequence getCommandSequence() {
+    public static CommandSequence get() {
 
         return new CommandSequenceBuilder()
                 .addCommands("feature", "checkout")
