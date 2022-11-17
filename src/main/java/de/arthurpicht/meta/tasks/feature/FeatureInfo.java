@@ -8,6 +8,7 @@ import de.arthurpicht.meta.tasks.feature.scanner.FeatureInventory;
 import de.arthurpicht.meta.tasks.feature.scanner.FeatureScanner;
 
 import java.util.List;
+import java.util.Set;
 
 import static de.arthurpicht.utils.core.assertion.MethodPreconditions.assertArgumentNotNull;
 
@@ -64,9 +65,9 @@ public class FeatureInfo {
         return this.featureInventory;
     }
 
-    public List<String> getRelatedRepoNames() {
+    public List<RepoConfig> getRelatedRepoConfigs() {
         assertFeature();
-        return this.featureInventory.getRepoNames(this.feature.getName());
+        return this.featureInventory.getRepoConfigs(this.feature.getName());
     }
 
     private void assertFeature() {

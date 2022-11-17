@@ -12,15 +12,15 @@ import java.util.List;
 public class FeatureScanner {
 
     public static FeatureInventory scan(MetaConfig metaConfig, Target target) {
-        FeatureInventory featureInventory = new FeatureInventory();
+        FeatureInventory.Builder featureInventoryBuilder = new FeatureInventory.Builder();
         List<RepoConfig> repoConfigList = metaConfig.getRepoConfigsForTarget(target);
-        repoConfigList.forEach(repoConfig -> scanRepo(repoConfig, featureInventory));
-        return featureInventory;
+        repoConfigList.forEach(repoConfig -> scanRepo(repoConfig, featureInventoryBuilder));
+        return featureInventoryBuilder.build();
     }
 
-    private static void scanRepo(RepoConfig repoConfig, FeatureInventory featureInventory) {
+    private static void scanRepo(RepoConfig repoConfig, FeatureInventory.Builder featureInventoryBuilder) {
         List<String> featureNameList = getFeatureNames(repoConfig);
-        featureInventory.add(featureNameList, repoConfig.getRepoName());
+        featureInventoryBuilder.add(featureNameList, repoConfig);
     }
 
     private static List<String> getFeatureNames(RepoConfig repoConfig) {

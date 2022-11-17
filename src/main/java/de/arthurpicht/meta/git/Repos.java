@@ -1,6 +1,5 @@
 package de.arthurpicht.meta.git;
 
-import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.tasks.feature.FeatureInfo;
@@ -9,13 +8,9 @@ import de.arthurpicht.meta.tasks.status.RepoProperties;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Repos {
-
-    public static List<RepoConfig> selectReposWithUncommittedChanges(List<String> repoNames, MetaConfig metaConfig) {
-        List<RepoConfig> repoConfigs = metaConfig.getRepoConfigs(repoNames);
-        return selectReposWithUncommittedChanges(repoConfigs);
-    }
 
     public static List<RepoConfig> selectReposWithUncommittedChanges(List<RepoConfig> repoConfigs) {
         List<RepoConfig> reposWithUncommittedChanges = new ArrayList<>();
@@ -24,6 +19,15 @@ public class Repos {
                 reposWithUncommittedChanges.add(repoConfig);
         }
         return reposWithUncommittedChanges;
+    }
+
+    public static List<RepoConfig> selectReposWithModifiedFiles(List<RepoConfig> repoConfigs) {
+        List<RepoConfig> reposWithModifiedFiles = new ArrayList<>();
+        for (RepoConfig repoConfig : repoConfigs) {
+            if (hasModifiedFiles(repoConfig.getRepoPath()))
+                reposWithModifiedFiles.add(repoConfig);
+        }
+        return reposWithModifiedFiles;
     }
 
     public static List<RepoConfig> selectReposNotOnBaseBranch(List<RepoConfig> repoConfigs, FeatureInfo featureInfo) {
@@ -52,10 +56,17 @@ public class Repos {
         }
     }
 
-
     private static boolean hasUncommittedChanges(Path repoPath) {
         try {
             return Git.hasUncommittedChanges(repoPath);
+        } catch (GitException e) {
+            throw new MetaRuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private static boolean hasModifiedFiles(Path repoPath) {
+        try {
+            return Git.hasModifiedFiles(repoPath);
         } catch (GitException e) {
             throw new MetaRuntimeException(e.getMessage(), e);
         }

@@ -17,6 +17,7 @@ import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.util.List;
+import java.util.Set;
 
 import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.assertGitInstalled;
 import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.initMetaConfig;
@@ -40,19 +41,18 @@ public class FeatureResetExecutor implements CommandExecutor {
         if (all) {
             resetAll(metaConfig, target, featureInfo, force, verbose);
         } else {
-            resetFeature(metaConfig, featureInfo, force, verbose);
+            resetFeature(featureInfo, force, verbose);
         }
     }
 
-    private void resetFeature(MetaConfig metaConfig, FeatureInfo featureInfo, boolean force, boolean verbose)
+    private void resetFeature(FeatureInfo featureInfo, boolean force, boolean verbose)
             throws CommandExecutorException {
 
         if (!featureInfo.hasFeature())
             throw new CommandExecutorException("There is no feature checked out." +
                     " Consider calling --all to reset all repos.");
 
-        List<String> relatedRepoNames = featureInfo.getRelatedRepoNames();
-        List<RepoConfig> relatedRepoConfigs = metaConfig.getRepoConfigs(relatedRepoNames);
+        List<RepoConfig> relatedRepoConfigs = featureInfo.getRelatedRepoConfigs();
 
         reset(relatedRepoConfigs, force, verbose);
 
@@ -81,6 +81,13 @@ public class FeatureResetExecutor implements CommandExecutor {
             } else {
                 System.out.println("There are changes in the following repos: "
                         + Strings.listing(RepoConfigs.getRepoNames(changedRepos), ", ") + ". Force reset.");
+
+                List<RepoConfig> reposWithModifiedFiles = Repos.selectReposWithModifiedFiles(changedRepos);
+                if (!reposWithModifiedFiles.isEmpty()) {
+                    throw new CommandExecutorException("There are modified files in the following repos: "
+                            + Strings.listing(RepoConfigs.getRepoNames(reposWithModifiedFiles), ", ") + "."
+                    );
+                }
             }
         }
 

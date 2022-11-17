@@ -1,46 +1,74 @@
 package de.arthurpicht.meta.tasks.feature.scanner;
 
+import de.arthurpicht.meta.config.RepoConfig;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class FeatureInventory {
 
-    private final Map<String, Set<String>> featureMap;
+    public static class Builder {
 
-    public FeatureInventory() {
-        this.featureMap = new HashMap<>();
-    }
+        private FeatureMap.Builder featureMapBuilder;
 
-    public void add(List<String> featureNameList, String repoName) {
-        for (String featureName : featureNameList) {
-            add(featureName, repoName);
+        public Builder() {
+            this.featureMapBuilder = new FeatureMap.Builder();
         }
-    }
 
-    public void add(String featureName, String repoName) {
-        Set<String> repoNameSet;
-        if (this.featureMap.containsKey(featureName)) {
-            repoNameSet = this.featureMap.get(featureName);
-
-        } else {
-            repoNameSet = new HashSet<>();
-            this.featureMap.put(featureName, repoNameSet);
+        public void add(List<String> featureNameList, RepoConfig repoConfig) {
+            this.featureMapBuilder.add(featureNameList, repoConfig);
         }
-        repoNameSet.add(repoName);
+
+        public FeatureInventory build() {
+            return new FeatureInventory(this.featureMapBuilder.build());
+        }
+
     }
+
+    private final FeatureMap featureMap;
+
+    public FeatureInventory(FeatureMap featureMap) {
+        this.featureMap = featureMap;
+    }
+
+//    public void add(List<String> featureNameList, String repoName) {
+//        for (String featureName : featureNameList) {
+//            add(featureName, repoName);
+//        }
+//    }
+//
+//    public void add(String featureName, String repoName) {
+//        Set<String> repoNameSet;
+//        if (this.featureMap.containsKey(featureName)) {
+//            repoNameSet = this.featureMap.get(featureName);
+//
+//        } else {
+//            repoNameSet = new HashSet<>();
+//            this.featureMap.put(featureName, repoNameSet);
+//        }
+//        repoNameSet.add(repoName);
+//    }
 
     public List<String> getFeatureNames() {
-        return this.featureMap.keySet().stream().sorted().collect(Collectors.toList());
+        return this.featureMap.getFeatureNames().stream().sorted().collect(Collectors.toList());
     }
 
     public boolean hasFeatureName(String featureName) {
-        return this.featureMap.containsKey(featureName);
+        return this.featureMap.containsFeature(featureName);
     }
 
-    public List<String> getRepoNames(String featureName) {
-        if (!this.featureMap.containsKey(featureName))
+    public List<RepoConfig> getRepoConfigs(String featureName) {
+        if (!this.featureMap.containsFeature(featureName))
             throw new IllegalArgumentException("No such featureName: [" + featureName + "].");
-        return this.featureMap.get(featureName).stream().sorted().collect(Collectors.toList());
+        return List.copyOf(featureMap.getRepoConfigs(featureName));
+    }
+
+    public List<String> getSortedRepoNames(String featureName) {
+        List<RepoConfig> repoConfigs = getRepoConfigs(featureName);
+        return repoConfigs.stream()
+                .map(RepoConfig::getRepoName)
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public boolean isEmpty() {
@@ -48,8 +76,11 @@ public class FeatureInventory {
     }
 
     public boolean hasRepoFeature(String repoName, String featureName) {
-        Set<String> repoNames = this.featureMap.get(featureName);
-        return repoNames.contains(repoName);
+        Set<RepoConfig> repoConfigs = this.featureMap.getRepoConfigs(featureName);
+        return repoConfigs.stream()
+                .map(RepoConfig::getRepoName)
+                .collect(Collectors.toList())
+                .contains(repoName);
     }
 
 }

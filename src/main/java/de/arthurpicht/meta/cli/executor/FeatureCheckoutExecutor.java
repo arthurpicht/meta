@@ -20,7 +20,10 @@ import de.arthurpicht.meta.tasks.status.RepoProperties;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.assertGitInstalled;
 import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.initMetaConfig;
@@ -46,27 +49,30 @@ public class FeatureCheckoutExecutor implements CommandExecutor {
             throw new CommandExecutorException("No such feature with name [" + destinationFeatureName + "].");
         FeatureInfo destinationFeatureInfo = createFeatureInfoFromPreexisting(featureInventory, destinationFeatureName);
 
-        List<String> affectedRepos = determineAffectedRepos(sourceFeatureInfo, destinationFeatureInfo);
-        List<RepoConfig> uncommittedChangedRepos = Repos.selectReposWithUncommittedChanges(affectedRepos, metaConfig);
+        List<RepoConfig> affectedRepos = determineAffectedRepos(sourceFeatureInfo, destinationFeatureInfo);
+        List<RepoConfig> uncommittedChangedRepos = Repos.selectReposWithUncommittedChanges(affectedRepos);
 
-        if (!uncommittedChangedRepos.isEmpty())
+        if (!uncommittedChangedRepos.isEmpty()) {
+            List<String> uncommittedChangedRepoNames = uncommittedChangedRepos.stream()
+                    .map(RepoConfig::getRepoName)
+                    .collect(Collectors.toList());
             throw new CommandExecutorException(
                     "Cannot checkout feature. The following repos are affected and have " +
-                    "uncommitted changes: " + Strings.listing(uncommittedChangedRepos, ", ") + ".\n" +
-                    "Use option --force to ignore that.");
+                    "uncommitted changes: " + Strings.listing(uncommittedChangedRepoNames, ", ") + ".\n" +
+                    "Consider calling option --force.");
+        }
 
-        checkoutBase(metaConfig, sourceFeatureInfo);
-        checkoutFeature(metaConfig, sourceFeatureInfo);
+        checkoutBase(sourceFeatureInfo);
+        checkoutFeature(sourceFeatureInfo);
 
         System.out.println("Successfully checked out feature [" + destinationFeatureName + "].");
     }
 
-    private void checkoutBase(MetaConfig metaConfig, FeatureInfo sourceFeatureInfo) {
+    private void checkoutBase(FeatureInfo sourceFeatureInfo) {
         if (!sourceFeatureInfo.hasFeature()) return;
 
-        List<String> repos = sourceFeatureInfo.getRelatedRepoNames();
-        for (String repo : repos) {
-            RepoConfig repoConfig = metaConfig.getRepoConfig(repo);
+        List<RepoConfig> repoConfigs = sourceFeatureInfo.getRelatedRepoConfigs();
+        for (RepoConfig repoConfig : repoConfigs) {
             RepoProperties repoProperties = new RepoProperties(repoConfig, sourceFeatureInfo);
             try {
                 Git.checkout(repoProperties.getRepoPath(), repoProperties.getBaseBranchName(), false);
@@ -76,10 +82,9 @@ public class FeatureCheckoutExecutor implements CommandExecutor {
         }
     }
 
-    private void checkoutFeature(MetaConfig metaConfig, FeatureInfo destFeatureInfo) {
-        List<String> repos = destFeatureInfo.getRelatedRepoNames();
-        for (String repo : repos) {
-            RepoConfig repoConfig = metaConfig.getRepoConfig(repo);
+    private void checkoutFeature(FeatureInfo destFeatureInfo) {
+        List<RepoConfig> repoConfigs = destFeatureInfo.getRelatedRepoConfigs();
+        for (RepoConfig repoConfig : repoConfigs) {
             RepoProperties repoProperties = new RepoProperties(repoConfig, destFeatureInfo);
             try {
                 Git.checkout(repoProperties.getRepoPath(), repoProperties.getIntendedBranchName(), false);
@@ -94,13 +99,13 @@ public class FeatureCheckoutExecutor implements CommandExecutor {
         return new FeatureInfo(feature, featureInventory);
     }
 
-    private List<String> determineAffectedRepos(
+    private List<RepoConfig> determineAffectedRepos(
             FeatureInfo sourceFeatureInfo, FeatureInfo destinationFeatureInfo) {
 
-        List<String> affectedRepos = sourceFeatureInfo.hasFeature() ?
-                sourceFeatureInfo.getRelatedRepoNames() :
+        List<RepoConfig> affectedRepos = sourceFeatureInfo.hasFeature() ?
+                sourceFeatureInfo.getRelatedRepoConfigs() :
                 new ArrayList<>();
-        affectedRepos.addAll(destinationFeatureInfo.getRelatedRepoNames());
+        affectedRepos.addAll(destinationFeatureInfo.getRelatedRepoConfigs());
 
         return affectedRepos;
     }

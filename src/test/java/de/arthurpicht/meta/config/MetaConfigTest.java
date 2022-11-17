@@ -26,10 +26,10 @@ public class MetaConfigTest {
 
     @Test
     public void getRepoNamesMeta1() {
-        assertEquals(8, metaConfig3.getRepoNames().size());
+        assertEquals(8, metaConfig3.getIds().size());
         assertEquals(
                 Lists.newArrayList("simple", "testRepo1", "testRepo2", "testRepo3", "testRepo4", "testRepo5", "testRepo6", "testRepo7"),
-                metaConfig3.getRepoNames()
+                metaConfig3.getIds()
         );
     }
 

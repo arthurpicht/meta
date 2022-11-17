@@ -247,6 +247,20 @@ public class Git {
         }
     }
 
+    public static boolean hasModifiedFiles(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "ls-files", "-m");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreams.toStrings(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git ls-files -m' exited with error code " + exitCode + ".");
+            return (result.size() > 0);
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
     public static boolean hasUncommittedChanges(Path repoPath) throws GitException {
         List<String> commands = List.of("git", "status", "--porcelain");
         try {

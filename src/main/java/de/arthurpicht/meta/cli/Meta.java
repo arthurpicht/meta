@@ -71,7 +71,6 @@ public class Meta {
     }
 
     private static void errorOut(Throwable e, boolean showStacktrace) {
-        System.out.println();
         System.out.println(Ansi.colorize("ERROR. OPERATION ABORTED.", Colors.redText));
         System.out.println(e.getMessage());
         if (showStacktrace) e.printStackTrace();
