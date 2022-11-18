@@ -14,9 +14,8 @@ public final class RepoConfigMap {
             this.map = new LinkedHashMap<>();
         }
 
-        public Builder put(String repoId, RepoConfig repoConfig) {
+        public void put(String repoId, RepoConfig repoConfig) {
             this.map.put(repoId, repoConfig);
-            return this;
         }
 
         public RepoConfigMap build() {

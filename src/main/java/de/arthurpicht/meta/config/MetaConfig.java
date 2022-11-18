@@ -9,15 +9,11 @@ import java.util.stream.Collectors;
 public class MetaConfig {
 
     private final Path metaDir;
-//    private final List<String> repoNames;
     private final GeneralConfig generalConfig;
-//    private final Map<String, RepoConfig> repoConfigMap;
     private final RepoConfigMap repoConfigMap;
 
     public MetaConfig(Path metaDir, GeneralConfig generalConfig, RepoConfigMap repoConfigMap) {
         this.metaDir = metaDir;
-//        String[] repoNames = repoConfigMap.keySet().toArray(new String[0]);
-//        this.repoNames = List.of(repoNames);
         this.generalConfig = generalConfig;
         this.repoConfigMap = repoConfigMap;
     }

@@ -292,10 +292,6 @@ public class Git {
         }
     }
 
-//    public static boolean hasLocalChanges(Path repoPath) throws GitException {
-//        return hasUncommittedChanges(repoPath) || hasUncommittedChanges(repoPath);
-//    }
-
     public static boolean hasStash(Path repoPath) throws GitException {
         List<String> commands = List.of("git", "stash", "list");
         try {

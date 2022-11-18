@@ -17,7 +17,6 @@ import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.util.List;
-import java.util.Set;
 
 import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.assertGitInstalled;
 import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.initMetaConfig;
@@ -41,11 +40,11 @@ public class FeatureResetExecutor implements CommandExecutor {
         if (all) {
             resetAll(metaConfig, target, featureInfo, force, verbose);
         } else {
-            resetFeature(featureInfo, force, verbose);
+            resetFeature(featureInfo, force, verbose, metaConfig, target);
         }
     }
 
-    private void resetFeature(FeatureInfo featureInfo, boolean force, boolean verbose)
+    private void resetFeature(FeatureInfo featureInfo, boolean force, boolean verbose, MetaConfig metaConfig, Target target)
             throws CommandExecutorException {
 
         if (!featureInfo.hasFeature())
@@ -54,9 +53,9 @@ public class FeatureResetExecutor implements CommandExecutor {
 
         List<RepoConfig> relatedRepoConfigs = featureInfo.getRelatedRepoConfigs();
 
-        reset(relatedRepoConfigs, force, verbose);
+        reset(relatedRepoConfigs, force, verbose, metaConfig, target);
 
-        System.out.println("All repos related to feature [" + featureInfo.getFeature().getName() + "] reset.");
+        System.out.println("All repos related to feature [" + featureInfo.getFeature().getName() + "] are reset to base.");
     }
 
     private void resetAll(MetaConfig metaConfig, Target target, FeatureInfo featureInfo, boolean force, boolean verbose)
@@ -64,12 +63,13 @@ public class FeatureResetExecutor implements CommandExecutor {
 
         List<RepoConfig> repos = metaConfig.getRepoConfigsForTarget(target);
         List<RepoConfig> reposNotOnBaseBranch = Repos.selectReposNotOnBaseBranch(repos, featureInfo);
-        reset(reposNotOnBaseBranch, force, verbose);
+        reset(reposNotOnBaseBranch, force, verbose, metaConfig, target);
 
         System.out.println("All repos reset.");
     }
 
-    private void reset(List<RepoConfig> repoConfigs, boolean force, boolean verbose) throws CommandExecutorException {
+    private void reset(List<RepoConfig> repoConfigs, boolean force, boolean verbose, MetaConfig metaConfig, Target target)
+            throws CommandExecutorException {
 
         List<RepoConfig> changedRepos = Repos.selectReposWithUncommittedChanges(repoConfigs);
 
@@ -91,7 +91,7 @@ public class FeatureResetExecutor implements CommandExecutor {
             }
         }
 
-        Repos.reset(repoConfigs, verbose);
+        Repos.reset(repoConfigs, verbose, metaConfig, target);
 
         FeatureFile featureFile = new FeatureFile(ExecutionContext.getMetaDirAsPath());
         featureFile.delete();

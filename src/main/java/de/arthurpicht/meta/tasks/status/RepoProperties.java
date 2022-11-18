@@ -8,8 +8,6 @@ import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class RepoProperties {
 
@@ -28,11 +26,6 @@ public class RepoProperties {
         this.repoConfig = repoConfig;
         this.isRepoPathExisting = FileUtils.isExistingDirectory(this.repoConfig.getRepoPath());
         this.featureInfo = featureInfo;
-    }
-
-    public static RepoProperties createForNoFeature(RepoConfig repoConfig) {
-        FeatureInfo featureInfo = FeatureInfo.createForNoFeature();
-        return new RepoProperties(repoConfig, featureInfo);
     }
 
     public String getRepoName() {
@@ -84,7 +77,7 @@ public class RepoProperties {
             String featureName = this.featureInfo.getFeature().getName();
             boolean hasFeature = this.featureInfo.getFeatureInventory().hasRepoFeature(repoName, featureName);
 
-            if (hasFeature) return FeatureBranchName.FEATURE_BRANCH_PREFIX + "featureName";
+            if (hasFeature) return FeatureBranchName.FEATURE_BRANCH_PREFIX + featureName;
         }
         return getBaseBranchName();
     }
@@ -130,13 +123,6 @@ public class RepoProperties {
             throw new IllegalStateException("Repo path not existing.");
         if (!isRepo())
             throw new IllegalStateException("Not a git repo.");
-    }
-
-    private List<String> getFeatureBranches() throws GitException {
-        List<String> localBranches = Git.getLocalBranches(getRepoPath());
-        return localBranches.stream()
-                .filter(brachName -> brachName.startsWith(FeatureBranchName.FEATURE_BRANCH_PREFIX))
-                .collect(Collectors.toList());
     }
 
 }

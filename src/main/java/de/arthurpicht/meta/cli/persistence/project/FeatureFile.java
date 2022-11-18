@@ -1,7 +1,6 @@
 package de.arthurpicht.meta.cli.persistence.project;
 
 import de.arthurpicht.meta.cli.feature.Feature;
-import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.utils.io.file.SingleValueFile;
 

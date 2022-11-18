@@ -5,8 +5,6 @@ import de.arthurpicht.meta.cli.persistence.project.FeatureFile;
 import de.arthurpicht.utils.core.assertion.MethodPreconditions;
 import de.arthurpicht.utils.core.strings.Strings;
 
-import java.io.IOException;
-
 public class Feature {
 
     private final String name;
@@ -29,8 +27,14 @@ public class Feature {
         if (featureFile.exists()) {
             String featureName = featureFile.read();
             return createFeatureByName(featureName);
-    }
+        }
         return createWithNoFeature();
+    }
+
+    public void save() {
+        FeatureFile featureFile = new FeatureFile(ExecutionContext.getMetaDirAsPath());
+        if (featureFile.exists()) featureFile.delete();
+        featureFile.write(this);
     }
 
     public boolean hasFeature() {
@@ -41,6 +45,12 @@ public class Feature {
         if (!Strings.isSpecified(this.name))
             throw new IllegalStateException("No feature specified.");
         return this.name;
+    }
+
+    @Override
+    public String toString() {
+        if (Strings.isSpecified(this.name)) return this.name;
+        return "NO_FEATURE";
     }
 
 }

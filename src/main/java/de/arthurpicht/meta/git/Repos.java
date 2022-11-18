@@ -1,5 +1,7 @@
 package de.arthurpicht.meta.git;
 
+import de.arthurpicht.meta.cli.target.Target;
+import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.tasks.feature.FeatureInfo;
@@ -8,7 +10,6 @@ import de.arthurpicht.meta.tasks.status.RepoProperties;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class Repos {
 
@@ -72,9 +73,10 @@ public class Repos {
         }
     }
 
-    public static void reset(List<RepoConfig> repoConfigs, boolean verbose) {
+    public static void reset(List<RepoConfig> repoConfigs, boolean verbose, MetaConfig metaConfig, Target target) {
+        FeatureInfo featureInfo = FeatureInfo.createForNoFeature(metaConfig, target);
         for (RepoConfig repoConfig : repoConfigs) {
-            RepoProperties repoProperties = RepoProperties.createForNoFeature(repoConfig);
+            RepoProperties repoProperties = new RepoProperties(repoConfig, featureInfo);
             checkoutBaseBranch(repoProperties, verbose);
         }
     }

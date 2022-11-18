@@ -31,19 +31,4 @@ public class FeatureScanner {
         }
     }
 
-//    private static List<String> getRemoteBranchNames(RepoConfig repoConfig) {
-//        try {
-//            return Git.getRemoteBranches(repoConfig.getRepoPath());
-//        } catch (GitException e) {
-//            throw new MetaRuntimeException("Could not determine remote branches.", e);
-//        }
-//    }
-//
-//    private static List<String> extractFeatureNames(List<String> localBranchNameList) {
-//        return localBranchNameList.stream()
-//                .filter(localBranchName -> localBranchName.startsWith(Const.FEATURE_BRANCH_PREFIX))
-//                .map(localBranchName -> localBranchName.substring(Const.FEATURE_BRANCH_PREFIX.length()))
-//                .collect(Collectors.toList());
-//    }
-
 }
