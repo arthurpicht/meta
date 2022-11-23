@@ -2,34 +2,27 @@
 
 meta is a linux tool for managing multi git projects. It allows for performing git commands such as *clone*, *status*, 
 *fetch* and *pull* as bulk operations on all configured repositories. It produces concise output, in particular when
-executing *status*.
+executing *status*. Furthermore, meta manages switching between features affecting different repositories.  
 
 The configuration of meta is done by a configuration file named `meta.conf`. The idea is to store `meta.conf` in a git
 repository on its own. When starting developing or deploying on a new location, only that single meta
 repository needs to be cloned. All subsequent clones and further git operations will then be handled by meta.
 
-Meta is restricted to "reading" operations intentionally.
+Meta does no harm. Except performing `fetch`, `pull`, and switching between branches, meta will not change the state of
+the repo. 
 
 Meta is restricted to git repos intentionally that are either accessible via ssh by keys or via https anonymously.
 Thus, authentication by username/password is not supported.
 
-## Build
-
-1. Make sure you have Java 11 and Gradle 6 installed.
-2. Clone repository [arthurpicht/meta](https://github.com/arthurpicht/meta.git):
-
-        git clone https://github.com/arthurpicht/meta.git
-3. Call 
-
-        gradle fatJar
-
 ## Install
 
-Add the `bin` directory of the local arthurpicht/meta repository to your PATH variable.
+Download the [latest release](https://github.com/arthurpicht/meta/releases) and put it on your $PATH.
 
 Check the installation by calling:
 
     meta --version
+
+If you want to build meta on your own, see paragraph *Build* below.
  
 ## Definitions
 
@@ -137,6 +130,27 @@ following calls of meta will be applied for that target. Changing the target aft
 `meta pull` will execute pull on all repositories. It only executes if the particular repository has no unpushed
 changes.
 
+### meta feature
+
+Working on features using feature branches can affect not only one but several repos. Meta can help with switching
+between different features if
+
+* all related feature-branches are named consistently over all affected repos and
+* all created feature-branches begin with a `feature-` prefix.
+
+`meta feature show` shows all features with affected repositories. A currently checked out feature is marked with
+a `*`.
+
+`meta feature checkout <featureName>` switches to a specified feature. The operation is not executed if any affected repo
+has uncommitted changes. Using the specific option `--force` or `-f` will switch also on uncommitted changes as long
+as those changes do not reflect modified files.
+
+`meta feature reset` resets repos affected by currently checked out feature to base branch configuration. Feature
+branches are reset by checking out those branches that were present after `meta clone`. This operation will not be executed, if any repo
+has uncommitted changes. Using the specific option `--force` or `-f` will ignore that, as long as those changes do not
+reflect modified files. Applying the specific option `--all` or `-a` will cause the operation to be executed not only
+on repos related to the lastly checked out feature, but on all.
+
 ## rapidly changing into repo directories
 
 Prerequisite: 
@@ -180,6 +194,20 @@ As mentioned before, putting `meta.conf` into a repository on its own *("the
 meta repo")* is considered a good idea. When doing so, include subdirectory
 `.meta-local` into `.gitignore` as it is created by meta and
 contains information about specific local circumstances.
+
+## Build
+
+If you want to build meta on your own, go like that:
+
+1. Make sure you have Java 11 and Gradle 6 installed.
+2. Clone repository [arthurpicht/meta](https://github.com/arthurpicht/meta.git):
+
+        git clone https://github.com/arthurpicht/meta.git
+3. Call
+
+        gradle fatJar
+4. Add the `bin` directory of the local arthurpicht/meta repository to your PATH variable.
+
 ## license
 
 Apache-2.0 License

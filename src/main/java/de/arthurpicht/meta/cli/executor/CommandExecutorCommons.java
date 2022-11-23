@@ -1,7 +1,11 @@
 package de.arthurpicht.meta.cli.executor;
 
 import de.arthurpicht.cli.CommandExecutorException;
+import de.arthurpicht.meta.cli.ExecutionContext;
+import de.arthurpicht.meta.config.MetaConfig;
+import de.arthurpicht.meta.config.MetaConfigFactory;
 import de.arthurpicht.meta.config.RepoConfig;
+import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
 
@@ -14,6 +18,14 @@ public class CommandExecutorCommons {
             if (!Git.hasGit()) throw new CommandExecutorException("Git command not found.");
         } catch (GitException e) {
             throw new RuntimeException("Unexpected Git-Exception: " + e.getMessage(), e);
+        }
+    }
+
+    public static MetaConfig initMetaConfig() throws CommandExecutorException {
+        try {
+            return MetaConfigFactory.create(ExecutionContext.getMetaDirAsPath());
+        } catch (ConfigurationException e) {
+            throw new CommandExecutorException(e.getMessage(), e);
         }
     }
 

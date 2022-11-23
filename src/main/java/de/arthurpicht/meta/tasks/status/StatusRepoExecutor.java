@@ -7,22 +7,25 @@ import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.git.GitException;
 import de.arthurpicht.meta.tasks.RepoExecutor;
 import de.arthurpicht.meta.tasks.TaskSummary;
-
-import java.nio.file.Path;
+import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 
 public class StatusRepoExecutor extends RepoExecutor {
 
+    private final FeatureInfo featureInfo;
+
+    public StatusRepoExecutor(FeatureInfo featureInfo) {
+        this.featureInfo = featureInfo;
+    }
+
     @Override
     public void execute(RepoConfig repoConfig, Target target, TaskSummary taskSummary) {
-        String repoName = repoConfig.getRepoName();
-        Path repoPath = repoConfig.getRepoPath();
         try {
-            BranchStatus branchStatus = BranchStatusResolver.resolve(repoPath, repoName);
-            BranchOutput.output(branchStatus);
+            RepoProperties repoProperties = new RepoProperties(repoConfig, this.featureInfo);
+            RepoStatusOutput.output(repoProperties);
         } catch (MetaRuntimeException e) {
-            Output.error(repoName, e.getMessage());
+            Output.error(repoConfig.getRepoName(), e.getMessage());
         } catch (GitException | RuntimeException e) {
-            Output.error(repoName, "Error: " + e.getMessage());
+            Output.error(repoConfig.getRepoName(), "Error: " + e.getMessage());
         }
     }
 

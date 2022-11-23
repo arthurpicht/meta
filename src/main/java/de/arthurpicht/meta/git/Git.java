@@ -9,6 +9,7 @@ import de.arthurpicht.utils.io.nio2.FileUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Git {
 
@@ -167,6 +168,48 @@ public class Git {
         }
     }
 
+    public static List<String> getLocalBranches(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "branch");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreams.toStrings(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git branch' exited with error code " + exitCode + ".");
+
+            return result.stream()
+                    .map(branch -> branch.substring(2).trim())
+                    .collect(Collectors.toList());
+
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
+    public static List<String> getRemoteBranches(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "branch", "-r");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreams.toStrings(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git branch -r' exited with error code " + exitCode + ".");
+
+            return result.stream()
+                    .map(branch -> branch.substring(2).trim())
+                    .map(branch -> branch.substring(branch.indexOf('/') + 1))
+                    .map(branch -> {
+                        var indexOfBlank = branch.indexOf(' ');
+                        if (branch.indexOf(' ') < 0) return branch;
+                        return branch.substring(0, indexOfBlank);
+                    })
+                    .collect(Collectors.toList());
+
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
     public static String getDefaultBranch(Path repoPath) throws GitException {
         // see: https://stackoverflow.com/questions/28666357/git-how-to-get-default-branch
         List<String> commands = List.of("git", "symbolic-ref", "refs/remotes/origin/HEAD");
@@ -204,6 +247,20 @@ public class Git {
         }
     }
 
+    public static boolean hasModifiedFiles(Path repoPath) throws GitException {
+        List<String> commands = List.of("git", "ls-files", "-m");
+        try {
+            Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
+            List<String> result = InputStreams.toStrings(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new GitException("'git ls-files -m' exited with error code " + exitCode + ".");
+            return (result.size() > 0);
+        } catch (IOException | InterruptedException e) {
+            throw new GitException(e);
+        }
+    }
+
     public static boolean hasUncommittedChanges(Path repoPath) throws GitException {
         List<String> commands = List.of("git", "status", "--porcelain");
         try {
@@ -233,10 +290,6 @@ public class Git {
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
-    }
-
-    public static boolean hasLocalChanges(Path repoPath) throws GitException {
-        return hasUncommittedChanges(repoPath) || hasUncommittedChanges(repoPath);
     }
 
     public static boolean hasStash(Path repoPath) throws GitException {

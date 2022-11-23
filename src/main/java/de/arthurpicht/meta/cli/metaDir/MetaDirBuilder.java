@@ -2,7 +2,7 @@ package de.arthurpicht.meta.cli.metaDir;
 
 import de.arthurpicht.cli.option.OptionParserResult;
 import de.arthurpicht.meta.Const;
-import de.arthurpicht.meta.cli.Meta;
+import de.arthurpicht.meta.cli.definitions.GlobalOptionsDef;
 import de.arthurpicht.meta.cli.persistence.user.MetaDirFile;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.utils.io.nio2.FileUtils;
@@ -26,8 +26,8 @@ public class MetaDirBuilder {
         String metaDirString;
         MetaDirSpecifier metaDirSpecifier;
         MetaDirFile metaDirFile = new MetaDirFile();
-        if (optionParserResultGlobal.hasOption(Meta.OPTION_META_DIR)) {
-            metaDirString = optionParserResultGlobal.getValue(Meta.OPTION_META_DIR);
+        if (optionParserResultGlobal.hasOption(GlobalOptionsDef.META_DIR)) {
+            metaDirString = optionParserResultGlobal.getValue(GlobalOptionsDef.META_DIR);
             metaDirSpecifier = MetaDirSpecifier.CLI;
         } else if (metaDirFile.exists()) {
             metaDirString = readMetaDirFromFile();

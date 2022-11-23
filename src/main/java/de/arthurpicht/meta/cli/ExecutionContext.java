@@ -2,6 +2,7 @@ package de.arthurpicht.meta.cli;
 
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.option.OptionParserResult;
+import de.arthurpicht.meta.cli.definitions.GlobalOptionsDef;
 import de.arthurpicht.meta.cli.metaDir.MetaDir;
 import de.arthurpicht.meta.cli.metaDir.MetaDirBuilder;
 
@@ -17,8 +18,8 @@ public class ExecutionContext {
     public static void init(CliCall cliCall) {
         OptionParserResult optionParserResultGlobal = cliCall.getOptionParserResultGlobal();
         metaDir = MetaDirBuilder.obtain(optionParserResultGlobal);
-        verbose = optionParserResultGlobal.hasOption(Meta.OPTION_VERBOSE);
-        stacktrace = optionParserResultGlobal.hasOption(Meta.OPTION_STACKTRACE);
+        verbose = optionParserResultGlobal.hasOption(GlobalOptionsDef.VERBOSE);
+        stacktrace = optionParserResultGlobal.hasOption(GlobalOptionsDef.STACKTRACE);
         initialized = true;
     }
 

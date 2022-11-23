@@ -7,30 +7,25 @@ import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.MetaConfig;
-import de.arthurpicht.meta.config.MetaConfigFactory;
-import de.arthurpicht.meta.config.exceptions.ConfigurationException;
+import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.meta.tasks.status.Status;
+
+import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.assertGitInstalled;
+import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.initMetaConfig;
 
 public class StatusExecutor implements CommandExecutor {
 
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
 
-        CommandExecutorCommons.assertGitInstalled();
+        assertGitInstalled();
 
         ExecutionContext.init(cliCall);
         MetaConfig metaConfig = initMetaConfig();
         Target target = ProjectTarget.obtainInitializedTarget(metaConfig.getGeneralConfig().getTargets());
+        FeatureInfo featureInfo = FeatureInfo.createFromPersistence(metaConfig, target);
 
-        Status.execute(metaConfig, target);
-    }
-
-    private MetaConfig initMetaConfig() throws CommandExecutorException {
-        try {
-            return MetaConfigFactory.create(ExecutionContext.getMetaDirAsPath());
-        } catch (ConfigurationException e) {
-            throw new CommandExecutorException(e.getMessage(), e);
-        }
+        Status.execute(metaConfig, target, featureInfo);
     }
 
 }

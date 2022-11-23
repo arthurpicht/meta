@@ -8,8 +8,6 @@ import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class MetaConfigFactory {
@@ -17,7 +15,7 @@ public class MetaConfigFactory {
     private static final String SECTION_GENERAL = "general";
 
     private final GeneralConfig generalConfig;
-    private final Map<String, RepoConfig> repoConfigMap;
+    private final RepoConfigMap repoConfigMap;
 
     public static MetaConfig create(Path metaDir) throws ConfigurationException {
         MetaConfigFactory metaConfigFactory = new MetaConfigFactory(metaDir);
@@ -48,17 +46,17 @@ public class MetaConfigFactory {
         return new GeneralConfig(generalSection, metaDir);
     }
 
-    private Map<String, RepoConfig> obtainRepoConfigs(ConfigurationFactory configurationFactory, GeneralConfig generalConfig)
+    private RepoConfigMap obtainRepoConfigs(ConfigurationFactory configurationFactory, GeneralConfig generalConfig)
             throws ConfigurationException {
         Set<String> sectionNames = configurationFactory.getSectionNames();
         sectionNames.remove(SECTION_GENERAL);
-        Map<String, RepoConfig> repoConfigMap = new LinkedHashMap<>();
+        RepoConfigMap.Builder repoConfigMapBuilder = new RepoConfigMap.Builder();
         for (String sectionName : sectionNames) {
             Configuration configuration = configurationFactory.getConfiguration(sectionName);
             RepoConfig repoConfig = RepoConfigFactory.create(configuration, generalConfig);
-            repoConfigMap.put(sectionName, repoConfig);
+            repoConfigMapBuilder.put(sectionName, repoConfig);
         }
-        return repoConfigMap;
+        return repoConfigMapBuilder.build();
     }
 
     private Path getMetaFile(Path metaDir) {

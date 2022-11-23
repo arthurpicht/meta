@@ -5,6 +5,7 @@ import de.arthurpicht.meta.cli.target.Targets;
 import de.arthurpicht.utils.core.strings.Strings;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class RepoConfig {
 
@@ -78,4 +79,16 @@ public class RepoConfig {
         return this.targets.hasTarget(target);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RepoConfig that = (RepoConfig) o;
+        return repoId.equals(that.repoId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(repoId);
+    }
 }

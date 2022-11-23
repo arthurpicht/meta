@@ -1,12 +1,12 @@
 package de.arthurpicht.meta.cli.metaDir;
 
-import de.arthurpicht.meta.cli.Meta;
+import de.arthurpicht.meta.cli.definitions.GlobalOptionsDef;
 
 public enum MetaDirSpecifier {
 
     META_DIR_FILE("user specific meta_dir file"),
     WORKING_DIR("current working directory"),
-    CLI("global cli parameter '" + Meta.OPTION_META_DIR + "'");
+    CLI("global cli parameter '" + GlobalOptionsDef.META_DIR + "'");
 
     private final String text;
 

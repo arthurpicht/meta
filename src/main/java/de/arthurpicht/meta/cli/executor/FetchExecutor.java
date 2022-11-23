@@ -7,30 +7,23 @@ import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.MetaConfig;
-import de.arthurpicht.meta.config.MetaConfigFactory;
-import de.arthurpicht.meta.config.exceptions.ConfigurationException;
 import de.arthurpicht.meta.tasks.fetch.Fetch;
+
+import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.assertGitInstalled;
+import static de.arthurpicht.meta.cli.executor.CommandExecutorCommons.initMetaConfig;
 
 public class FetchExecutor implements CommandExecutor {
 
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
 
-        CommandExecutorCommons.assertGitInstalled();
+        assertGitInstalled();
 
         ExecutionContext.init(cliCall);
         MetaConfig metaConfig = initMetaConfig();
         Target target = ProjectTarget.obtainInitializedTarget(metaConfig.getGeneralConfig().getTargets());
 
         Fetch.execute(metaConfig, target);
-    }
-
-    private MetaConfig initMetaConfig() throws CommandExecutorException {
-        try {
-            return MetaConfigFactory.create(ExecutionContext.getMetaDirAsPath());
-        } catch (ConfigurationException e) {
-            throw new CommandExecutorException(e.getMessage(), e);
-        }
     }
 
 }
