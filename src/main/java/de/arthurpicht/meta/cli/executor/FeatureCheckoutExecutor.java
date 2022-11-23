@@ -4,6 +4,7 @@ import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
+import de.arthurpicht.meta.cli.definitions.FeatureCheckoutDef;
 import de.arthurpicht.meta.cli.definitions.FeatureResetDef;
 import de.arthurpicht.meta.cli.feature.Feature;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
@@ -37,7 +38,7 @@ public class FeatureCheckoutExecutor implements CommandExecutor {
         MetaConfig metaConfig = initMetaConfig();
         Target target = ProjectTarget.obtainInitializedTarget(metaConfig.getGeneralConfig().getTargets());
         String destinationFeatureName = getCliParameterFeature(cliCall);
-        boolean force = cliCall.getOptionParserResultSpecific().hasOption(FeatureResetDef.OPTION_FORCE);
+        boolean force = cliCall.getOptionParserResultSpecific().hasOption(FeatureCheckoutDef.OPTION_FORCE);
 
         FeatureInfo sourceFeatureInfo = FeatureInfo.createFromPersistence(metaConfig, target);
         FeatureInfo destinationFeatureInfo = getDestinationFeatureInfo(sourceFeatureInfo, destinationFeatureName);
