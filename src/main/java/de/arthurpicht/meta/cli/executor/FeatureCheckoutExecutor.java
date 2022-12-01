@@ -16,6 +16,7 @@ import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
 import de.arthurpicht.meta.git.Repos;
+import de.arthurpicht.meta.helper.ListHelper;
 import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.meta.tasks.feature.scanner.FeatureInventory;
 import de.arthurpicht.meta.tasks.status.RepoProperties;
@@ -128,7 +129,7 @@ public class FeatureCheckoutExecutor implements CommandExecutor {
             FeatureInfo sourceFeatureInfo, FeatureInfo destinationFeatureInfo) {
 
         List<RepoConfig> affectedRepos = new ArrayList<>(sourceFeatureInfo.getRelatedRepoConfigs());
-        affectedRepos.addAll(destinationFeatureInfo.getRelatedRepoConfigs());
+        affectedRepos = ListHelper.addIfNotYetContained(affectedRepos, destinationFeatureInfo.getRelatedRepoConfigs());
 
         return affectedRepos;
     }
