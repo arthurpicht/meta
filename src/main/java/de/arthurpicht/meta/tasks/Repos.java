@@ -5,7 +5,9 @@ import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.config.RepoConfig;
+import de.arthurpicht.utils.core.strings.Strings;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Repos {
@@ -31,10 +33,18 @@ public class Repos {
         } else {
             System.out.println(Ansi.colorize("ERROR ON PROCESSING REPOS.", Colors.redText));
         }
-        System.out.println(taskSummary.getNumberOfRepos() + " repos processed: "
-                + taskSummary.getNrOfReposSuccess() + " ok, "
-                + taskSummary.getNrOfReposWarning() + " with warnings, "
-                + taskSummary.getNrOfReposFailed() + " failed.");
+
+        List<String> summaryStrings = new ArrayList<>();
+        if (taskSummary.hasReposWithSuccess()) summaryStrings.add(taskSummary.getNrOfReposSuccess() + " ok");
+        if (taskSummary.hasReposThatWereSkipped())
+            summaryStrings.add(taskSummary.getNrOfReposSkipped() + " skipped");
+        if (taskSummary.hasReposWithWarning())
+            summaryStrings.add(taskSummary.getNrOfReposWithWarning() + " with warnings");
+        if (taskSummary.hasReposFailed())
+            summaryStrings.add(taskSummary.getNrOfReposFailed() + " failed");
+
+        System.out.println(taskSummary.getNumberOfRepos() + " repos processed: " +
+                Strings.listing(summaryStrings, ", ") + ".");
     }
 
 }

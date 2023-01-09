@@ -22,6 +22,10 @@ public class Output {
         System.out.println(greenTag("OK") + blueTag(projectName) + Ansi.colorize(message, Colors.greenText));
     }
 
+    public static void skip(String projectName, String message) {
+        System.out.println(greenTag("SKIP") + blueTag(projectName) + message);
+    }
+
     public static void warning(String projectName, String message) {
         System.out.println(yellowTag("WARN") + blueTag(projectName) + message);
     }

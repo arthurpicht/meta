@@ -1,6 +1,7 @@
 package de.arthurpicht.meta.tasks.feature;
 
 import static de.arthurpicht.utils.core.assertion.MethodPreconditions.assertArgumentNotNull;
+import static de.arthurpicht.utils.core.assertion.MethodPreconditions.assertArgumentNotNullAndNotEmpty;
 
 public class FeatureBranchName {
 
@@ -36,6 +37,11 @@ public class FeatureBranchName {
     public static boolean isFeatureBranchName(String branchName) {
         return branchName.startsWith(FEATURE_BRANCH_PREFIX)
                 && branchName.length() > FEATURE_BRANCH_PREFIX.length();
+    }
+
+    public static String getBranchName(String featureName) {
+        assertArgumentNotNullAndNotEmpty("featureName", featureName);
+        return FEATURE_BRANCH_PREFIX + featureName;
     }
 
 }

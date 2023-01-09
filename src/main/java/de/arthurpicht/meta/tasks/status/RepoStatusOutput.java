@@ -48,6 +48,10 @@ public class RepoStatusOutput {
             output += Ansi.colorize("Commits ahead. ", Colors.magentaText);
         }
 
+        if (!repoProperties.isOnIntendedBranch()) {
+            output += Ansi.colorize("Intended branch: " + repoProperties.getIntendedBranchName() + ".", Colors.redText);
+        }
+
         System.out.println(output);
     }
 

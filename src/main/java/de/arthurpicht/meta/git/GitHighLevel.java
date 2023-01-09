@@ -16,4 +16,9 @@ public class GitHighLevel {
                 .collect(Collectors.toList());
     }
 
+    public static boolean hasFeatureBranch(Path repoPath, FeatureBranchName featureBranchName) throws GitException {
+        List<String> featureBranchNameList = getFeatureBranchNameList(repoPath);
+        return featureBranchNameList.contains(featureBranchName.getBranchName());
+    }
+
 }

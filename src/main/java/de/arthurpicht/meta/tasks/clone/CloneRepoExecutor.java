@@ -6,8 +6,11 @@ import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.git.Git;
 import de.arthurpicht.meta.git.GitException;
+import de.arthurpicht.meta.git.GitHighLevel;
 import de.arthurpicht.meta.tasks.RepoExecutor;
 import de.arthurpicht.meta.tasks.TaskSummary;
+import de.arthurpicht.meta.tasks.feature.FeatureBranchName;
+import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.utils.io.nio2.FileUtils;
 
 import java.io.IOException;
@@ -17,6 +20,12 @@ import java.nio.file.Path;
 import static de.arthurpicht.meta.cli.output.Output.*;
 
 public class CloneRepoExecutor extends RepoExecutor {
+
+    private final FeatureInfo featureInfo;
+
+    public CloneRepoExecutor(FeatureInfo featureInfo) {
+        this.featureInfo = featureInfo;
+    }
 
     @Override
     public void execute(RepoConfig repoConfig, Target target, TaskSummary taskSummary) {
@@ -48,7 +57,7 @@ public class CloneRepoExecutor extends RepoExecutor {
         }
 
         try {
-            checkoutAlteredBranch(repoConfig, ExecutionContext.isVerbose());
+            checkoutIntendedBranch(repoConfig, this.featureInfo, ExecutionContext.isVerbose());
         } catch (GitException e) {
             Output.error(repoName,"Git checkout failed: " + e.getMessage());
             if (ExecutionContext.isStacktrace())
@@ -79,24 +88,19 @@ public class CloneRepoExecutor extends RepoExecutor {
 
         if (isRepoDir(repoConfig)) {
             boolean isTargetProd = projectTarget.isProd();
-            if (isIntendedGitRepo(repoConfig, isTargetProd) && isIntendedBranch(repoConfig)) {
-                taskSummary.addRepoWarning(repoName);
+            if (isIntendedGitRepo(repoConfig, isTargetProd)) {
+                taskSummary.addRepoSkip(repoName);
                 if (!verbose)
                     Output.deleteLastLine();
-                warning(project, "Repo already existing in intended branch. Consider performing update. Skip operation.");
-            } else if (isIntendedGitRepo(repoConfig, isTargetProd) && !isIntendedBranch(repoConfig)) {
-                taskSummary.addRepoFailed(repoName);
-                if (!verbose)
-                    Output.deleteLastLine();
-                error(project, "Repo already existing with a checked out branch " +
-                        "[" + getCurrentBranch(repoConfig) + "] other than intended branch " +
-                        "[" + getIntendedBranchForCheckedOutRepo(repoConfig) + "].");
+                skip(project, "Repo already existing.");
             } else {
                 taskSummary.addRepoFailed(repoName);
                 if (!verbose)
                     Output.deleteLastLine();
-                error(project, "Wrong repo in destination. Expected: [" + getConfiguredUrl(repoConfig, isTargetProd) + "]. " +
-                        "Actual: [" + getRemoteUrl(repoConfig) + "].");
+                error(project,
+                        "Wrong repo in destination. " +
+                                "Expected: [" + getConfiguredUrl(repoConfig, isTargetProd) + "]. " +
+                                "Actual: [" + getRemoteUrl(repoConfig) + "].");
             }
         } else {
             taskSummary.addRepoFailed(repoName);
@@ -172,8 +176,14 @@ public class CloneRepoExecutor extends RepoExecutor {
         return url;
     }
 
-    private static void checkoutAlteredBranch(RepoConfig repoConfig, boolean verbose) throws GitException {
-        if (repoConfig.hasAlteredBranch()) {
+    private static void checkoutIntendedBranch(RepoConfig repoConfig, FeatureInfo featureInfo, boolean verbose)
+            throws GitException {
+
+        if (featureInfo.hasFeature() && hasFeatureBranch(repoConfig, featureInfo)) {
+            String featureBranchName = FeatureBranchName.getBranchName(featureInfo.getFeature().getName());
+            Git.checkout(repoConfig.getRepoPath(), featureBranchName, verbose);
+
+        } else if (repoConfig.hasAlteredBranch()) {
             Path repoPath = repoConfig.getRepoPath();
             String branch = repoConfig.getBranch();
 
@@ -182,6 +192,12 @@ public class CloneRepoExecutor extends RepoExecutor {
 
             Git.checkout(repoConfig.getRepoPath(), repoConfig.getBranch(), verbose);
         }
+    }
+
+    private static boolean hasFeatureBranch(RepoConfig repoConfig, FeatureInfo featureInfo) throws GitException {
+        String featureName = featureInfo.getFeature().getName();
+        FeatureBranchName featureBranchName = FeatureBranchName.createByFeatureName(featureName);
+        return GitHighLevel.hasFeatureBranch(repoConfig.getDestinationPath(), featureBranchName);
     }
 
     private static String getDefaultBranch(RepoConfig repoConfig) {

@@ -6,17 +6,23 @@ import java.util.List;
 public class TaskSummary {
 
     private final List<String> reposSuccess;
+    private final List<String> reposSkip;
     private final List<String> reposWarning;
     private final List<String> reposFailed;
 
     public TaskSummary() {
         this.reposSuccess = new ArrayList<>();
+        this.reposSkip = new ArrayList<>();
         this.reposWarning = new ArrayList<>();
         this.reposFailed = new ArrayList<>();
     }
 
     public void addRepoSuccess(String repoName) {
         this.reposSuccess.add(repoName);
+    }
+
+    public void addRepoSkip(String repoName) {
+        this.reposSkip.add(repoName);
     }
 
     public void addRepoWarning(String repoName) {
@@ -31,12 +37,32 @@ public class TaskSummary {
         return this.reposSuccess.size();
     }
 
-    public int getNrOfReposWarning() {
+    public boolean hasReposWithSuccess() {
+        return getNrOfReposSuccess() > 0;
+    }
+
+    public int getNrOfReposSkipped() {
+        return this.reposSkip.size();
+    }
+
+    public boolean hasReposThatWereSkipped() {
+        return getNrOfReposSkipped() > 0;
+    }
+
+    public int getNrOfReposWithWarning() {
         return this.reposWarning.size();
+    }
+
+    public boolean hasReposWithWarning() {
+        return this.getNrOfReposWithWarning() > 0;
     }
 
     public int getNrOfReposFailed() {
         return this.reposFailed.size();
+    }
+
+    public boolean hasReposFailed() {
+        return getNrOfReposFailed() > 0;
     }
 
     public List<String> getReposSuccess() {
@@ -55,12 +81,8 @@ public class TaskSummary {
         return this.reposFailed.isEmpty();
     }
 
-    public boolean hasWarnings() {
-        return !this.reposWarning.isEmpty();
-    }
-
     public int getNumberOfRepos() {
-        return this.reposSuccess.size() + this.reposWarning.size() + this.reposFailed.size();
+        return getNrOfReposSuccess() + getNrOfReposSkipped() + getNrOfReposWithWarning() + getNrOfReposFailed();
     }
 
 }
