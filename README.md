@@ -117,6 +117,16 @@ directory. This will override all other binding behaviours.
 When cloning for the first time (initialization), the target has to be specified by `--target` specific option. All 
 following calls of meta will be applied for that target. Changing the target after initialization is not provided.
 
+If `meta.conf` contains a `branch` declaration for the repository to be cloned, then the specified branch will be
+checked out. Otherwise, the repo keeps at the respective default branch.
+
+`meta clone` can be called subsequently, especially after adding further declarations to `meta.conf`. When doing so,
+meta will check out the appropriate feature branch, if a feature is selected and the repo to be cloned contains a
+branch related to that particular feature. In that case, a possible `branch` declaration for that repo in `meta.conf`
+will be ignored.
+
+On subsequent calls of `meta clone` repos that are already existing keep untouched and will be displayed as skipped.
+
 ### meta status
 
 `meta status` shows a concise output for all configured repos.
