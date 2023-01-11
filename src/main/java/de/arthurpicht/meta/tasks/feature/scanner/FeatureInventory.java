@@ -62,7 +62,7 @@ public class FeatureInventory {
         return this.featureMap.isEmpty();
     }
 
-    public boolean hasRepoFeature(String repoName, String featureName) {
+    public boolean containsRepoWithFeature(String repoName, String featureName) {
         Set<RepoConfig> repoConfigs = this.featureMap.getRepoConfigs(featureName);
         return repoConfigs.stream()
                 .map(RepoConfig::getRepoName)

@@ -75,7 +75,7 @@ public class RepoProperties {
         if (this.featureInfo.hasFeature()) {
             String repoName = this.repoConfig.getRepoName();
             String featureName = this.featureInfo.getFeature().getName();
-            boolean hasFeature = this.featureInfo.getFeatureInventory().hasRepoFeature(repoName, featureName);
+            boolean hasFeature = this.featureInfo.getFeatureInventory().containsRepoWithFeature(repoName, featureName);
 
             if (hasFeature) return FeatureBranchName.FEATURE_BRANCH_PREFIX + featureName;
         }

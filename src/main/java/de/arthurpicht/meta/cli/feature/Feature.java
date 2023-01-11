@@ -2,6 +2,7 @@ package de.arthurpicht.meta.cli.feature;
 
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.persistence.project.FeatureFile;
+import de.arthurpicht.meta.tasks.feature.FeatureBranchName;
 import de.arthurpicht.utils.core.assertion.MethodPreconditions;
 import de.arthurpicht.utils.core.strings.Strings;
 
@@ -42,15 +43,24 @@ public class Feature {
     }
 
     public String getName() {
-        if (!Strings.isSpecified(this.name))
-            throw new IllegalStateException("No feature specified.");
+        assertFeatureIsSpecified();
         return this.name;
+    }
+
+    public FeatureBranchName getFeatureBranchName() {
+        assertFeatureIsSpecified();
+        return FeatureBranchName.createByFeatureName(this.name);
     }
 
     @Override
     public String toString() {
         if (Strings.isSpecified(this.name)) return this.name;
         return "NO_FEATURE";
+    }
+
+    private void assertFeatureIsSpecified() {
+        if (!Strings.isSpecified(this.name))
+            throw new IllegalStateException("No feature specified.");
     }
 
 }

@@ -13,6 +13,7 @@ public class ExecutionContext {
     private static MetaDir metaDir;
     private static boolean stacktrace;
     private static boolean verbose;
+    private static boolean debug;
     private static boolean initialized = false;
 
     public static void init(CliCall cliCall) {
@@ -20,6 +21,7 @@ public class ExecutionContext {
         metaDir = MetaDirBuilder.obtain(optionParserResultGlobal);
         verbose = optionParserResultGlobal.hasOption(GlobalOptionsDef.VERBOSE);
         stacktrace = optionParserResultGlobal.hasOption(GlobalOptionsDef.STACKTRACE);
+        debug = optionParserResultGlobal.hasOption(GlobalOptionsDef.DEBUG);
         initialized = true;
     }
 
@@ -45,6 +47,11 @@ public class ExecutionContext {
     public static boolean isStacktrace() {
         assertInitialized();
         return stacktrace;
+    }
+
+    public static boolean isDebug() {
+        assertInitialized();
+        return debug;
     }
 
 }

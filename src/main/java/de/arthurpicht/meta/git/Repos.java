@@ -1,9 +1,11 @@
 package de.arthurpicht.meta.git;
 
+import de.arthurpicht.meta.cli.feature.Feature;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
+import de.arthurpicht.meta.tasks.feature.FeatureBranchName;
 import de.arthurpicht.meta.tasks.feature.FeatureInfo;
 import de.arthurpicht.meta.tasks.status.RepoProperties;
 
@@ -35,10 +37,21 @@ public class Repos {
         List<RepoConfig> repoConfigsNotOnBase = new ArrayList<>();
         for (RepoConfig repoConfig : repoConfigs) {
             RepoProperties repoProperties = new RepoProperties(repoConfig, featureInfo);
-            if (!isOnBaseBranch(repoProperties))
+            if (isNotOnBaseBranch(repoProperties))
                 repoConfigsNotOnBase.add(repoConfig);
         }
         return repoConfigsNotOnBase;
+    }
+
+    public static List<RepoConfig> selectReposNotOnFeatureBranch(List<RepoConfig> repoConfigs, Feature feature) {
+        if (!feature.hasFeature()) throw new IllegalStateException("No feature selected.");
+        List<RepoConfig> repoConfigsNotOnBranch = new ArrayList<>();
+        for (RepoConfig repoConfig : repoConfigs) {
+            String branchName = FeatureBranchName.getBranchName(feature.getName());
+            if (isNotOnBranch(repoConfig.getRepoPath(), branchName))
+                repoConfigsNotOnBranch.add(repoConfig);
+        }
+        return repoConfigsNotOnBranch;
     }
 
     private static boolean isNotOnIntendedBranch(RepoProperties repoProperties) {
@@ -49,9 +62,17 @@ public class Repos {
         }
     }
 
-    private static boolean isOnBaseBranch(RepoProperties repoProperties) {
+    private static boolean isNotOnBaseBranch(RepoProperties repoProperties) {
         try {
-            return repoProperties.isOnBaseBranch();
+            return !repoProperties.isOnBaseBranch();
+        } catch (GitException e) {
+            throw new MetaRuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private static boolean isNotOnBranch(RepoProperties repoProperties, String branchName) {
+        try {
+            return !repoProperties.getCurrentBranchName().equals(branchName);
         } catch (GitException e) {
             throw new MetaRuntimeException(e.getMessage(), e);
         }
@@ -72,6 +93,23 @@ public class Repos {
             throw new MetaRuntimeException(e.getMessage(), e);
         }
     }
+
+    private static boolean isNotOnBranch(Path repoPath, String branchName) {
+        try {
+            return !Git.getCurrentBranch(repoPath).equals(branchName);
+        } catch (GitException e) {
+            throw new MetaRuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public static boolean isOnBranch(Path repoPath, String branchName) {
+        try {
+            return Git.getCurrentBranch(repoPath).equals(branchName);
+        } catch (GitException e) {
+            throw new MetaRuntimeException(e.getMessage(), e);
+        }
+    }
+
 
     public static void reset(List<RepoConfig> repoConfigs, boolean verbose, MetaConfig metaConfig, Target target) {
         FeatureInfo featureInfo = FeatureInfo.createForNoFeature(metaConfig, target);

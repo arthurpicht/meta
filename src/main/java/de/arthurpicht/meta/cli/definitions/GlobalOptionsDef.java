@@ -10,6 +10,7 @@ public class GlobalOptionsDef {
     public static final String STACKTRACE = "stacktrace";
     public static final String META_DIR = "metaDir";
     public static final String VERBOSE = "verbose";
+    public static final String DEBUG = "debug";
 
     public static Options get() {
 
@@ -30,7 +31,12 @@ public class GlobalOptionsDef {
                 .add(new OptionBuilder()
                         .withLongName("verbose")
                         .withDescription("verbose output")
-                        .build(VERBOSE));
+                        .build(VERBOSE))
+                .add(new OptionBuilder()
+                        .withLongName("debug")
+                        .withDescription("output for debugging meta application")
+                        .build(DEBUG));
+
     }
 
 }

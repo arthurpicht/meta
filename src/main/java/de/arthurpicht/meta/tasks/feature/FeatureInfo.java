@@ -59,4 +59,8 @@ public class FeatureInfo {
         return this.featureInventory.getRepoConfigs(this.feature.getName());
     }
 
+    public boolean containsRepoWithFeature(String repoName, FeatureBranchName featureBranchName) {
+        return this.featureInventory.containsRepoWithFeature(repoName, featureBranchName.getFeatureName());
+    }
+
 }
