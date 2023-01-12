@@ -1,4 +1,4 @@
-package de.arthurpicht.meta.cli.feature.branchChangeSet;
+package de.arthurpicht.meta.tasks.feature.branchChangeSet;
 
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.config.RepoConfig;
@@ -14,7 +14,7 @@ public class BranchChangeSetDebugOut {
         System.out.println(BranchChangeSet.class.getSimpleName() + ":");
 
         System.out.println("    checkout to base branch:");
-        List<RepoConfig> checkoutToBaseBranch = branchChangeSet.getCheckoutToBaseBranches();
+        List<RepoConfig> checkoutToBaseBranch = branchChangeSet.getCheckoutToBaseRepos();
         if (checkoutToBaseBranch.isEmpty())
             System.out.println("        <none>");
         for (RepoConfig repoConfig : checkoutToBaseBranch) {
@@ -22,7 +22,7 @@ public class BranchChangeSetDebugOut {
         }
 
         System.out.println("    checkout to new feature branch:");
-        List<RepoConfig> checkoutToNewFeatureBranch = branchChangeSet.getCheckoutNewFeatureBranches();
+        List<RepoConfig> checkoutToNewFeatureBranch = branchChangeSet.getCheckoutToNewFeatureRepos();
         if (checkoutToNewFeatureBranch.isEmpty())
             System.out.println("        <none>");
         for (RepoConfig repoConfig : checkoutToNewFeatureBranch) {
@@ -30,7 +30,7 @@ public class BranchChangeSetDebugOut {
         }
 
         System.out.println("    repos to be changed but with uncommitted changes:");
-        List<RepoConfig> uncommittedChanges = branchChangeSet.getUncommittedChangesBlockingBranches();
+        List<RepoConfig> uncommittedChanges = branchChangeSet.getUncommittedChangedRepos();
         if (uncommittedChanges.isEmpty())
             System.out.println("        <none>");
         for (RepoConfig repoConfig : uncommittedChanges) {
@@ -38,7 +38,7 @@ public class BranchChangeSetDebugOut {
         }
 
         System.out.println("    repos to be changed with uncommitted changes containing modified files:");
-        List<RepoConfig> modifiedFilesRepos = branchChangeSet.getModifiedFilesBlockingBranches();
+        List<RepoConfig> modifiedFilesRepos = branchChangeSet.getModifiedFilesRepos();
         if (modifiedFilesRepos.isEmpty())
             System.out.println("        <none>");
         for (RepoConfig repoConfig : modifiedFilesRepos) {
@@ -47,7 +47,7 @@ public class BranchChangeSetDebugOut {
 
         System.out.println("    force checkout? " + branchChangeSet.isForce());
 
-        System.out.println("    isBlocked? " + branchChangeSet.isBlocked());
+        System.out.println("    isBlocked? " + BranchChangeSetChecker.isBlocked(branchChangeSet));
     }
 
 }
