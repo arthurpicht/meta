@@ -29,7 +29,7 @@ public class BranchChangeSetCreator {
         List<RepoConfig> modifiedFilesBlockingBranches = new ArrayList<>();
 
         FeatureBranchName destinationBranchName = destinationFeatureInfo.getFeature().getFeatureBranchName();
-        boolean featureIdentity = sourceFeatureInfo.getFeature().getName().equals(destinationFeatureInfo.getFeature().getName());
+        boolean equalsFeature = equalsFeature(sourceFeatureInfo, destinationFeatureInfo);
 
         List<RepoConfig> affectedRepos = determineAffectedRepos(sourceFeatureInfo, destinationFeatureInfo);
 
@@ -51,7 +51,7 @@ public class BranchChangeSetCreator {
 
             if (hasDestinationFeatureBranch(repoConfig, destinationFeatureInfo)) {
                 checkoutNewFeatureBranches.add(repoConfig);
-            } else if (!featureIdentity) {
+            } else if (!equalsFeature) {
                 checkoutToBaseBranches.add(repoConfig);
             }
         }
@@ -62,6 +62,11 @@ public class BranchChangeSetCreator {
                 uncommittedChangesBlockingBranches,
                 modifiedFilesBlockingBranches,
                 force);
+    }
+
+    private static boolean equalsFeature(FeatureInfo sourceFeatureInfo, FeatureInfo destinationFeatureInfo) {
+        if (!sourceFeatureInfo.hasFeature()) return false;
+        return sourceFeatureInfo.getFeature().getName().equals(destinationFeatureInfo.getFeature().getName());
     }
 
     private static void consistencyCheck(RepoConfig repoConfig, FeatureInfo destinationFeatureInfo) throws CommandExecutorException {
