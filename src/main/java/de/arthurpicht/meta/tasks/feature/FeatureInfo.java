@@ -4,6 +4,7 @@ import de.arthurpicht.meta.cli.feature.Feature;
 import de.arthurpicht.meta.cli.target.Target;
 import de.arthurpicht.meta.config.MetaConfig;
 import de.arthurpicht.meta.config.RepoConfig;
+import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.tasks.feature.scanner.FeatureInventory;
 import de.arthurpicht.meta.tasks.feature.scanner.FeatureScanner;
 
@@ -13,6 +14,26 @@ import java.util.List;
 import static de.arthurpicht.utils.core.assertion.MethodPreconditions.assertArgumentNotNull;
 
 public class FeatureInfo {
+
+    public static class FeatureGoneException extends MetaRuntimeException {
+
+        private final Feature feature;
+        private final FeatureInventory featureInventory;
+
+        public FeatureGoneException(Feature feature, FeatureInventory featureInventory) {
+            super("Feature [" + feature.getName() + "] is gone. Please call 'meta feature reset --force --all'.");
+            this.feature = feature;
+            this.featureInventory = featureInventory;
+        }
+
+        public Feature getFeature() {
+            return feature;
+        }
+
+        public FeatureInventory getFeatureInventory() {
+            return featureInventory;
+        }
+    }
 
     private final Feature feature;
     private final FeatureInventory featureInventory;
@@ -26,6 +47,8 @@ public class FeatureInfo {
     public static FeatureInfo createFromPersistence(MetaConfig metaConfig, Target target) {
         Feature feature = Feature.load();
         FeatureInventory featureInventory = FeatureScanner.scan(metaConfig, target);
+        if (feature.hasFeature() && !featureInventory.hasFeature(feature))
+            throw new FeatureGoneException(feature, featureInventory);
         return new FeatureInfo(feature, featureInventory);
     }
 

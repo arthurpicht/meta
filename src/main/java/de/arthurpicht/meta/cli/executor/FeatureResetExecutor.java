@@ -6,6 +6,8 @@ import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.meta.cli.ExecutionContext;
 import de.arthurpicht.meta.cli.definitions.FeatureResetDef;
 import de.arthurpicht.meta.cli.definitions.GlobalOptionsDef;
+import de.arthurpicht.meta.cli.feature.Feature;
+import de.arthurpicht.meta.cli.output.Output;
 import de.arthurpicht.meta.cli.persistence.project.FeatureFile;
 import de.arthurpicht.meta.cli.target.ProjectTarget;
 import de.arthurpicht.meta.cli.target.Target;
@@ -31,11 +33,25 @@ public class FeatureResetExecutor implements CommandExecutor {
         MetaConfig metaConfig = initMetaConfig();
         Target target = ProjectTarget.obtainInitializedTarget(metaConfig.getGeneralConfig().getTargets());
 
-        FeatureInfo featureInfo = FeatureInfo.createFromPersistence(metaConfig, target);
-
         boolean verbose = cliCall.getOptionParserResultGlobal().hasOption(GlobalOptionsDef.VERBOSE);
         boolean all = cliCall.getOptionParserResultSpecific().hasOption(FeatureResetDef.OPTION_ALL);
         boolean force = cliCall.getOptionParserResultSpecific().hasOption(FeatureResetDef.OPTION_FORCE);
+
+        FeatureInfo featureInfo;
+        try {
+            featureInfo = FeatureInfo.createFromPersistence(metaConfig, target);
+        } catch (FeatureInfo.FeatureGoneException e) {
+            if (force && all) {
+                System.out.println(Output.yellowTag("WARN") + "Configured feature [" + e.getFeature().getName() + "] is gone.");
+                Feature feature = Feature.createWithNoFeature();
+                featureInfo = new FeatureInfo(feature, e.getFeatureInventory());
+                FeatureFile featureFile = new FeatureFile(ExecutionContext.getMetaDirAsPath());
+                featureFile.delete();
+            } else {
+                throw e;
+            }
+        }
+
 
         if (all) {
             resetAll(metaConfig, target, featureInfo, force, verbose);
