@@ -6,7 +6,10 @@ import de.arthurpicht.meta.config.RepoConfig;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.meta.git.GitException;
 import de.arthurpicht.meta.git.GitHighLevel;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FeatureScanner {
@@ -24,6 +27,8 @@ public class FeatureScanner {
     }
 
     private static List<String> getFeatureNames(RepoConfig repoConfig) {
+        Path repoPath = repoConfig.getRepoPath();
+        if (!FileUtils.isExistingDirectory(repoPath)) return new ArrayList<>();
         try {
             return GitHighLevel.getFeatureBranchNameList(repoConfig.getRepoPath());
         } catch (GitException e) {
