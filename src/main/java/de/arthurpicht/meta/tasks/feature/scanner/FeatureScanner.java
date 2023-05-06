@@ -30,7 +30,7 @@ public class FeatureScanner {
         Path repoPath = repoConfig.getRepoPath();
         if (!FileUtils.isExistingDirectory(repoPath)) return new ArrayList<>();
         try {
-            return GitHighLevel.getFeatureBranchNameList(repoConfig.getRepoPath());
+            return GitHighLevel.getFeatureBranchNameList(repoConfig.getRepoPath(), false);
         } catch (GitException e) {
             throw new MetaRuntimeException("Could not determine remote branches.", e);
         }

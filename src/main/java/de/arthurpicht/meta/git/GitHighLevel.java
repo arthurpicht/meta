@@ -8,16 +8,17 @@ import java.util.stream.Collectors;
 
 public class GitHighLevel {
 
-    public static List<String> getFeatureBranchNameList(Path repoPath) throws GitException {
-        List<String> featureBranchNameList = Git.getRemoteBranches(repoPath);
+    public static List<String> getFeatureBranchNameList(Path repoPath, boolean verbose) throws GitException {
+        List<String> featureBranchNameList = Git.getRemoteBranches(repoPath, verbose);
         return featureBranchNameList.stream()
                 .filter(featureBranchName -> featureBranchName.startsWith(FeatureBranchName.FEATURE_BRANCH_PREFIX))
                 .map(featureBranchName -> featureBranchName.substring(FeatureBranchName.FEATURE_BRANCH_PREFIX.length()))
                 .collect(Collectors.toList());
     }
 
-    public static boolean hasFeatureBranch(Path repoPath, FeatureBranchName featureBranchName) throws GitException {
-        List<String> featureBranchNameList = getFeatureBranchNameList(repoPath);
+    public static boolean hasFeatureBranch(Path repoPath, FeatureBranchName featureBranchName, boolean verbose)
+            throws GitException {
+        List<String> featureBranchNameList = getFeatureBranchNameList(repoPath, verbose);
         return featureBranchNameList.contains(featureBranchName.getBranchName());
     }
 

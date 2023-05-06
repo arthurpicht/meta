@@ -31,7 +31,7 @@ public class PullRepoExecutor extends RepoExecutor {
                 throw new MetaRuntimeException("Repo [" + repoPath.toAbsolutePath() + "] not found. Consider calling clone.");
 
             String message;
-            if (Git.hasUncommittedChanges(repoPath)) {
+            if (Git.hasUncommittedChanges(repoPath, ExecutionContext.isVerbose())) {
                 message = "Performed only fetch due to local changes. ";
                 Git.fetch(repoPath);
                 String currentBranch = CommandExecutorCommons.getCurrentBranch(repoConfig);

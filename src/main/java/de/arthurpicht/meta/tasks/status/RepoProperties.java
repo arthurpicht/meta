@@ -93,7 +93,7 @@ public class RepoProperties {
     public boolean hasUncommittedChanges() throws GitException {
         assertExistingRepo();
         if (this.hasUncommittedChanges == null)
-            this.hasUncommittedChanges = Git.hasUncommittedChanges(getRepoPath());
+            this.hasUncommittedChanges = Git.hasUncommittedChanges(getRepoPath(), false);
         return this.hasUncommittedChanges;
     }
 

@@ -80,7 +80,7 @@ public class Repos {
 
     private static boolean hasUncommittedChanges(Path repoPath) {
         try {
-            return Git.hasUncommittedChanges(repoPath);
+            return Git.hasUncommittedChanges(repoPath, false);
         } catch (GitException e) {
             throw new MetaRuntimeException(e.getMessage(), e);
         }

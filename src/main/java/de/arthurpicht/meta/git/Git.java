@@ -25,12 +25,8 @@ public class Git {
     }
 
     public static void clone(Path destinationPath, String url, String repoName, boolean verbose) throws GitException {
-
         List<String> commands = Lists.newArrayList("git", "-C", destinationPath.toString(), "clone", url, repoName);
-
-        if (verbose)
-            System.out.println(Strings.listing(commands, " "));
-
+        outputEntryLog(FileUtils.getWorkingDir(), commands, verbose);
         try {
             ProcessBuilder processBuilder = new ProcessBuilder()
                     .command(commands);
@@ -53,11 +49,8 @@ public class Git {
     }
 
     public static void checkout(Path repoPath, String branch, boolean verbose) throws GitException {
-
         List<String> commands = Lists.newArrayList("git", "-C", repoPath.toString(), "checkout", branch);
-        if (verbose)
-            System.out.println(Strings.listing(commands, " "));
-
+        outputEntryLog(FileUtils.getWorkingDir(), commands, verbose);
         try {
             ProcessBuilder processBuilder = new ProcessBuilder().command(commands);
             if (verbose)
@@ -101,7 +94,6 @@ public class Git {
     }
 
     public static String getRemoteUrlForOriginFetch(Path repoPath) throws GitException {
-
         List<String> commands = List.of("git", "remote", "-v");
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
@@ -186,8 +178,9 @@ public class Git {
         }
     }
 
-    public static List<String> getRemoteBranches(Path repoPath) throws GitException {
+    public static List<String> getRemoteBranches(Path repoPath, boolean verbose) throws GitException {
         List<String> commands = List.of("git", "branch", "-r");
+        outputEntryLog(repoPath, commands, verbose);
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
             List<String> result = InputStreams.toStrings(process.getInputStream());
@@ -261,8 +254,9 @@ public class Git {
         }
     }
 
-    public static boolean hasUncommittedChanges(Path repoPath) throws GitException {
+    public static boolean hasUncommittedChanges(Path repoPath, boolean verbose) throws GitException {
         List<String> commands = List.of("git", "status", "--porcelain");
+        outputEntryLog(repoPath, commands, verbose);
         try {
             Process process = new ProcessBuilder().command(commands).directory(repoPath.toFile()).start();
             List<String> result = InputStreams.toStrings(process.getInputStream());
@@ -363,6 +357,11 @@ public class Git {
         }
     }
 
+    private static void outputEntryLog(Path repoPath, List<String> commands, boolean verbose) {
+        String commandsString = Strings.listing(commands, " ");
+        if (verbose) System.out.println("Executing '" + commandsString + "' in directory ["
+                + repoPath.toAbsolutePath() + "].");
+    }
 
     private static void outputResult(List<String> result, boolean verbose) {
         if (!verbose) return;

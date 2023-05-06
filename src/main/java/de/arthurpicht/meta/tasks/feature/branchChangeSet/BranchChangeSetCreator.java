@@ -93,7 +93,7 @@ public class BranchChangeSetCreator {
 
     private static boolean hasUncommittedChanges(RepoConfig repoConfig) {
         try {
-            return Git.hasUncommittedChanges(repoConfig.getRepoPath());
+            return Git.hasUncommittedChanges(repoConfig.getRepoPath(), false);
         } catch (GitException e) {
             throw new MetaRuntimeException(e.getMessage(), e);
         }

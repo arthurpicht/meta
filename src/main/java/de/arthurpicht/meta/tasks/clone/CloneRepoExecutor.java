@@ -179,7 +179,7 @@ public class CloneRepoExecutor extends RepoExecutor {
     private static void checkoutIntendedBranch(RepoConfig repoConfig, FeatureInfo featureInfo, boolean verbose)
             throws GitException {
 
-        if (featureInfo.hasFeature() && hasFeatureBranch(repoConfig, featureInfo)) {
+        if (featureInfo.hasFeature() && hasFeatureBranch(repoConfig, featureInfo, verbose)) {
             String featureBranchName = FeatureBranchName.getBranchName(featureInfo.getFeature().getName());
             Git.checkout(repoConfig.getRepoPath(), featureBranchName, verbose);
 
@@ -194,10 +194,10 @@ public class CloneRepoExecutor extends RepoExecutor {
         }
     }
 
-    private static boolean hasFeatureBranch(RepoConfig repoConfig, FeatureInfo featureInfo) throws GitException {
+    private static boolean hasFeatureBranch(RepoConfig repoConfig, FeatureInfo featureInfo, boolean verbose) throws GitException {
         String featureName = featureInfo.getFeature().getName();
         FeatureBranchName featureBranchName = FeatureBranchName.createByFeatureName(featureName);
-        return GitHighLevel.hasFeatureBranch(repoConfig.getDestinationPath(), featureBranchName);
+        return GitHighLevel.hasFeatureBranch(repoConfig.getRepoPath(), featureBranchName, verbose);
     }
 
     private static String getDefaultBranch(RepoConfig repoConfig) {
