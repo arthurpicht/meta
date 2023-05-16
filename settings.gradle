@@ -1,2 +1,5 @@
 rootProject.name = 'meta'
+includeBuild('../cli')
+
+
 
