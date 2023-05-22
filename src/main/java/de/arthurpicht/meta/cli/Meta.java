@@ -5,6 +5,8 @@ import de.arthurpicht.cli.*;
 import de.arthurpicht.cli.command.Commands;
 import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
+import de.arthurpicht.console.Console;
+import de.arthurpicht.console.config.ConsoleConfigurationBuilder;
 import de.arthurpicht.meta.Const;
 import de.arthurpicht.meta.cli.definitions.*;
 import de.arthurpicht.meta.cli.output.Colors;
@@ -52,6 +54,10 @@ public class Meta {
 
         boolean showStacktrace = cliCall.getOptionParserResultGlobal().hasOption(GlobalOptionsDef.STACKTRACE);
 
+        ConsoleConfigurationBuilder consoleConfigurationBuilder = new ConsoleConfigurationBuilder();
+        if (isNoColor(cliCall)) consoleConfigurationBuilder.withSuppressedColors();
+        Console.init(consoleConfigurationBuilder.build());
+
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException | MetaRuntimeException e) {
@@ -74,6 +80,16 @@ public class Meta {
         System.out.println(Ansi.colorize("ERROR. OPERATION ABORTED.", Colors.redText));
         System.out.println(e.getMessage());
         if (showStacktrace) e.printStackTrace();
+    }
+
+    private static boolean isNoColor(CliCall cliCall) {
+        if (cliCall.getOptionParserResultGlobal().hasOption(GlobalOptionsDef.NO_COLOR)) return true;
+        try {
+            if (System.getenv("NO_COLOR") != null) return true;
+        } catch (SecurityException e) {
+            // ignored
+        }
+        return false;
     }
 
 }

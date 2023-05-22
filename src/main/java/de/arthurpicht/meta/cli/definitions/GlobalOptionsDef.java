@@ -1,9 +1,6 @@
 package de.arthurpicht.meta.cli.definitions;
 
-import de.arthurpicht.cli.option.ManOption;
-import de.arthurpicht.cli.option.OptionBuilder;
-import de.arthurpicht.cli.option.Options;
-import de.arthurpicht.cli.option.VersionOption;
+import de.arthurpicht.cli.option.*;
 
 public class GlobalOptionsDef {
 
@@ -11,6 +8,7 @@ public class GlobalOptionsDef {
     public static final String META_DIR = "metaDir";
     public static final String VERBOSE = "verbose";
     public static final String DEBUG = "debug";
+    public static final String NO_COLOR = "no-color";
 
     public static Options get() {
 
@@ -20,7 +18,7 @@ public class GlobalOptionsDef {
                 .add(new OptionBuilder()
                         .withShortName('s')
                         .withLongName("stacktrace")
-                        .withDescription("Show stacktrace when running on error.")
+                        .withDescription("show stacktrace when running on error")
                         .build(STACKTRACE))
                 .add(new OptionBuilder()
                         .withShortName('d')
@@ -35,7 +33,12 @@ public class GlobalOptionsDef {
                 .add(new OptionBuilder()
                         .withLongName("debug")
                         .withDescription("output for debugging meta application")
-                        .build(DEBUG));
+                        .build(DEBUG))
+                .add(new OptionBuilder()
+                        .withShortName('c')
+                        .withLongName("no-color")
+                        .withDescription("omit colors on console output")
+                        .build(NO_COLOR));
 
     }
 
