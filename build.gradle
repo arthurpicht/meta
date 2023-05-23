@@ -21,7 +21,7 @@ dependencies {
     implementation 'com.github.arthurpicht:utils-io:0.0.17'
     implementation 'com.github.arthurpicht:cli:0.1.0'
     implementation 'com.github.arthurpicht:AP-Configuration:0.1.6'
-    implementation 'com.github.arthurpicht:console:0.1.2'
+    implementation 'com.github.arthurpicht:console:0.1.4-no_log'
 
     implementation group: 'com.diogonunes', name: 'JColor', version: '5.0.1'
 

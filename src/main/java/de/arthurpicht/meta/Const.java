@@ -5,6 +5,6 @@ public class Const {
     public static final String META_CONF__FILE_NAME = "meta.conf";
 
     public static final String VERSION_TAG = "0.2.4";
-    public static final String VERSION_DATE = "2023-05-22";
+    public static final String VERSION_DATE = "2023-05-23";
 
 }
