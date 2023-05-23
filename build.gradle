@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.github.arthurpicht'
-version '0.2.4'
+version '0.2.5-SNAPSHOT'
 
 java {
     toolchain {
@@ -19,7 +19,7 @@ repositories {
 dependencies {
     implementation 'com.github.arthurpicht:utils-core:1.11.0'
     implementation 'com.github.arthurpicht:utils-io:0.0.17'
-    implementation 'com.github.arthurpicht:cli:0.1.0'
+    implementation 'com.github.arthurpicht:cli:0.1.1'
     implementation 'com.github.arthurpicht:AP-Configuration:0.1.6'
     implementation 'com.github.arthurpicht:console:0.1.4-no_log'
 
@@ -28,6 +28,10 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
 }
+
+// damit meta zu native kompiliert werden kann, muss die lib ap/console in der
+// no_log version gebunden werden. ap/cli bindet 0.1.2, was hier mit 0.1.4-no_log
+// überschrieben wird.
 
 test {
     useJUnitPlatform()

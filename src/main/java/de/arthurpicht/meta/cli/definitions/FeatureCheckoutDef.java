@@ -24,7 +24,7 @@ public class FeatureCheckoutDef {
                 .addCommands("feature", "checkout")
                 .withCommandExecutor(new FeatureCheckoutExecutor())
                 .withSpecificOptions(options)
-                .withParameters(new ParametersOne())
+                .withParameters(new ParametersOne("feature", "name of feature"))
                 .withDescription("Checkout feature.")
                 .build();
     }
