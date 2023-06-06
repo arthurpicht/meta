@@ -56,7 +56,7 @@ public class Meta {
 
         ConsoleConfigurationBuilder consoleConfigurationBuilder = new ConsoleConfigurationBuilder();
         if (isNoColor(cliCall)) consoleConfigurationBuilder.withSuppressedColors();
-        Console.init(consoleConfigurationBuilder.build());
+        Console.configure(consoleConfigurationBuilder.build());
 
         try {
             cli.execute(cliCall);
