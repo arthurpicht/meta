@@ -1,15 +1,14 @@
 package de.arthurpicht.meta.cli;
 
-import com.diogonunes.jcolor.Ansi;
 import de.arthurpicht.cli.*;
 import de.arthurpicht.cli.command.Commands;
 import de.arthurpicht.cli.command.InfoDefaultCommand;
 import de.arthurpicht.cli.common.UnrecognizedArgumentException;
 import de.arthurpicht.console.Console;
 import de.arthurpicht.console.config.ConsoleConfigurationBuilder;
+import de.arthurpicht.console.message.format.Format;
 import de.arthurpicht.meta.Const;
 import de.arthurpicht.meta.cli.definitions.*;
-import de.arthurpicht.meta.cli.output.Colors;
 import de.arthurpicht.meta.exception.MetaRuntimeException;
 import de.arthurpicht.utils.core.strings.Strings;
 
@@ -77,9 +76,9 @@ public class Meta {
     }
 
     private static void errorOut(Throwable e, boolean showStacktrace) {
-        System.out.println(Ansi.colorize("ERROR. OPERATION ABORTED.", Colors.redText));
-        System.out.println(e.getMessage());
-        if (showStacktrace) e.printStackTrace();
+        Console.error("ERROR. OPERATION ABORTED.", Format.RED_TEXT());
+        Console.error(e.getMessage());
+        if (showStacktrace) Console.printStackTrace(e);
     }
 
     private static boolean isNoColor(CliCall cliCall) {
