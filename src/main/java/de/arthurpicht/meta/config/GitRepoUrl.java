@@ -27,6 +27,14 @@ public class GitRepoUrl {
     }
 
     private String extractRepoName(String url) throws ConfigurationException {
+        if (url.endsWith(".git")) {
+            return extractRepoNameDotGit(url);
+        } else {
+            return extractRepoNameNoDotGit(url);
+        }
+    }
+
+    private String extractRepoNameDotGit(String url) throws ConfigurationException {
         int lastIndexOfSlash = url.lastIndexOf('/');
         int lastIndexOfDot = url.lastIndexOf(".");
 
@@ -34,6 +42,17 @@ public class GitRepoUrl {
             throw new ConfigurationException("Error parsing repo name from url: [" + url + "].");
 
         return url.substring(lastIndexOfSlash + 1, lastIndexOfDot);
+    }
+
+    private String extractRepoNameNoDotGit(String url) throws ConfigurationException {
+        // This applies to bitbucket wiki repos
+        int lastIndexOfSlash = url.lastIndexOf('/');
+        int lastIndexOfDot = url.lastIndexOf(".");
+
+        if (url.endsWith("/") || lastIndexOfSlash <= 0 || lastIndexOfDot > lastIndexOfSlash)
+            throw new ConfigurationException("Error parsing repo name from url: [" + url + "].");
+
+        return url.substring(lastIndexOfSlash + 1);
     }
 
     public String getUrl() {
