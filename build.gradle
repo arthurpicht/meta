@@ -7,8 +7,13 @@ version '0.2.5-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+wrapper {
+    gradleVersion = '8.3'
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 repositories {
@@ -37,27 +42,21 @@ test {
     useJUnitPlatform()
 }
 
-tasks.register('extractDependencies', Copy) {
-    dependsOn jar
-    from configurations.runtimeClasspath
-    into "$buildDir/dependencies"
-}
-
 tasks.register('fatJar', Jar) {
-    dependsOn extractDependencies
+    archiveClassifier = 'fat'
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes 'Main-Class': 'de.arthurpicht.meta.cli.Meta'
         attributes 'Version': project.property("version")
         attributes 'Build': new Date().format('yyyyMMddHHmmss')
     }
+
+    from sourceSets.main.output
+
+    dependsOn configurations.runtimeClasspath
     from {
-        file("$buildDir/dependencies").listFiles().collect { zipTree(it) }
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
     }
-    from {
-        file("$buildDir/libs").listFiles().collect { zipTree(it) }
-    }
-    destinationDirectory.set(file("$buildDir/fatjar"))
 }
 
 tasks.register('tool') {
