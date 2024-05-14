@@ -5,14 +5,14 @@ plugins {
 group 'com.github.arthurpicht'
 version '0.2.5-SNAPSHOT'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
+//java {
+//    toolchain {
+//        languageVersion = JavaLanguageVersion.of(17)
+//    }
+//}
 
 wrapper {
-    gradleVersion = '8.3'
+    gradleVersion = '8.7'
     distributionType = Wrapper.DistributionType.BIN
 }
 
@@ -22,21 +22,17 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.arthurpicht:utils-core:1.13.0'
-    implementation 'com.github.arthurpicht:utils-io:0.0.17'
-    implementation 'com.github.arthurpicht:cli:0.1.2-no_log'
+    implementation 'com.github.arthurpicht:utils-core:1.13.1'
+    implementation 'com.github.arthurpicht:utils-io:0.0.20'
+    implementation 'com.github.arthurpicht:cli:0.1.3'
     implementation 'com.github.arthurpicht:AP-Configuration:0.1.6'
-    implementation 'com.github.arthurpicht:console:0.1.6-no_log'
+    implementation 'com.github.arthurpicht:console:0.2.1'
 
-    implementation group: 'com.diogonunes', name: 'JColor', version: '5.0.1'
+    implementation group: 'com.diogonunes', name: 'JColor', version: '5.5.1'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 }
-
-// damit meta zu native kompiliert werden kann, muss die lib ap/console in der
-// no_log version gebunden werden. ap/cli bindet 0.1.2, was hier mit 0.1.4-no_log
-// überschrieben wird.
 
 test {
     useJUnitPlatform()
