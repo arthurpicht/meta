@@ -3,8 +3,8 @@ package de.arthurpicht.meta.git;
 import de.arthurpicht.meta.helper.StringHelper;
 import de.arthurpicht.utils.core.collection.Lists;
 import de.arthurpicht.utils.core.strings.Strings;
-import de.arthurpicht.utils.io.InputStreams;
 import de.arthurpicht.utils.io.nio2.FileUtils;
+import de.arthurpicht.utils.io.stream.InputStreams;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -18,12 +18,13 @@ public class Git {
             Process process = new ProcessBuilder("which", "git").start();
             List<String> result = InputStreams.toStrings(process.getInputStream());
             if (process.waitFor() > 0) return false;
-            return (result.size() > 0);
+            return (!result.isEmpty());
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public static void clone(Path destinationPath, String url, String repoName, boolean verbose) throws GitException {
         List<String> commands = Lists.newArrayList("git", "-C", destinationPath.toString(), "clone", url, repoName);
         outputEntryLog(FileUtils.getWorkingDir(), commands, verbose);
@@ -48,6 +49,7 @@ public class Git {
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public static void checkout(Path repoPath, String branch, boolean verbose) throws GitException {
         List<String> commands = Lists.newArrayList("git", "-C", repoPath.toString(), "checkout", branch);
         outputEntryLog(FileUtils.getWorkingDir(), commands, verbose);
@@ -81,6 +83,7 @@ public class Git {
         return FileUtils.isExistingDirectory(gitRepoDir);
     }
 
+    @SuppressWarnings("unused")
     public static boolean isUnderGitControl(Path repoPath) throws GitException {
         List<String> commands = List.of("git", "rev-parse", "--git-dir");
         try {
@@ -139,6 +142,7 @@ public class Git {
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public static String getCurrentBranch(Path repoPath) throws GitException {
         List<String> commands = List.of("git", "branch");
         try {
@@ -160,6 +164,7 @@ public class Git {
         }
     }
 
+    @SuppressWarnings({"unused", "DuplicatedCode"})
     public static List<String> getLocalBranches(Path repoPath) throws GitException {
         List<String> commands = List.of("git", "branch");
         try {
@@ -219,7 +224,7 @@ public class Git {
                 // After cloning symbolic ref HEAD is missing.
                 // Calling 'git remote set-head origin --auto' fixes that.
                 List<String> errorResult = InputStreams.toStrings(process.getErrorStream());
-                if (!errorResult.isEmpty() && errorResult.get(0).contains("is not a symbolic ref"))
+                if (!errorResult.isEmpty() && errorResult.getFirst().contains("is not a symbolic ref"))
                     throw new GitException("Could not determine default branch. Consider calling 'git remote set-head origin --auto' in repo.");
 
                 throw new GitException("'git symbolic-ref refs/remotes/origin/HEAD' exited with error code " + exitCode + ".");
@@ -228,7 +233,7 @@ public class Git {
             if (result.isEmpty())
                 throw new GitException("No default branch found. No output for 'git symbolic-ref refs/remotes/origin/HEAD'.");
 
-            String resultString = result.get(0);
+            String resultString = result.getFirst();
             String refLeading = "refs/remotes/origin/";
 
             if (!resultString.startsWith(refLeading))
@@ -248,7 +253,7 @@ public class Git {
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git ls-files -m' exited with error code " + exitCode + ".");
-            return (result.size() > 0);
+            return (!result.isEmpty());
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
@@ -263,7 +268,7 @@ public class Git {
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git status --porcelain' exited with error code " + exitCode + ".");
-            return (result.size() > 0);
+            return (!result.isEmpty());
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
@@ -280,7 +285,7 @@ public class Git {
                 // will throw error 128 when executed on newly created branch before committed as upstream branch.
                 return false;
             }
-            return (result.size() > 0);
+            return (!result.isEmpty());
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
@@ -294,7 +299,7 @@ public class Git {
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git stash list' exited with error code " + exitCode + ".");
-            return (result.size() > 0);
+            return (!result.isEmpty());
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
@@ -335,7 +340,7 @@ public class Git {
             int exitCode = process.waitFor();
             if (exitCode != 0)
                 throw new GitException("'git log " + remoteBranch + " ^" + branch + " --oneline' exited with error code " + exitCode + ".");
-            return (result.size() > 0);
+            return (!result.isEmpty());
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
@@ -351,7 +356,7 @@ public class Git {
                 throw new GitException("'git rev-parse HEAD' exited with error code " + exitCode + ".");
             if (result.size() != 1)
                 throw new GitException("'git rev-parse HEAD' is expected to return exactly one line but is: " + result.size());
-            return (result.get(0));
+            return (result.getFirst());
         } catch (IOException | InterruptedException e) {
             throw new GitException(e);
         }
