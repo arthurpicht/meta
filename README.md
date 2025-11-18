@@ -63,11 +63,17 @@ URL of git repository.
 
 #### urlReadonly
 
-Optional. URL of git repository for anonymous read access, like public open source repositories.
-If target is of type `prod` and parameter `urlReadonly`is specified, given URL is bound for git operations.
+Optional. If target is of type `prod` and parameter `urlReadonly`is specified, given URL is bound for git operations.
+
+URL of git repository for anonymous read access, like public open source repositories, especially referenced
+by http addresses.
 
 Specifying this parameter allows CI/CD pipelines on production machines for accessing public git repositories
 without granting access by ssh keys.
+
+This parameter can also be used to reference repositories that are accessed by a personal access token (PAT), in
+particular for production machines, that are provided with a read-only PAT. It is strongly recommended to not
+include the PAT into the referenced url, but to include it rather into the *git credential helper*.
 
 #### destinationDir
 
